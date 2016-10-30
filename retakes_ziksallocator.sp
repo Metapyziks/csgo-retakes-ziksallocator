@@ -54,7 +54,7 @@ enum CSWeapon
     WEAPON_AK47,
     WEAPON_M4A1,
     WEAPON_M4A1_SILENCER,
-    WEAPON_SG553,
+    WEAPON_SG556,
     WEAPON_AUG,
     WEAPON_AWP,
     WEAPON_G3SG1,
@@ -74,7 +74,7 @@ public Plugin myinfo = {
     author = "Ziks",
     description = "A more complex weapon allocator with customizability",
     version = PLUGIN_VERSION,
-    url = "https://csgo.ziks.net"
+    url = "https://github.com/Metapyziks/retakes-ziksallocator"
 };
 
 //
@@ -275,7 +275,7 @@ bool CanBuyWeapon( int client, int team, RoundType roundType, CSWeapon weapon )
     switch ( weapon )
     {
         case WEAPON_GLOCK, WEAPON_TEC9, WEAPON_MAC10, WEAPON_SAWEDOFF,
-            WEAPON_GALILAR, WEAPON_AK47, WEAPON_SG553, WEAPON_G3SG1:
+            WEAPON_GALILAR, WEAPON_AK47, WEAPON_SG556, WEAPON_G3SG1:
             return team == CS_TEAM_T;
         case WEAPON_HKP2000, WEAPON_FIVESEVEN, WEAPON_MP9, WEAPON_MAG7,
             WEAPON_FAMAS, WEAPON_M4A1, WEAPON_M4A1_SILENCER, WEAPON_AUG, WEAPON_SCAR20:
@@ -357,7 +357,7 @@ int GetWeaponCost( int client, CSWeapon weapon )
             return 2700;
         case WEAPON_M4A1, WEAPON_M4A1_SILENCER:
             return 3100;
-        case WEAPON_SG553:
+        case WEAPON_SG556:
             return 3000;
         case WEAPON_AUG:
             return 3300;
@@ -502,7 +502,7 @@ void GetWeaponName( CSWeapon weapon, char[] buffer, int maxLength )
         case WEAPON_AK47:          strcopy( buffer, maxLength, "AK-47" );
         case WEAPON_M4A1:          strcopy( buffer, maxLength, "M4A4" );
         case WEAPON_M4A1_SILENCER: strcopy( buffer, maxLength, "M4A1-S" );
-        case WEAPON_SG553:         strcopy( buffer, maxLength, "SG 553" );
+        case WEAPON_SG556:         strcopy( buffer, maxLength, "SG 553" );
         case WEAPON_AUG:           strcopy( buffer, maxLength, "AUG" );
         case WEAPON_AWP:           strcopy( buffer, maxLength, "AWP" );
         case WEAPON_G3SG1:         strcopy( buffer, maxLength, "G3SG1" );
@@ -552,7 +552,7 @@ void GetWeaponClassName( CSWeapon weapon, char[] buffer, int maxLength )
         case WEAPON_AK47:          strcopy( buffer, maxLength, "weapon_ak47" );
         case WEAPON_M4A1:          strcopy( buffer, maxLength, "weapon_m4a1" );
         case WEAPON_M4A1_SILENCER: strcopy( buffer, maxLength, "weapon_m4a1_silencer" );
-        case WEAPON_SG553:         strcopy( buffer, maxLength, "weapon_sg553" );
+        case WEAPON_SG556:         strcopy( buffer, maxLength, "weapon_sg556" );
         case WEAPON_AUG:           strcopy( buffer, maxLength, "weapon_aug" );
         case WEAPON_AWP:           strcopy( buffer, maxLength, "weapon_awp" );
         case WEAPON_G3SG1:         strcopy( buffer, maxLength, "weapon_g3sg1" );
