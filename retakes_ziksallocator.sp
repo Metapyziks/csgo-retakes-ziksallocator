@@ -839,16 +839,16 @@ public void OnClientCookiesCached( int client )
 // Weapon allocator
 //
 
-int g_RoundCounter = 0;
-
-RoundType GetRoundType( int roundNumber )
+RoundType GetRoundType()
 {
-    if ( (roundNumber % 10) < 3 )
+    int rand = GetRandomInt( 0, 99 );
+
+    if ( rand < 30 )
     {
         return ROUND_PISTOL;
     }
 
-    if ( (roundNumber % 10) < 5 )
+    if ( rand < 50 )
     {
         return ROUND_FORCE;
     }
@@ -884,7 +884,7 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
     int tCount = GetArraySize( tPlayers );
     int ctCount = GetArraySize( ctPlayers );
 
-    RoundType roundType = GetRoundType( g_RoundCounter++ );
+    RoundType roundType = GetRoundType();
 
     int tSniper = -1; 
     int ctSniper = -1;
