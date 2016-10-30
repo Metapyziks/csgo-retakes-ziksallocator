@@ -792,6 +792,13 @@ void AddMoneyAvailableItems( Panel menu, int moneyAvailable )
     menu.DrawItem( " ", ITEMDRAW_RAWLINE  );
 }
 
+void AddBackItem( Panel menu )
+{
+    menu.DrawItem( " ", ITEMDRAW_RAWLINE  );
+    menu.CurrentKey = 9;
+    menu.DrawItem( "Back" );
+}
+
 void GiveLoadoutMenu( int client, int team, RoundType roundType )
 {
     g_LoadoutMenuTeam[client] = team;
@@ -857,9 +864,7 @@ void GiveLoadoutMenu( int client, int team, RoundType roundType )
         menu.DrawItem( buffer );
     }
 
-    menu.DrawItem( " ", ITEMDRAW_RAWLINE  );
-
-    menu.DrawItem( "Back" );
+    AddBackItem( menu );
     menu.Send( client, MenuHandler_Loadout, MENU_TIME_LENGTH );
 
     delete menu;
@@ -937,9 +942,7 @@ void GiveWeaponCategoryListMenu( int client, int team, RoundType roundType )
         menu.DrawItem( buffer, enabled ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED );
     }
 
-    menu.DrawItem( " ", ITEMDRAW_RAWLINE  );
-
-    menu.DrawItem( "Back" );
+    AddBackItem( menu );
     menu.Send( client, MenuHandler_WeaponCategoryList, MENU_TIME_LENGTH );
 
     delete menu;
@@ -1008,9 +1011,7 @@ void GiveWeaponCategoryMenu( int client, int team, RoundType roundType, CSWeapon
         }
     }
 
-    menu.DrawItem( " ", ITEMDRAW_RAWLINE  );
-
-    menu.DrawItem( "Back" );
+    AddBackItem( menu );
     menu.Send( client, MenuHandler_WeaponCategory, MENU_TIME_LENGTH );
 
     delete menu;
@@ -1079,6 +1080,12 @@ public int MenuHandler_Loadout( Menu menu, MenuAction action, int param1, int pa
     int team = g_LoadoutMenuTeam[client];
     RoundType roundType = g_LoadoutMenuRoundType[client];
 
+    if ( param2 == 9 ) // Go back
+    {
+        GiveTeamSelectMenu( client, roundType );
+        return;
+    }
+
     if ( ShowKevlarOption( team, roundType ) )
     {
         if ( param2 == 1 )
@@ -1131,12 +1138,6 @@ public int MenuHandler_Loadout( Menu menu, MenuAction action, int param1, int pa
         param2 -= 1;
     }
 
-    if ( param2 == 1 ) // Go back
-    {
-        GiveTeamSelectMenu( client, roundType );
-        return;
-    }
-
     GiveLoadoutMenu( client, team, roundType );
 }
 
@@ -1154,17 +1155,19 @@ public int MenuHandler_WeaponCategoryList( Menu menu, MenuAction action, int par
     int team = g_LoadoutMenuTeam[client];
     RoundType roundType = g_LoadoutMenuRoundType[client];
 
-    if ( param2 == 1 ) // No weapon
-    {
-        SetPrimary( client, team, roundType, WEAPON_NONE );
-    }
-
-    int categoryIndex = param2 - 2;
-    if ( categoryIndex < 0 || categoryIndex >= sizeof(g_PrimaryCategories) )
+    if ( param2 == 9 ) // Go back
     {
         GiveLoadoutMenu( client, team, roundType );
         return;
     }
+    
+    if ( param2 == 1 ) // No weapon
+    {
+        SetPrimary( client, team, roundType, WEAPON_NONE );
+        GiveLoadoutMenu( client, team, roundType );
+    }
+
+    int categoryIndex = param2 - 2;
 
     CSWeaponCategory category = g_PrimaryCategories[categoryIndex];
     GiveWeaponCategoryMenu( client, team, roundType, category );
