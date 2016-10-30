@@ -7,7 +7,11 @@
 #pragma semicolon 1
 #pragma newdecls required
 
+#define TEAM_COUNT 2
+
 #define MENU_TIME_LENGTH 15
+
+#define MAX_NADE_VALUE 800
 
 #define LOADOUT_KEVLAR_COST 650
 #define LOADOUT_HELMET_COST 350
@@ -66,7 +70,7 @@ enum RoundType
     ROUND_PISTOL,
     ROUND_FORCE,
     ROUND_FULL,
-    ROUND_RESET
+    ROUND_SNIPER
 }
 
 public Plugin myinfo = {
@@ -81,10 +85,26 @@ public Plugin myinfo = {
 // Loadout fields
 //
 
-bool g_Kevlar[MAXPLAYERS+1][4][4];
+int GetTeamIndex( int team )
+{
+    return team - CS_TEAM_T;
+}
+
+bool g_Sniper[MAXPLAYERS+1][TEAM_COUNT];
+void SetSniper( int client, int team, bool enabled )
+{
+    g_Sniper[client][GetTeamIndex( team )] = enabled;
+}
+
+bool GetSniper( int client, int team )
+{
+    return g_Sniper[client][GetTeamIndex( team )];
+}
+
+bool g_Kevlar[MAXPLAYERS+1][TEAM_COUNT][RoundType];
 void SetKevlar( int client, int team, RoundType roundType, bool enabled )
 {
-    g_Kevlar[client][team][roundType] = enabled;
+    g_Kevlar[client][GetTeamIndex( team )][roundType] = enabled;
 
     if ( !enabled )
     {
@@ -94,13 +114,13 @@ void SetKevlar( int client, int team, RoundType roundType, bool enabled )
 
 bool GetKevlar( int client, int team, RoundType roundType )
 {
-    return g_Kevlar[client][team][roundType];
+    return g_Kevlar[client][GetTeamIndex( team )][roundType];
 }
 
-bool g_Helmet[MAXPLAYERS+1][4][4];
+bool g_Helmet[MAXPLAYERS+1][TEAM_COUNT][RoundType];
 void SetHelmet( int client, int team, RoundType roundType, bool enabled )
 {
-    g_Helmet[client][team][roundType] = enabled;
+    g_Helmet[client][GetTeamIndex( team )][roundType] = enabled;
 
     if ( enabled )
     {
@@ -110,10 +130,10 @@ void SetHelmet( int client, int team, RoundType roundType, bool enabled )
 
 bool GetHelmet( int client, int team, RoundType roundType )
 {
-    return GetKevlar( client, team, roundType ) && g_Helmet[client][team][roundType];
+    return GetKevlar( client, team, roundType ) && g_Helmet[client][GetTeamIndex( team )][roundType];
 }
 
-bool g_Defuse[MAXPLAYERS+1][4];
+bool g_Defuse[MAXPLAYERS+1][RoundType];
 void SetDefuse( int client, int team, RoundType roundType, bool enabled )
 {
     if ( team != CS_TEAM_CT ) return;
@@ -126,26 +146,26 @@ bool GetDefuse( int client, int team, RoundType roundType )
     return g_Defuse[client][roundType];
 }
 
-CSWeapon g_Primary[MAXPLAYERS+1][4][4];
+CSWeapon g_Primary[MAXPLAYERS+1][TEAM_COUNT][RoundType];
 void SetPrimary( int client, int team, RoundType roundType, CSWeapon weapon )
 {
-    g_Primary[client][team][roundType] = weapon;
+    g_Primary[client][GetTeamIndex( team )][roundType] = weapon;
 }
 
 CSWeapon GetPrimary( int client, int team, RoundType roundType )
 {
-    return g_Primary[client][team][roundType];
+    return g_Primary[client][GetTeamIndex( team )][roundType];
 }
 
-CSWeapon g_Secondary[MAXPLAYERS+1][4][4];
+CSWeapon g_Secondary[MAXPLAYERS+1][TEAM_COUNT][RoundType];
 void SetSecondary( int client, int team, RoundType roundType, CSWeapon weapon )
 {
-    g_Secondary[client][team][roundType] = weapon;
+    g_Secondary[client][GetTeamIndex( team )][roundType] = weapon;
 }
 
 CSWeapon GetSecondary( int client, int team, RoundType roundType )
 {
-    return g_Secondary[client][team][roundType];
+    return g_Secondary[client][GetTeamIndex( team )][roundType];
 }
 
 void ResetAllLoadouts( int client )
@@ -153,6 +173,7 @@ void ResetAllLoadouts( int client )
     ResetPistolRoundLoadout( client );
     ResetForceBuyRoundLoadout( client );
     ResetFullBuyRoundLoadout( client );
+    ResetSniperRoundLoadout( client );
 }
 
 void ResetPistolRoundLoadout( int client )
@@ -203,6 +224,22 @@ void ResetFullBuyRoundLoadout( int client )
     SetSecondary( client, CS_TEAM_CT, ROUND_FULL, WEAPON_HKP2000 );
 }
 
+void ResetSniperRoundLoadout( int client )
+{
+    SetHelmet( client, CS_TEAM_T, ROUND_SNIPER, true );
+    SetHelmet( client, CS_TEAM_CT, ROUND_SNIPER, true );
+
+    SetKevlar( client, CS_TEAM_T, ROUND_SNIPER, true );
+    SetKevlar( client, CS_TEAM_CT, ROUND_SNIPER, true );
+
+    SetDefuse( client, CS_TEAM_CT, ROUND_SNIPER, true );
+
+    SetPrimary( client, CS_TEAM_T, ROUND_SNIPER, WEAPON_AWP );
+    SetPrimary( client, CS_TEAM_CT, ROUND_SNIPER, WEAPON_AWP );
+    SetSecondary( client, CS_TEAM_T, ROUND_SNIPER, WEAPON_TEC9 );
+    SetSecondary( client, CS_TEAM_CT, ROUND_SNIPER, WEAPON_FIVESEVEN );
+}
+
 //
 // Economy
 //
@@ -216,10 +253,17 @@ int GetStartMoney( RoundType roundType )
         case ROUND_FORCE:
             return 2400;
         case ROUND_FULL:
-            return 8000;
+            return 16000;
+        case ROUND_SNIPER:
+            return 16000;
     }
 
-    return 16000;
+    return 0;
+}
+
+bool ShouldShowMoney( RoundType roundType )
+{
+    return roundType != ROUND_FULL && roundType != ROUND_SNIPER;
 }
 
 bool CanShowWeaponCategory( int client, int team, RoundType roundType, CSWeaponCategory category )
@@ -285,29 +329,29 @@ bool CanBuyWeapon( int client, int team, RoundType roundType, CSWeapon weapon )
     return true;
 }
 
-bool ShowKevlarOption( int team, RoundType roundType )
+bool ShowKevlarOption( int client, int team, RoundType roundType )
 {
-    return roundType != ROUND_FULL;
+    return roundType != ROUND_FULL && roundType != ROUND_SNIPER;
 }
 
-bool ShowHelmetOption( int team, RoundType roundType )
+bool ShowHelmetOption( int client, int team, RoundType roundType )
 {
-    return roundType != ROUND_PISTOL && roundType != ROUND_FULL;
+    return roundType != ROUND_PISTOL && roundType != ROUND_FULL && roundType != ROUND_SNIPER;
 }
 
-bool ShowDefuseOption( int team, RoundType roundType )
+bool ShowDefuseOption( int client, int team, RoundType roundType )
 {
-    return team == CS_TEAM_CT && roundType != ROUND_FULL;
+    return team == CS_TEAM_CT && roundType != ROUND_FULL && roundType != ROUND_SNIPER;
 }
 
-bool ShowPrimaryOption( int team, RoundType roundType )
+bool ShowPrimaryOption( int client, int team, RoundType roundType )
 {
-    return roundType != ROUND_PISTOL;
+    return roundType != ROUND_PISTOL && roundType != ROUND_SNIPER;
 }
 
-bool ShowSecondaryOption( int team, RoundType roundType )
+bool ShowSecondaryOption( int client, int team, RoundType roundType )
 {
-    return true;
+    return roundType != ROUND_SNIPER || GetSniper( client, team );
 }
 
 int GetWeaponCost( int client, CSWeapon weapon )
@@ -444,6 +488,7 @@ void GetRoundTypeName( RoundType roundType, char[] buffer, int maxLength )
         case ROUND_PISTOL: strcopy( buffer, maxLength, "Pistol" );
         case ROUND_FORCE:  strcopy( buffer, maxLength, "Force Buy" );
         case ROUND_FULL:   strcopy( buffer, maxLength, "Full Buy" );
+        case ROUND_SNIPER: strcopy( buffer, maxLength, "AWP" );
     }
 }
 
@@ -561,17 +606,216 @@ void GetWeaponClassName( CSWeapon weapon, char[] buffer, int maxLength )
 }
 
 //
+// Persistence
+//
+
+void EncodeTeamRoundTypeBools( bool array[TEAM_COUNT][RoundType], char[] dest )
+{
+    int index = 0;
+    for ( int roundType = 0; roundType < view_as<int>(RoundType); ++roundType )
+    {
+        for ( int team = 0; team < TEAM_COUNT; ++team )
+        {
+            dest[index++] = array[team][roundType] ? '1' : '0';
+        }
+    }
+
+    dest[index] = 0;
+}
+
+void DecodeTeamRoundTypeBools( bool array[TEAM_COUNT][RoundType], char[] src )
+{
+    int length = strlen(src);
+    int index = 0;
+    for ( int roundType = 0; roundType < view_as<int>(RoundType); ++roundType )
+    {
+        for ( int team = 0; team < TEAM_COUNT; ++team )
+        {
+            if ( index >= length ) return;
+            array[team][roundType] = src[index++] == '1';
+        }
+    }
+}
+
+void EncodeRoundTypeBools( bool array[RoundType], char[] dest )
+{
+    int index = 0;
+    for ( int roundType = 0; roundType < view_as<int>(RoundType); ++roundType )
+    {
+        dest[index++] = array[roundType] ? '1' : '0';
+    }
+
+    dest[index] = 0;
+}
+
+void DecodeRoundTypeBools( bool array[RoundType], char[] src )
+{
+    int length = strlen(src);
+    int index = 0;
+    for ( int roundType = 0; roundType < view_as<int>(RoundType); ++roundType )
+    {
+        if ( index >= length ) return;
+        array[roundType] = src[index++] == '1';
+    }
+}
+
+void EncodeTeamBools( bool array[TEAM_COUNT], char[] dest )
+{
+    int index = 0;
+    for ( int team = 0; team < TEAM_COUNT; ++team )
+    {
+        dest[index++] = array[team] ? '1' : '0';
+    }
+
+    dest[index] = 0;
+}
+
+void DecodeTeamBools( bool array[TEAM_COUNT], char[] src )
+{
+    int length = strlen(src);
+    int index = 0;
+    for ( int team = 0; team < TEAM_COUNT; ++team )
+    {
+        if ( index >= length ) return;
+        array[team] = src[index++] == '1';
+    }
+}
+
+void EncodeWeapons( CSWeapon array[TEAM_COUNT][RoundType], char[] dest )
+{
+    char buffer[8];
+
+    int index = 0;
+    for ( int roundType = 0; roundType < view_as<int>(RoundType); ++roundType )
+    {
+        for ( int team = 0; team < TEAM_COUNT; ++team )
+        {
+            CSWeapon weapon = array[team][roundType];
+            IntToString( view_as<int>(weapon), buffer, sizeof(buffer) );
+
+            int numLen = strlen(buffer);
+            for ( int c = 0; c < numLen; ++c )
+            {
+                dest[index++] = buffer[c];
+            }
+
+            dest[index++] = ';';
+        }
+    }
+    
+    dest[index] = 0;
+}
+
+void DecodeWeapons( CSWeapon array[TEAM_COUNT][RoundType], char[] src )
+{
+    char buffer[8];
+
+    int length = strlen(src);
+    int index = 0;
+    for ( int roundType = 0; roundType < view_as<int>(RoundType); ++roundType )
+    {
+        for ( int team = 0; team < TEAM_COUNT; ++team )
+        {
+            if ( index >= length ) return;
+
+            int numLen = 0;
+            while ( index < length && src[index++] != ';' )
+            {
+                buffer[numLen++] = src[index - 1];
+            }
+            buffer[numLen] = 0;
+
+            array[team][roundType] = view_as<CSWeapon>(StringToInt( buffer, 10 ));
+        }
+    }
+}
+
+Handle g_hKevlarCookie = INVALID_HANDLE;
+Handle g_hHelmetCookie = INVALID_HANDLE;
+Handle g_hDefuseCookie = INVALID_HANDLE;
+Handle g_hSniperCookie = INVALID_HANDLE;
+
+Handle g_hPrimaryCookie = INVALID_HANDLE;
+Handle g_hSecondaryCookie = INVALID_HANDLE;
+
+void SetupClientCookies()
+{
+    g_hKevlarCookie = RegClientCookie( "retakes_ziks_kevlar", "Kevlar preferences", CookieAccess_Protected );
+    g_hHelmetCookie = RegClientCookie( "retakes_ziks_helmet", "Helmet preferences", CookieAccess_Protected );
+    g_hDefuseCookie = RegClientCookie( "retakes_ziks_defuse", "Defuse preferences", CookieAccess_Protected );
+    g_hSniperCookie = RegClientCookie( "retakes_ziks_sniper", "Sniper preferences", CookieAccess_Protected );
+
+    g_hPrimaryCookie = RegClientCookie( "retakes_ziks_primary", "Primary preferences", CookieAccess_Protected );
+    g_hSecondaryCookie = RegClientCookie( "retakes_ziks_secondary", "Secondary preferences", CookieAccess_Protected );
+}
+
+void SaveLoadouts( int client )
+{
+    char buffer[64];
+
+    EncodeTeamRoundTypeBools( g_Kevlar[client], buffer );
+    SetClientCookie( client, g_hKevlarCookie, buffer );
+
+    EncodeTeamRoundTypeBools( g_Helmet[client], buffer );
+    SetClientCookie( client, g_hHelmetCookie, buffer );
+
+    EncodeRoundTypeBools( g_Defuse[client], buffer );
+    SetClientCookie( client, g_hDefuseCookie, buffer );
+
+    EncodeTeamBools( g_Sniper[client], buffer );
+    SetClientCookie( client, g_hSniperCookie, buffer );
+
+    EncodeWeapons( g_Primary[client], buffer );
+    SetClientCookie( client, g_hPrimaryCookie, buffer );
+
+    EncodeWeapons( g_Secondary[client], buffer );
+    SetClientCookie( client, g_hSecondaryCookie, buffer );
+}
+
+void RestoreLoadouts( int client )
+{
+    ResetAllLoadouts( client );
+
+    char buffer[64];
+
+    GetClientCookie( client, g_hKevlarCookie, buffer, sizeof(buffer) );
+    DecodeTeamRoundTypeBools( g_Kevlar[client], buffer );
+
+    GetClientCookie( client, g_hHelmetCookie, buffer, sizeof(buffer) );
+    DecodeTeamRoundTypeBools( g_Helmet[client], buffer );
+
+    GetClientCookie( client, g_hDefuseCookie, buffer, sizeof(buffer) );
+    DecodeRoundTypeBools( g_Defuse[client], buffer );
+
+    GetClientCookie( client, g_hSniperCookie, buffer, sizeof(buffer) );
+    DecodeTeamBools( g_Sniper[client], buffer );
+
+    GetClientCookie( client, g_hPrimaryCookie, buffer, sizeof(buffer) );
+    DecodeWeapons( g_Primary[client], buffer );
+
+    GetClientCookie( client, g_hSecondaryCookie, buffer, sizeof(buffer) );
+    DecodeWeapons( g_Secondary[client], buffer );
+}
+
+//
 // Callbacks
 //
 
 public void OnPluginStart()
 {
-
+    SetupClientCookies();
 }
 
 public void OnClientConnected( int client )
 {
-    ResetAllLoadouts( client );
+    if ( AreClientCookiesCached( client ) )
+    {
+        RestoreLoadouts( client );
+    }
+    else
+    {
+        ResetAllLoadouts( client );
+    }
 }
 
 public void Retakes_OnGunsCommand( int client )
@@ -588,6 +832,7 @@ public void OnClientCookiesCached( int client )
 {
     if ( IsFakeClient( client ) ) return;
 
+    RestoreLoadouts( client );
 }
 
 //
@@ -611,6 +856,29 @@ RoundType GetRoundType( int roundNumber )
     return ROUND_FULL;
 }
 
+int ChooseSniperPlayer( ArrayList players, int team )
+{
+    int sniper = -1;
+    int bestScore = -1;
+    int count = GetArraySize( players );
+
+    for ( int i = 0; i < count; i++ )
+    {
+        int client = GetArrayCell( players, i );
+        if ( !GetSniper( client, team ) ) continue;
+
+        int score = GetRandomInt( 0, 65535 );
+
+        if ( score > bestScore )
+        {
+            sniper = client;
+            bestScore = score;
+        }
+    }
+
+    return sniper;
+}
+
 void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite )
 {
     int tCount = GetArraySize( tPlayers );
@@ -618,16 +886,25 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
 
     RoundType roundType = GetRoundType( g_RoundCounter++ );
 
-    for (int i = 0; i < tCount; i++)
+    int tSniper = -1; 
+    int ctSniper = -1;
+
+    if ( roundType == ROUND_FULL )
     {
-        int client = GetArrayCell( tPlayers, i );
-        HandleLoadout( client, CS_TEAM_T, roundType );
+        tSniper = ChooseSniperPlayer( tPlayers, CS_TEAM_T );
+        ctSniper = ChooseSniperPlayer( ctPlayers, CS_TEAM_CT );
     }
 
-    for (int i = 0; i < ctCount; i++)
+    for ( int i = 0; i < tCount; i++ )
+    {
+        int client = GetArrayCell( tPlayers, i );
+        HandleLoadout( client, CS_TEAM_T, client == tSniper ? ROUND_SNIPER : roundType );
+    }
+
+    for ( int i = 0; i < ctCount; i++ )
     {
         int client = GetArrayCell(ctPlayers, i);
-        HandleLoadout( client, CS_TEAM_CT, roundType );
+        HandleLoadout( client, CS_TEAM_CT, client == ctSniper ? ROUND_SNIPER : roundType );
     }
 }
 
@@ -649,6 +926,9 @@ void HandleLoadout( int client, int team, RoundType roundType )
     GetWeaponClassName( GetSecondary( client, team, roundType ), secondary, sizeof(secondary) );
 
     int remaining = GetStartMoney( roundType ) - GetLoadoutCost( client, team, roundType );
+    
+    if ( remaining > MAX_NADE_VALUE ) remaining = MAX_NADE_VALUE;
+
     FillGrenades( team, remaining, nades );
 
     health = 100;
@@ -743,7 +1023,8 @@ void GiveWeaponsMenu( int client )
     AddMenuInt( menu, view_as<int>( ROUND_PISTOL ), "Pistol rounds" );
     AddMenuInt( menu, view_as<int>( ROUND_FORCE ), "Force Buy rounds" );
     AddMenuInt( menu, view_as<int>( ROUND_FULL ), "Full Buy rounds" );
-    AddMenuInt( menu, view_as<int>( ROUND_RESET ), "Reset all" );
+    AddMenuInt( menu, view_as<int>( ROUND_SNIPER ), "AWP rounds" );
+    AddMenuInt( menu, -1, "Reset all" );
     DisplayMenu( menu, client, MENU_TIME_LENGTH );
 }
 
@@ -783,13 +1064,14 @@ void AddGearOption( Panel menu, char[] name, int available, int cost, bool equip
     menu.DrawItem( buffer, enabled ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED );
 }
 
-void AddMoneyAvailableItems( Panel menu, int moneyAvailable )
+void AddMoneyAvailableItems( Panel menu, RoundType roundType, int moneyAvailable )
 {
+    if ( !ShouldShowMoney( roundType ) ) return;
+
     char buffer[64];
     Format( buffer, sizeof(buffer), "Money available: $%i", moneyAvailable );
 
     menu.DrawItem( buffer, ITEMDRAW_RAWLINE );
-    menu.DrawItem( " ", ITEMDRAW_RAWLINE  );
 }
 
 void AddBackItem( Panel menu )
@@ -818,15 +1100,20 @@ void GiveLoadoutMenu( int client, int team, RoundType roundType )
     
     int currentCost = GetLoadoutCost( client, team, roundType );
     int moneyAvailable = GetStartMoney( roundType ) - currentCost;
-    AddMoneyAvailableItems( menu, moneyAvailable );
+    AddMoneyAvailableItems( menu, roundType, moneyAvailable );
 
-    if ( ShowKevlarOption( team, roundType ) )
+    if ( roundType == ROUND_SNIPER )
+    {
+        menu.DrawItem( GetSniper( client, team ) ? "Disable AWP rounds" : "Enable AWP rounds" );
+    }
+
+    if ( ShowKevlarOption( client, team, roundType ) )
     {
         AddGearOption( menu, "Kevlar", moneyAvailable,
             LOADOUT_KEVLAR_COST, GetKevlar( client, team, roundType ) );
     }
 
-    if ( ShowHelmetOption( team, roundType ) )
+    if ( ShowHelmetOption( client, team, roundType ) )
     {
         int cost = LOADOUT_HELMET_COST;
         if ( !GetKevlar( client, team, roundType ) )
@@ -838,13 +1125,13 @@ void GiveLoadoutMenu( int client, int team, RoundType roundType )
             cost, GetHelmet( client, team, roundType ) );
     }
 
-    if ( ShowDefuseOption( team, roundType ) )
+    if ( ShowDefuseOption( client, team, roundType ) )
     {
         AddGearOption( menu, "Defuse Kit", moneyAvailable,
             LOADOUT_DEFUSE_COST, GetDefuse( client, team, roundType ) );
     }
 
-    if ( ShowPrimaryOption( team, roundType ) )
+    if ( ShowPrimaryOption( client, team, roundType ) )
     {
         char weaponName[32];
         GetWeaponName( GetPrimary( client, team, roundType ), weaponName, sizeof(weaponName) );
@@ -854,7 +1141,7 @@ void GiveLoadoutMenu( int client, int team, RoundType roundType )
         menu.DrawItem( buffer );
     }
 
-    if ( ShowSecondaryOption( team, roundType ) )
+    if ( ShowSecondaryOption( client, team, roundType ) )
     {
         char pistolName[32];
         GetWeaponName( GetSecondary( client, team, roundType ), pistolName, sizeof(pistolName) );
@@ -915,16 +1202,16 @@ void GiveWeaponCategoryListMenu( int client, int team, RoundType roundType )
     
     int currentCost = GetLoadoutCost( client, team, roundType );
     int moneyAvailable = GetStartMoney( roundType ) - currentCost;
-    AddMoneyAvailableItems( menu, moneyAvailable );
+    AddMoneyAvailableItems( menu, roundType, moneyAvailable );
 
     CSWeapon weapon = GetPrimary( client, team, roundType );
-    if ( weapon != WEAPON_NONE )
+    int cost = GetWeaponCost( client, weapon );
+    moneyAvailable += cost;
+
+    if ( weapon != WEAPON_NONE && ShouldShowMoney( roundType ) )
     {
-        int cost = GetWeaponCost( client, weapon );
         Format( buffer, sizeof(buffer), "No weapon (+$%i)", cost );
         menu.DrawItem( buffer );
-
-        moneyAvailable += cost;
     }
     else
     {
@@ -960,15 +1247,26 @@ void GiveWeaponCategoryMenu( int client, int team, RoundType roundType, CSWeapon
     char roundTypeName[16];
     GetRoundTypeName( roundType, roundTypeName, sizeof(roundTypeName) );
 
+    char weaponCategoryName[16];
+
+    if ( category == WCAT_PISTOL )
+    {
+        weaponCategoryName = "sidearm";
+    }
+    else
+    {
+        weaponCategoryName = "weapon";
+    }
+
     char buffer[128];
-    Format( buffer, sizeof(buffer), "%s %s round sidearm:", teamAbbrev, roundTypeName );
+    Format( buffer, sizeof(buffer), "%s %s round %s:", teamAbbrev, roundTypeName, weaponCategoryName );
 
     Panel menu = new Panel();
     menu.SetTitle( buffer );
         
     int currentCost = GetLoadoutCost( client, team, roundType );
     int moneyAvailable = GetStartMoney( roundType ) - currentCost;
-    AddMoneyAvailableItems( menu, moneyAvailable );
+    AddMoneyAvailableItems( menu, roundType, moneyAvailable );
 
     char weaponName[32];
 
@@ -988,7 +1286,7 @@ void GiveWeaponCategoryMenu( int client, int team, RoundType roundType, CSWeapon
         int curCost = GetWeaponCost( client, current );
         int diff = cost - curCost;
 
-        if ( diff == 0 )
+        if ( diff == 0 || !ShouldShowMoney( roundType ) )
         {
             Format( buffer, sizeof(buffer), "%s", weaponName );
         }
@@ -1032,13 +1330,15 @@ public int MenuHandler_RoundType( Handle menu, MenuAction action, int param1, in
     if ( action != MenuAction_Select ) return;
 
     int client = param1;
-    RoundType choice = view_as<RoundType>( GetMenuInt( menu, param2 ) );
 
-    if ( choice == ROUND_RESET )
+    if ( GetMenuInt( menu, param2 ) == -1 )
     {
         ResetAllLoadouts( client );
+        SaveLoadouts( client );
         return;
     }
+
+    RoundType choice = view_as<RoundType>( GetMenuInt( menu, param2 ) );
 
     GiveTeamSelectMenu( client, choice );
 }
@@ -1086,37 +1386,51 @@ public int MenuHandler_Loadout( Menu menu, MenuAction action, int param1, int pa
         return;
     }
 
-    if ( ShowKevlarOption( team, roundType ) )
+    if ( roundType == ROUND_SNIPER )
+    {
+        if ( param2 == 1 )
+        {
+            SetSniper( client, team, !GetSniper( client, team ) );
+            SaveLoadouts( client );
+        }
+
+        param2 -= 1;
+    }
+
+    if ( ShowKevlarOption( client, team, roundType ) )
     {
         if ( param2 == 1 )
         {
             SetKevlar( client, team, roundType, !GetKevlar( client, team, roundType ) );
+            SaveLoadouts( client );
         }
 
         param2 -= 1;
     }
 
-    if ( ShowHelmetOption( team, roundType ) )
+    if ( ShowHelmetOption( client, team, roundType ) )
     {
         if ( param2 == 1 )
         {
             SetHelmet( client, team, roundType, !GetHelmet( client, team, roundType ) );
+            SaveLoadouts( client );
         }
 
         param2 -= 1;
     }
 
-    if ( ShowDefuseOption( team, roundType ) )
+    if ( ShowDefuseOption( client, team, roundType ) )
     {
         if ( param2 == 1 )
         {
             SetDefuse( client, team, roundType, !GetDefuse( client, team, roundType ) );
+            SaveLoadouts( client );
         }
 
         param2 -= 1;
     }
 
-    if ( ShowPrimaryOption( team, roundType ) )
+    if ( ShowPrimaryOption( client, team, roundType ) )
     {
         if ( param2 == 1 )
         {
@@ -1127,7 +1441,7 @@ public int MenuHandler_Loadout( Menu menu, MenuAction action, int param1, int pa
         param2 -= 1;
     }
 
-    if ( ShowSecondaryOption( team, roundType ) )
+    if ( ShowSecondaryOption( client, team, roundType ) )
     {
         if ( param2 == 1 )
         {
@@ -1164,6 +1478,7 @@ public int MenuHandler_WeaponCategoryList( Menu menu, MenuAction action, int par
     if ( param2 == 1 ) // No weapon
     {
         SetPrimary( client, team, roundType, WEAPON_NONE );
+        SaveLoadouts( client );
         GiveLoadoutMenu( client, team, roundType );
     }
 
@@ -1205,6 +1520,8 @@ public int MenuHandler_WeaponCategory( Menu menu, MenuAction action, int param1,
             {
                 SetPrimary( client, team, roundType, weapon );
             }
+
+            SaveLoadouts( client );
         }
     }
     
