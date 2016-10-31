@@ -100,10 +100,11 @@ public int MenuHandler_WeaponCategory( Menu menu, MenuAction action, int param1,
         SetPrimary( client, team, loadout, WEAPON_NONE );
         SaveLoadouts( client );
         GiveLoadoutMenu( client, team, loadout );
+        return;
     }
 
     int categoryIndex = param2 - 2;
-
+    
     CSWeaponCategory category = g_PrimaryCategories[categoryIndex];
     GiveWeaponMenu( client, team, loadout, category );
 }

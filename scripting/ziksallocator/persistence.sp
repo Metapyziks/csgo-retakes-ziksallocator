@@ -28,6 +28,8 @@ Handle g_hPrimaryCookie = INVALID_HANDLE;
  */
 Handle g_hSecondaryCookie = INVALID_HANDLE;
 
+bool g_bLoadedCookies[MAXPLAYERS+1];
+
 /**
  * Registers all required client cookies.
  *
@@ -35,6 +37,8 @@ Handle g_hSecondaryCookie = INVALID_HANDLE;
  */
 void SetupClientCookies()
 {
+    if ( g_hKevlarCookie != INVALID_HANDLE ) return;
+
     g_hKevlarCookie = RegClientCookie( "retakes_ziks_kevlar", "Kevlar preferences", CookieAccess_Protected );
     g_hHelmetCookie = RegClientCookie( "retakes_ziks_helmet", "Helmet preferences", CookieAccess_Protected );
     g_hDefuseCookie = RegClientCookie( "retakes_ziks_defuse", "Defuse preferences", CookieAccess_Protected );
@@ -42,6 +46,23 @@ void SetupClientCookies()
 
     g_hPrimaryCookie = RegClientCookie( "retakes_ziks_primary", "Primary preferences", CookieAccess_Protected );
     g_hSecondaryCookie = RegClientCookie( "retakes_ziks_secondary", "Secondary preferences", CookieAccess_Protected );
+}
+
+void InvalidateLoadedCookies( int client )
+{
+    g_bLoadedCookies[client] = false;
+}
+
+void CheckForSavedLoadouts( int client )
+{
+    if ( IsFakeClient( client ) ) return;
+    if ( g_bLoadedCookies[client] ) return;
+
+    if ( AreClientCookiesCached( client ) )
+    {
+        g_bLoadedCookies[client] = true;
+        RestoreLoadouts( client );
+    }
 }
 
 /**
@@ -52,6 +73,8 @@ void SetupClientCookies()
  */
 void SaveLoadouts( int client )
 {
+    if ( IsFakeClient( client ) ) return;
+
     char buffer[64];
 
     EncodeTeamLoadoutBools( g_Kevlar[client], buffer, sizeof(buffer) );
@@ -81,9 +104,10 @@ void SaveLoadouts( int client )
  */
 bool RestoreLoadouts( int client )
 {
-    if ( !AreClientCookiesCached( client ) ) return false;
-
     ResetAllLoadouts( client );
+    
+    if ( IsFakeClient( client ) ) return false;
+    if ( !AreClientCookiesCached( client ) ) return false;
 
     char buffer[64];
 

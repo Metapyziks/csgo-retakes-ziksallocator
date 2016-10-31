@@ -46,10 +46,8 @@ public void OnPluginStart()
  */
 public void OnClientConnected( int client )
 {
-    if ( !RestoreLoadouts( client ) )
-    {
-        ResetAllLoadouts( client );
-    }
+    ResetAllLoadouts( client );
+    InvalidateLoadedCookies( client );
 }
 
 /**
@@ -62,6 +60,7 @@ public void OnClientCookiesCached( int client )
 {
     if ( IsFakeClient( client ) ) return;
 
+    PrintToConsole( client, "[retakes_ziksallocator] Found cached loadout preferences!" );
     RestoreLoadouts( client );
 }
 
@@ -73,6 +72,7 @@ public void OnClientCookiesCached( int client )
  */
 public void Retakes_OnGunsCommand( int client )
 {
+    CheckForSavedLoadouts( client );
     GiveMainMenu( client );
 }
 
@@ -86,5 +86,20 @@ public void Retakes_OnGunsCommand( int client )
  */
 public void Retakes_OnWeaponsAllocated( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite )
 {
+    int tCount = GetArraySize( tPlayers );
+    int ctCount = GetArraySize( ctPlayers );
+
+    for ( int i = 0; i < tCount; i++ )
+    {
+        int client = GetArrayCell( tPlayers, i );
+        CheckForSavedLoadouts( client );
+    }
+    
+    for ( int i = 0; i < ctCount; i++ )
+    {
+        int client = GetArrayCell( ctPlayers, i );
+        CheckForSavedLoadouts( client );
+    }
+
     WeaponAllocator( tPlayers, ctPlayers, bombsite );
 }
