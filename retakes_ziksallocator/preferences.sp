@@ -220,10 +220,10 @@ CSWeapon GetSecondary( int client, int team, RTLoadout loadout )
  */
 void ResetAllLoadouts( int client )
 {
-    for ( var i = 0; i < view_as<int>(RTLoadout); ++i )
+    for ( int i = 0; i < view_as<int>(RTLoadout); ++i )
     {
         RTLoadout loadout = view_as<RTLoadout>(i);
-        ResetLoadout( client, i );
+        ResetLoadout( client, loadout );
     }
 }
 

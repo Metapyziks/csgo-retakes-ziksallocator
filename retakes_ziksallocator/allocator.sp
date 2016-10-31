@@ -117,7 +117,7 @@ void HandleLoadout( int client, int team, RTLoadout loadout )
     
     if ( remaining > GetMaxNadeValue( team, loadout ) ) remaining = GetMaxNadeValue( team, loadout );
 
-    FillGrenades( team, loadout, remaining, nades );
+    FillGrenades( team, loadout, remaining, nades, sizeof(nades) );
 
     health = 100;
     kevlar = GetKevlar( client, team, loadout ) ? 100 : 0;

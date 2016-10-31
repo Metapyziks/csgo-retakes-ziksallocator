@@ -103,7 +103,7 @@ int GetDecoyProbability( RTLoadout loadout )
 int AppendGrenadeIfAvailable( char[] nades, int index, char nade, int team, RTLoadout loadout, int money, int count )
 {
     if ( count >= GetMaxGrenades( team, loadout, nade ) ) return index;
-    if ( money < GetGrenadeCost( team, loadout, nade ) ) return index;
+    if ( money < GetGrenadeCost( team, nade ) ) return index;
 
     if ( nade == 'm' && team == CS_TEAM_CT ) nade = 'i';
     if ( nade == 'i' && team == CS_TEAM_T ) nade = 'm';
@@ -172,13 +172,14 @@ int GetAvailableGrenades( int team, RTLoadout loadout, int money, char[] current
  * @param money     Remaining money that can be used to allocate grenades.
  * @param nades     Output grenade character array, can already contain
  *                  grenades currently owned by the client.
+ * @param maxLength Size of nades array.
  */
-void FillGrenades( int team, RTLoadout loadout, int money, char[] nades )
+void FillGrenades( int team, RTLoadout loadout, int money, char[] nades, int maxLength )
 {
     int index = strlen( nades );
 
     char available[NADE_STRING_LENGTH];
-    while ( true )
+    while ( index < maxLength - 1 )
     {
         int availableCount = GetAvailableGrenades( team, loadout, money, nades, available );
         if ( availableCount == 0 ) break;
