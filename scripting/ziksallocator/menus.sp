@@ -45,6 +45,7 @@ void AddBackExitItems( Panel menu )
 
 #include "menus/main.sp"
 #include "menus/team.sp"
+#include "menus/resetconfirm.sp"
 #include "menus/loadout.sp"
 #include "menus/weaponcategory.sp"
 #include "menus/weapon.sp"

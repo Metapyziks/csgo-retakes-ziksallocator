@@ -24,8 +24,7 @@ public int MenuHandler_Main( Handle menu, MenuAction action, int param1, int par
 
     if ( GetMenuInt( menu, param2 ) == -1 )
     {
-        ResetAllLoadouts( client );
-        SaveLoadouts( client );
+        GiveResetConfirmMenu( client );
         return;
     }
 
