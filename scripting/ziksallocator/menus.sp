@@ -1,5 +1,5 @@
-#define BACK_ITEM_INDEX 8
-#define EXIT_ITEM_INDEX (BACK_ITEM_INDEX + 1)
+#define BACK_ITEM_INDEX 7
+#define EXIT_ITEM_INDEX 9
 
 /**
  * Stores the last team selected in the guns menu by each client.
@@ -26,11 +26,20 @@ void AddMoneyAvailableItems( Panel menu, RTLoadout loadout, int moneyAvailable )
     menu.DrawItem( buffer, ITEMDRAW_RAWLINE );
 }
 
+void FillMenu( Panel menu, int targetKey )
+{
+    while ( menu.CurrentKey < targetKey )
+    {
+        menu.DrawItem( " ", ITEMDRAW_RAWLINE  );
+        menu.CurrentKey += 1;
+    }
+}
+
 void AddBackExitItems( Panel menu )
 {
-    menu.DrawItem( " ", ITEMDRAW_RAWLINE  );
-    menu.CurrentKey = BACK_ITEM_INDEX;
+    FillMenu( menu, BACK_ITEM_INDEX );
     menu.DrawItem( "Back" );
+    FillMenu( menu, EXIT_ITEM_INDEX );
     menu.DrawItem( "Exit" );
 }
 

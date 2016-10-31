@@ -12,12 +12,20 @@ void GiveTeamMenu( int client, RTLoadout loadout )
     SetMenuTitle( menu, buffer );
     AddMenuInt( menu, CS_TEAM_T, "Terrorist" );
     AddMenuInt( menu, CS_TEAM_CT, "Counter-Terrorist" );
-    AddMenuInt( menu, -1, "Back" );
+    SetMenuExitBackButton( menu, true );
     DisplayMenu( menu, client, MENU_TIME_LENGTH );
 }
 
 public int MenuHandler_Team( Handle menu, MenuAction action, int param1, int param2 )
 {
+    LogMessage( "TeamMenu: %i, %i", view_as<int>( action ), param2 );
+
+    if ( action == MenuAction_Cancel && param2 == MenuCancel_ExitBack )
+    {
+        GiveMainMenu( param1 );
+        return;
+    }
+
     if ( action == MenuAction_End )
     {
         CloseHandle( menu );
@@ -29,12 +37,6 @@ public int MenuHandler_Team( Handle menu, MenuAction action, int param1, int par
     int client = param1;
     int team = GetMenuInt( menu, param2 );
     RTLoadout loadout = g_MenuStateLoadout[client];
-
-    if (team == -1)
-    {
-        GiveMainMenu( client );
-        return;
-    }
 
     GiveLoadoutMenu( client, team, loadout );
 }
