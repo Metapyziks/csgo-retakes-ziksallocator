@@ -7,16 +7,16 @@
 #pragma semicolon 1
 #pragma newdecls required
 
-#include "retakes_ziksallocator/defines.sp"
-#include "retakes_ziksallocator/types.sp"
-#include "retakes_ziksallocator/helpers.sp"
-#include "retakes_ziksallocator/weapons.sp"
-#include "retakes_ziksallocator/grenades.sp"
-#include "retakes_ziksallocator/loadouts.sp"
-#include "retakes_ziksallocator/preferences.sp"
-#include "retakes_ziksallocator/persistence.sp"
-#include "retakes_ziksallocator/allocator.sp"
-#include "retakes_ziksallocator/menus.sp"
+#include "ziksallocator/defines.sp"
+#include "ziksallocator/types.sp"
+#include "ziksallocator/helpers.sp"
+#include "ziksallocator/weapons.sp"
+#include "ziksallocator/grenades.sp"
+#include "ziksallocator/loadouts.sp"
+#include "ziksallocator/preferences.sp"
+#include "ziksallocator/persistence.sp"
+#include "ziksallocator/allocator.sp"
+#include "ziksallocator/menus.sp"
 
 public Plugin myinfo =
 {

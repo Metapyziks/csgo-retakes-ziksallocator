@@ -34,8 +34,8 @@ void AddBackExitItems( Panel menu )
     menu.DrawItem( "Exit" );
 }
 
-#include "retakes_ziksallocator/menus/main.sp"
-#include "retakes_ziksallocator/menus/team.sp"
-#include "retakes_ziksallocator/menus/loadout.sp"
-#include "retakes_ziksallocator/menus/weaponcategory.sp"
-#include "retakes_ziksallocator/menus/weapon.sp"
+#include "menus/main.sp"
+#include "menus/team.sp"
+#include "menus/loadout.sp"
+#include "menus/weaponcategory.sp"
+#include "menus/weapon.sp"
