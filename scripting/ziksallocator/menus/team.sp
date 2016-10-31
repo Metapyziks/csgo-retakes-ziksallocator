@@ -18,8 +18,6 @@ void GiveTeamMenu( int client, RTLoadout loadout )
 
 public int MenuHandler_Team( Handle menu, MenuAction action, int param1, int param2 )
 {
-    LogMessage( "TeamMenu: %i, %i", view_as<int>( action ), param2 );
-
     if ( action == MenuAction_Cancel && param2 == MenuCancel_ExitBack )
     {
         GiveMainMenu( param1 );
