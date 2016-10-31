@@ -16,23 +16,6 @@ void AddGearOption( Panel menu, char[] name, int available, int cost, bool equip
     menu.DrawItem( buffer, enabled ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED );
 }
 
-void AddMoneyAvailableItems( Panel menu, RTLoadout loadout, int moneyAvailable )
-{
-    if ( !ShouldShowMoney( loadout ) ) return;
-
-    char buffer[64];
-    Format( buffer, sizeof(buffer), "Money available: $%i", moneyAvailable );
-
-    menu.DrawItem( buffer, ITEMDRAW_RAWLINE );
-}
-
-void AddBackItem( Panel menu )
-{
-    menu.DrawItem( " ", ITEMDRAW_RAWLINE  );
-    menu.CurrentKey = 9;
-    menu.DrawItem( "Back" );
-}
-
 void GiveLoadoutMenu( int client, int team, RTLoadout loadout )
 {
     g_MenuStateTeam[client] = team;
@@ -103,7 +86,7 @@ void GiveLoadoutMenu( int client, int team, RTLoadout loadout )
         menu.DrawItem( buffer );
     }
 
-    AddBackItem( menu );
+    AddBackExitItems( menu );
     menu.Send( client, MenuHandler_Loadout, MENU_TIME_LENGTH );
 
     delete menu;
@@ -123,9 +106,14 @@ public int MenuHandler_Loadout( Menu menu, MenuAction action, int param1, int pa
     int team = g_MenuStateTeam[client];
     RTLoadout loadout = g_MenuStateLoadout[client];
 
-    if ( param2 == 9 ) // Go back
+    if ( param2 == BACK_ITEM_INDEX )
     {
         GiveTeamMenu( client, loadout );
+        return;
+    }
+    
+    if ( param2 == EXIT_ITEM_INDEX )
+    {
         return;
     }
 

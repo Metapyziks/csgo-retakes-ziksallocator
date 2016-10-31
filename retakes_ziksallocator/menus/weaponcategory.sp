@@ -64,7 +64,7 @@ void GiveWeaponCategoryMenu( int client, int team, RTLoadout loadout )
         menu.DrawItem( buffer, enabled ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED );
     }
 
-    AddBackItem( menu );
+    AddBackExitItems( menu );
     menu.Send( client, MenuHandler_WeaponCategory, MENU_TIME_LENGTH );
 
     delete menu;
@@ -84,9 +84,14 @@ public int MenuHandler_WeaponCategory( Menu menu, MenuAction action, int param1,
     int team = g_MenuStateTeam[client];
     RTLoadout loadout = g_MenuStateLoadout[client];
 
-    if ( param2 == 9 ) // Go back
+    if ( param2 == BACK_ITEM_INDEX )
     {
         GiveLoadoutMenu( client, team, loadout );
+        return;
+    }
+    
+    if ( param2 == EXIT_ITEM_INDEX )
+    {
         return;
     }
     

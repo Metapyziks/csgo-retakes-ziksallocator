@@ -72,7 +72,7 @@ void GiveWeaponMenu( int client, int team, RTLoadout loadout, CSWeaponCategory c
         }
     }
 
-    AddBackItem( menu );
+    AddBackExitItems( menu );
     menu.Send( client, MenuHandler_Weapon, MENU_TIME_LENGTH );
 
     delete menu;
@@ -87,6 +87,11 @@ public int MenuHandler_Weapon( Menu menu, MenuAction action, int param1, int par
     }
 
     if ( action != MenuAction_Select ) return;
+    
+    if ( param2 == EXIT_ITEM_INDEX )
+    {
+        return;
+    }
 
     int client = param1;
     int team = g_MenuStateTeam[client];
