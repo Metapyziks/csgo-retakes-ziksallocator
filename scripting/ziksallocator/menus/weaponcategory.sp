@@ -1,3 +1,13 @@
+/**
+ * Display the weapon category menu for a given weapon category to the given client.
+ * If there is only one weapon category applicable to the given team and loadout,
+ * this menu is skipped and the relevant weapon menu is displayed to the client.
+ *
+ * @param client    Client to display the menu to.
+ * @param team      Team of the loadout this weapon will be added to.
+ * @param loadout   Loadout type this weapon will be added to.
+ * @noreturn
+ */
 void GiveWeaponCategoryMenu( int client, int team, RTLoadout loadout )
 {
     g_MenuStateTeam[client] = team;
@@ -65,11 +75,20 @@ void GiveWeaponCategoryMenu( int client, int team, RTLoadout loadout )
     }
 
     AddBackExitItems( menu );
-    menu.Send( client, MenuHandler_WeaponCategory, MENU_TIME_LENGTH );
+    menu.Send( client, MenuHandler_WeaponCategory, GetMenuTimeSeconds() );
 
     delete menu;
 }
 
+/**
+ * Menu handler for the weapon category selection menu.
+ *
+ * @param menu      Menu to handle an action for.
+ * @param action    Type of action to handle.
+ * @param param1    First piece of auxiliary info.
+ * @param param2    Second piece of auxiliary info.
+ * @return          Handler response.
+ */
 public int MenuHandler_WeaponCategory( Menu menu, MenuAction action, int param1, int param2 )
 {
     if ( action == MenuAction_End )

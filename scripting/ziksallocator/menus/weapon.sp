@@ -1,3 +1,12 @@
+/**
+ * Display the weapon selection menu for a given weapon category to the given client.
+ *
+ * @param client    Client to display the menu to.
+ * @param team      Team of the loadout this weapon will be added to.
+ * @param loadout   Loadout type this weapon will be added to.
+ * @param category  Weapon category to list.
+ * @noreturn
+ */
 void GiveWeaponMenu( int client, int team, RTLoadout loadout, CSWeaponCategory category )
 {
     g_MenuStateTeam[client] = team;
@@ -73,11 +82,20 @@ void GiveWeaponMenu( int client, int team, RTLoadout loadout, CSWeaponCategory c
     }
 
     AddBackExitItems( menu );
-    menu.Send( client, MenuHandler_Weapon, MENU_TIME_LENGTH );
+    menu.Send( client, MenuHandler_Weapon, GetMenuTimeSeconds() );
 
     delete menu;
 }
 
+/**
+ * Menu handler for the weapon selection menu.
+ *
+ * @param menu      Menu to handle an action for.
+ * @param action    Type of action to handle.
+ * @param param1    First piece of auxiliary info.
+ * @param param2    Second piece of auxiliary info.
+ * @return          Handler response.
+ */
 public int MenuHandler_Weapon( Menu menu, MenuAction action, int param1, int param2 )
 {
     if ( action == MenuAction_End )

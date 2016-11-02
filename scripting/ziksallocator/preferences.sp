@@ -1,59 +1,32 @@
 /**
- * AWP round enabled state for each client on either team.
- */
-bool g_Sniper[MAXPLAYERS+1][TEAM_COUNT];
-
-/**
  * Kevlar enabled state for each client on either team for all loadout types.
  */
-bool g_Kevlar[MAXPLAYERS+1][TEAM_COUNT][RTLoadout];
+bool g_Kevlar[MAXPLAYERS+1][TEAM_COUNT*LOADOUT_COUNT];
 
 /**
  * Helmet enabled state for each client on either team for all loadout types.
  */
-bool g_Helmet[MAXPLAYERS+1][TEAM_COUNT][RTLoadout];
+bool g_Helmet[MAXPLAYERS+1][TEAM_COUNT*LOADOUT_COUNT];
 
 /**
  * Defuse kit enabled state for each client for all loadout types.
  */
-bool g_Defuse[MAXPLAYERS+1][RTLoadout];
+bool g_Defuse[MAXPLAYERS+1][LOADOUT_COUNT];
+
+/**
+ * AWP round flags for each client on either team.
+ */
+bool g_Sniper[MAXPLAYERS+1][TEAM_COUNT*SNIPER_FLAG_COUNT];
 
 /**
  * Primary weapon selection for each client on either team for all loadout types.
  */
-CSWeapon g_Primary[MAXPLAYERS+1][TEAM_COUNT][RTLoadout];
+CSWeapon g_Primary[MAXPLAYERS+1][TEAM_COUNT*LOADOUT_COUNT];
 
 /**
  * Secondary weapon selection for each client on either team for all loadout types.
  */
-CSWeapon g_Secondary[MAXPLAYERS+1][TEAM_COUNT][RTLoadout];
-
-/**
- * Sets AWP round enabled state for a client when on the given team.
- *
- * @param client    Client to set AWP round enabled state for.
- * @param team      Team for which to set AWP round enabled state for.
- * @param enabled   If true, the client is set to possibly receive an AWP
- *                  on full buy rounds when on the given team.
- * @noreturn
- */
-void SetSniper( int client, int team, bool enabled )
-{
-    g_Sniper[client][GetTeamIndex( team )] = enabled;
-}
-
-/**
- * Gets AWP round enabled state for a client when on the given team.
- *
- * @param client    Client to get AWP round enabled state for.
- * @param team      Team for which to get AWP round enabled state for.
- * @return          True if the client is set to possibly receive an AWP
- *                  on full buy rounds when on the given team.
- */
-bool GetSniper( int client, int team )
-{
-    return g_Sniper[client][GetTeamIndex( team )];
-}
+CSWeapon g_Secondary[MAXPLAYERS+1][TEAM_COUNT*LOADOUT_COUNT];
 
 /**
  * Sets kevlar enabled state for a client when on the given team for
@@ -68,7 +41,7 @@ bool GetSniper( int client, int team )
  */
 void SetKevlar( int client, int team, RTLoadout loadout, bool enabled )
 {
-    g_Kevlar[client][GetTeamIndex( team )][loadout] = enabled;
+    g_Kevlar[client][GetTeamLoadoutIndex( team , loadout )] = enabled;
     if ( !enabled ) SetHelmet( client, team, loadout, false );
 }
 
@@ -84,7 +57,7 @@ void SetKevlar( int client, int team, RTLoadout loadout, bool enabled )
  */
 bool GetKevlar( int client, int team, RTLoadout loadout )
 {
-    return g_Kevlar[client][GetTeamIndex( team )][loadout];
+    return g_Kevlar[client][GetTeamLoadoutIndex( team , loadout )];
 }
 
 /**
@@ -100,7 +73,7 @@ bool GetKevlar( int client, int team, RTLoadout loadout )
  */
 void SetHelmet( int client, int team, RTLoadout loadout, bool enabled )
 {
-    g_Helmet[client][GetTeamIndex( team )][loadout] = enabled;
+    g_Helmet[client][GetTeamLoadoutIndex( team , loadout )] = enabled;
     if ( enabled ) SetKevlar( client, team, loadout, true );
 }
 
@@ -116,7 +89,7 @@ void SetHelmet( int client, int team, RTLoadout loadout, bool enabled )
  */
 bool GetHelmet( int client, int team, RTLoadout loadout )
 {
-    return GetKevlar( client, team, loadout ) && g_Helmet[client][GetTeamIndex( team )][loadout];
+    return GetKevlar( client, team, loadout ) && g_Helmet[client][GetTeamLoadoutIndex( team , loadout )];
 }
 
 /**
@@ -151,6 +124,33 @@ bool GetDefuse( int client, int team, RTLoadout loadout )
 }
 
 /**
+ * Sets / clears AWP round flag for a client when on the given team.
+ *
+ * @param client    Client to set AWP round flag for.
+ * @param team      Team for which to set AWP round flag for.
+ * @param flag      Flag to either set or clear.
+ * @param enabled   If true, the given flag is set. Otherwise it is cleared.
+ * @noreturn
+ */
+void SetSniperFlag( int client, int team, RTSniperFlag flag, bool value )
+{
+    g_Sniper[client][GetTeamSniperFlagIndex( team, flag )] = value;
+}
+
+/**
+ * Gets an AWP round flag for a client when on the given team.
+ *
+ * @param client    Client to get AWP round flag for.
+ * @param team      Team for which to get AWP round flag for.
+ * @param flag      Flag to get.
+ * @return          True if the given flag is set, false otherwise.
+ */
+bool GetSniperFlag( int client, int team, RTSniperFlag flag )
+{
+    return g_Sniper[client][GetTeamSniperFlagIndex( team, flag )];
+}
+
+/**
  * Sets primary weapon selection for a client when on the given team for
  * loadouts of the given type.
  *
@@ -163,7 +163,7 @@ bool GetDefuse( int client, int team, RTLoadout loadout )
  */
 void SetPrimary( int client, int team, RTLoadout loadout, CSWeapon weapon )
 {
-    g_Primary[client][GetTeamIndex( team )][loadout] = weapon;
+    g_Primary[client][GetTeamLoadoutIndex( team , loadout )] = weapon;
 }
 
 /**
@@ -178,7 +178,7 @@ void SetPrimary( int client, int team, RTLoadout loadout, CSWeapon weapon )
  */
 CSWeapon GetPrimary( int client, int team, RTLoadout loadout )
 {
-    return g_Primary[client][GetTeamIndex( team )][loadout];
+    return g_Primary[client][GetTeamLoadoutIndex( team , loadout )];
 }
 
 /**
@@ -194,7 +194,7 @@ CSWeapon GetPrimary( int client, int team, RTLoadout loadout )
  */
 void SetSecondary( int client, int team, RTLoadout loadout, CSWeapon weapon )
 {
-    g_Secondary[client][GetTeamIndex( team )][loadout] = weapon;
+    g_Secondary[client][GetTeamLoadoutIndex( team , loadout )] = weapon;
 }
 
 /**
@@ -209,7 +209,7 @@ void SetSecondary( int client, int team, RTLoadout loadout, CSWeapon weapon )
  */
 CSWeapon GetSecondary( int client, int team, RTLoadout loadout )
 {
-    return g_Secondary[client][GetTeamIndex( team )][loadout];
+    return g_Secondary[client][GetTeamLoadoutIndex( team , loadout )];
 }
 
 /**
@@ -223,82 +223,56 @@ void ResetAllLoadouts( int client )
     for ( int i = 0; i < view_as<int>(RTLoadout); ++i )
     {
         RTLoadout loadout = view_as<RTLoadout>(i);
-        ResetLoadout( client, loadout );
+        ResetLoadout( client, CS_TEAM_T, loadout );
+        ResetLoadout( client, CS_TEAM_CT, loadout );
     }
 }
 
 /**
- * Resets a client's preferences for a given loadout to their defaults.
+ * Resets a client's preferences for a given team and loadout to their defaults.
  *
  * @param client    Client to reset loadout preferences for.
+ * @param team      Team to reset loadout preferences for.
  * @param loadout   Loadout type to reset preferences for.
  * @noreturn
  */
-void ResetLoadout( int client, RTLoadout loadout )
+void ResetLoadout( int client, int team, RTLoadout loadout )
 {
-    SetHelmet( client, CS_TEAM_T,  loadout, false );
-    SetHelmet( client, CS_TEAM_CT, loadout, false );
-
-    SetKevlar( client, CS_TEAM_T,  loadout, false );
-    SetKevlar( client, CS_TEAM_CT, loadout, false );
-
-    SetDefuse( client, CS_TEAM_CT, loadout, false );
-
-    SetPrimary( client, CS_TEAM_T,  loadout, WEAPON_NONE );
-    SetPrimary( client, CS_TEAM_CT, loadout, WEAPON_NONE );
-
-    SetSecondary( client, CS_TEAM_T,  loadout, WEAPON_GLOCK );
-    SetSecondary( client, CS_TEAM_CT, loadout, WEAPON_HKP2000 );
+    SetHelmet( client, team, loadout, false );
+    SetKevlar( client, team, loadout, false );
+    SetDefuse( client, team, loadout, false );
+    SetPrimary( client, team, loadout, WEAPON_NONE );
+    SetSecondary( client, team, loadout, team == CS_TEAM_T ? WEAPON_GLOCK : WEAPON_HKP2000 );
 
     switch ( loadout )
     {
         case LOADOUT_PISTOL:
         {
-            SetKevlar( client, CS_TEAM_T,  loadout, true );
-            SetKevlar( client, CS_TEAM_CT, loadout, true );
+            SetKevlar( client, team, loadout, true );
         }
         case LOADOUT_FORCE:
         {
-            SetHelmet( client, CS_TEAM_T,  loadout, true );
-            SetHelmet( client, CS_TEAM_CT, loadout, true );
-
-            SetKevlar( client, CS_TEAM_T,  loadout, true );
-            SetKevlar( client, CS_TEAM_CT, loadout, true );
-            
-            SetPrimary( client, CS_TEAM_T,  loadout, WEAPON_UMP45 );
-            SetPrimary( client, CS_TEAM_CT, loadout, WEAPON_UMP45 );
+            SetHelmet( client, team, loadout, true );
+            SetKevlar( client, team, loadout, true );
+            SetPrimary( client, team, loadout, WEAPON_UMP45 );
         }
         case LOADOUT_FULL:
         {
-            SetHelmet( client, CS_TEAM_T,  loadout, true );
-            SetHelmet( client, CS_TEAM_CT, loadout, true );
-
-            SetKevlar( client, CS_TEAM_T,  loadout, true );
-            SetKevlar( client, CS_TEAM_CT, loadout, true );
-
-            SetDefuse( client, CS_TEAM_CT, loadout, true );
-
-            SetPrimary( client, CS_TEAM_T,  loadout, WEAPON_AK47 );
-            SetPrimary( client, CS_TEAM_CT, loadout, WEAPON_M4A1 );
+            SetHelmet( client, team, loadout, true );
+            SetKevlar( client, team, loadout, true );
+            SetDefuse( client, team, loadout, true );
+            SetPrimary( client, team, loadout, team == CS_TEAM_T ? WEAPON_AK47 : WEAPON_M4A1 );
         }
         case LOADOUT_SNIPER:
         {
-            SetSniper( client, CS_TEAM_T,  false );
-            SetSniper( client, CS_TEAM_CT, false );
-
-            SetHelmet( client, CS_TEAM_T,  loadout, true );
-            SetHelmet( client, CS_TEAM_CT, loadout, true );
-
-            SetKevlar( client, CS_TEAM_T,  loadout, true );
-            SetKevlar( client, CS_TEAM_CT, loadout, true );
-
-            SetDefuse( client, CS_TEAM_CT, loadout, true );
-
-            SetPrimary( client, CS_TEAM_T,  loadout, WEAPON_AWP );
-            SetPrimary( client, CS_TEAM_CT, loadout, WEAPON_AWP );
-            
-            SetSecondary( client, CS_TEAM_T,  loadout, WEAPON_TEC9 );
-            SetSecondary( client, CS_TEAM_CT, loadout, WEAPON_FIVESEVEN );
+            SetSniperFlag( client, team, SNIPER_ENABLED, false );
+            SetSniperFlag( client, team, SNIPER_SOMETIMES, true );
+            SetSniperFlag( client, team, SNIPER_NEVERALONE, true );
+            SetHelmet( client, team, loadout, true );
+            SetKevlar( client, team, loadout, true );
+            SetDefuse( client, team, loadout, true );
+            SetPrimary( client, team, loadout, WEAPON_AWP );
+            SetSecondary( client, team, loadout, team == CS_TEAM_T ? WEAPON_TEC9 : WEAPON_FIVESEVEN );
         }
     }
 }

@@ -18,30 +18,6 @@ void GetLoadoutName( RTLoadout loadout, char[] buffer, int maxLength )
 }
 
 /**
- * Gets the amount of money that a client can allocate between
- * different gear and weapons on a given loadout type.
- *
- * @param loadout   Loadout type to get start money for.
- * @return          Money available for loadouts of the given type.
- */
-int GetStartMoney( RTLoadout loadout )
-{
-    switch ( loadout )
-    {
-        case LOADOUT_PISTOL:
-            return 800;
-        case LOADOUT_FORCE:
-            return 2400;
-        case LOADOUT_FULL:
-            return 16000;
-        case LOADOUT_SNIPER:
-            return 16000;
-    }
-
-    return 0;
-}
-
-/**
  * Gets whether money available and items costs should be shown
  * in loadout menus for the given loadout.
  *
@@ -51,7 +27,7 @@ int GetStartMoney( RTLoadout loadout )
  */
 bool ShouldShowMoney( RTLoadout loadout )
 {
-    return loadout != LOADOUT_FULL && loadout != LOADOUT_SNIPER;
+    return GetStartMoney( loadout ) < 16000;
 }
 
 /**
@@ -111,6 +87,20 @@ bool ShowPrimaryOption( int client, int team, RTLoadout loadout )
 }
 
 /**
+ * Gets whether the given client should be able to select the primary weapon
+ * option in the given loadout's menu for the given team.
+ *
+ * @param client    Client that the menu is to be displayed to.
+ * @param team      Team that the loadout menu corresponds to.
+ * @param loadout   Loadout that the menu corresponds to.
+ * @return          True if the client should be able to select a primary weapon.
+ */
+bool PrimaryOptionEnabled( int client, int team, RTLoadout loadout )
+{
+    return true;
+}
+
+/**
  * Gets whether the given client, when on the given team and during loadouts of
  * the given type, should be given the option to select a secondary weapon.
  *
@@ -121,7 +111,21 @@ bool ShowPrimaryOption( int client, int team, RTLoadout loadout )
  */
 bool ShowSecondaryOption( int client, int team, RTLoadout loadout )
 {
-    return loadout != LOADOUT_SNIPER || GetSniper( client, team );
+    return true;
+}
+
+/**
+ * Gets whether the given client should be able to select the secondary weapon
+ * option in the given loadout's menu for the given team.
+ *
+ * @param client    Client that the menu is to be displayed to.
+ * @param team      Team that the loadout menu corresponds to.
+ * @param loadout   Loadout that the menu corresponds to.
+ * @return          True if the client should be able to select a secondary weapon.
+ */
+bool SecondaryOptionEnabled( int client, int team, RTLoadout loadout )
+{
+    return loadout != LOADOUT_SNIPER || GetSniperFlag( client, team, SNIPER_ENABLED );
 }
 
 /**

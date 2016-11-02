@@ -1,3 +1,15 @@
+/**
+ * Adds a gear toggle option with the given name, cost and equipped state,
+ * with the option being enabled if the given available money value is
+ * greater than or equal to the cost.
+ *
+ * @param menu      Menu to add the option to.
+ * @param name      Name of the gear item.
+ * @param available Amount of money available to buy gear.
+ * @param cost      Cost of the gear item.
+ * @param equipped  True if the client already has this item equipped.
+ * @noreturn
+ */
 void AddGearOption( Panel menu, char[] name, int available, int cost, bool equipped )
 {
     char buffer[64];
@@ -16,6 +28,15 @@ void AddGearOption( Panel menu, char[] name, int available, int cost, bool equip
     menu.DrawItem( buffer, enabled ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED );
 }
 
+/**
+ * Display the loadout menu corresponding to the given team and loadout
+ * type to the given client.
+ *
+ * @param client    Client to display the menu to.
+ * @param team      Team of the loadout to display the menu for.
+ * @param loadout   Loadout type to display the menu for.
+ * @noreturn
+ */
 void GiveLoadoutMenu( int client, int team, RTLoadout loadout )
 {
     g_MenuStateTeam[client] = team;
@@ -39,7 +60,14 @@ void GiveLoadoutMenu( int client, int team, RTLoadout loadout )
 
     if ( loadout == LOADOUT_SNIPER )
     {
-        menu.DrawItem( GetSniper( client, team ) ? "Disable AWP rounds" : "Enable AWP rounds" );
+        bool enabled = GetSniperFlag( client, team, SNIPER_ENABLED );
+        int flagStyle = enabled ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED;
+
+        menu.DrawItem( enabled ? "Disable AWP rounds" : "Enable AWP rounds" );
+        menu.DrawItem( GetSniperFlag( client, team, SNIPER_SOMETIMES )
+            ? "Frequency: Sometimes" : "Frequency: Always if available", flagStyle );
+        menu.DrawItem( GetSniperFlag( client, team, SNIPER_NEVERALONE )
+            ? "AWP when alone: Disabled" : "AWP when alone: Enabled", flagStyle );
     }
 
     if ( ShowKevlarOption( client, team, loadout ) )
@@ -73,7 +101,8 @@ void GiveLoadoutMenu( int client, int team, RTLoadout loadout )
 
         Format( buffer, sizeof(buffer), "Primary: %s", weaponName );
 
-        menu.DrawItem( buffer );
+        menu.DrawItem( buffer, PrimaryOptionEnabled( client, team, loadout )
+            ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED );
     }
 
     if ( ShowSecondaryOption( client, team, loadout ) )
@@ -83,15 +112,25 @@ void GiveLoadoutMenu( int client, int team, RTLoadout loadout )
 
         Format( buffer, sizeof(buffer), "Sidearm: %s", pistolName );
 
-        menu.DrawItem( buffer );
+        menu.DrawItem( buffer, SecondaryOptionEnabled( client, team, loadout )
+            ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED );
     }
 
     AddBackExitItems( menu );
-    menu.Send( client, MenuHandler_Loadout, MENU_TIME_LENGTH );
+    menu.Send( client, MenuHandler_Loadout, GetMenuTimeSeconds() );
 
     delete menu;
 }
 
+/**
+ * Menu handler for the loadout menu.
+ *
+ * @param menu      Menu to handle an action for.
+ * @param action    Type of action to handle.
+ * @param param1    First piece of auxiliary info.
+ * @param param2    Second piece of auxiliary info.
+ * @return          Handler response.
+ */
 public int MenuHandler_Loadout( Menu menu, MenuAction action, int param1, int param2 )
 {
     if ( action == MenuAction_End )
@@ -119,13 +158,14 @@ public int MenuHandler_Loadout( Menu menu, MenuAction action, int param1, int pa
 
     if ( loadout == LOADOUT_SNIPER )
     {
-        if ( param2 == 1 )
+        if ( param2 > 0 && param2 <= SNIPER_FLAG_COUNT )
         {
-            SetSniper( client, team, !GetSniper( client, team ) );
+            RTSniperFlag flag = view_as<RTSniperFlag>(param2 - 1);
+            SetSniperFlag( client, team, flag, !GetSniperFlag( client, team, flag ) );
             SaveLoadouts( client );
         }
 
-        param2 -= 1;
+        param2 -= SNIPER_FLAG_COUNT;
     }
 
     if ( ShowKevlarOption( client, team, loadout ) )

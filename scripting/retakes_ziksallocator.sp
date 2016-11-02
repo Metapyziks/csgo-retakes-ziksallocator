@@ -9,6 +9,7 @@
 
 #include "ziksallocator/defines.sp"
 #include "ziksallocator/types.sp"
+#include "ziksallocator/config.sp"
 #include "ziksallocator/helpers.sp"
 #include "ziksallocator/weapons.sp"
 #include "ziksallocator/grenades.sp"
@@ -36,6 +37,7 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
     SetupClientCookies();
+    SetupConVars();
 }
 
 /**
@@ -48,20 +50,6 @@ public void OnClientConnected( int client )
 {
     ResetAllLoadouts( client );
     InvalidateLoadedCookies( client );
-}
-
-/**
- * Called once a client's saved cookies have been loaded from the database.
- *
- * @param client    Client index.
- * @noreturn
- */
-public void OnClientCookiesCached( int client )
-{
-    if ( IsFakeClient( client ) ) return;
-
-    PrintToConsole( client, "[retakes_ziksallocator] Found cached loadout preferences!" );
-    RestoreLoadouts( client );
 }
 
 /**

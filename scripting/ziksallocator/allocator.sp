@@ -6,18 +6,48 @@
 RTLoadout GetLoadout()
 {
     int rand = GetRandomInt( 0, 99 );
+    int pistolChance = GetLoadoutTypeProbability( LOADOUT_PISTOL );
+    int forceChance = GetLoadoutTypeProbability( LOADOUT_PISTOL );
 
-    if ( rand < 30 )
+    if ( rand < pistolChance )
     {
         return LOADOUT_PISTOL;
     }
 
-    if ( rand < 50 )
+    if ( rand < pistolChance + forceChance )
     {
         return LOADOUT_FORCE;
     }
 
     return LOADOUT_FULL;
+}
+
+/**
+ * Records which clients were allocated an AWP in the previous round.
+ */
+bool g_WasSniper[MAXPLAYERS+1];
+
+/**
+ * Checks to see if the given client was allocated an AWP in the previous round.
+ *
+ * @param client    Client to check.
+ * @return          True if the given client was allocated an AWP in the last round.
+ */
+bool GetWasSniper( int client )
+{
+    return g_WasSniper[client];
+}
+
+/**
+ * Sets whether the given client was allocated an AWP in the previous round.
+ *
+ * @param client    Client to set whether they were an AWPer.
+ * @param value     True if the client was an AWPer, false if not.
+ * @noreturn
+ */
+void SetWasSniper( int client, bool value )
+{
+    g_WasSniper[client] = value;
 }
 
 /**
@@ -37,7 +67,13 @@ int ChooseSniperPlayer( ArrayList players, int team )
     for ( int i = 0; i < count; i++ )
     {
         int client = GetArrayCell( players, i );
-        if ( !GetSniper( client, team ) ) continue;
+
+        bool wasSniper = GetWasSniper( client );
+        SetWasSniper( client, false );
+
+        if ( !GetSniperFlag( client, team, SNIPER_ENABLED ) ) continue;
+        if ( count == 1 && GetSniperFlag( client, team, SNIPER_NEVERALONE ) ) continue;
+        if ( wasSniper && GetSniperFlag( client, team, SNIPER_SOMETIMES ) ) continue;
 
         int score = GetRandomInt( 0, 65535 );
 
@@ -46,6 +82,11 @@ int ChooseSniperPlayer( ArrayList players, int team )
             sniper = client;
             bestScore = score;
         }
+    }
+
+    if ( sniper != -1 )
+    {
+        SetWasSniper( sniper, true );
     }
 
     return sniper;

@@ -1,55 +1,4 @@
 /**
- * Gets the maximum number of grenades that a player can hold when on the
- * given team during loadouts of the given type.
- *
- * @param team      Team to get maximum grenade count for.
- * @param loadout   Loadout type to get maximum grenade count for.
- * @return          Maximum number of grenades that can be held.
- */
-int GetMaxTotalGrenades( int team, RTLoadout loadout )
-{
-    return 4;
-}
-
-/**
- * Gets the maximum number of grenades of the given type that a player
- * can hold when on the given team during loadouts of the given type.
- *
- * @note            Valid grenade chars are {h, f, m, i, s, d}.
- * @param team      Team to get maximum grenade count for.
- * @param loadout   Loadout type to get maximum grenade count for.
- * @param nadeChar  Grenade type to get maximum grenade count for.
- * @return          Maximum number of grenades that can be held.
- */
-int GetMaxGrenades( int team, RTLoadout loadout, char nadeChar )
-{
-    switch ( nadeChar )
-    {
-        case 'h': return 1;
-        case 'f': return 2;
-        case 'm': return 1;
-        case 'i': return 1;
-        case 's': return 1;
-        case 'd': return 1;
-    }
-
-    return 0;
-}
-
-/**
- * Gets the maximum value of grenades that can be given to players
- * on the given team with the given loadout type.
- *
- * @param team      Team to get the maximum value for.
- * @param loadout   Loadout to get the maximum value for.
- * @return          Maximum total value of grenades.
- */
-int GetMaxNadeValue( int team, RTLoadout loadout )
-{
-    return 800;
-}
-
-/**
  * Gets the cost of the given grenade type when purchased by a client
  * on the given team.
  *
@@ -70,19 +19,6 @@ int GetGrenadeCost( int team, char nadeChar )
     }
     
     return 0;
-}
-
-/**
- * Percentage probability of a decoy being available when randomly
- * selecting a grenade.
- *
- * @param loadout   Loadout type to get decoy probability for.
- * @return          Probability of a decoy being available for randomly
- *                  selection, in percent. 
- */
-int GetDecoyProbability( RTLoadout loadout )
-{
-    return 10;
 }
 
 /**
