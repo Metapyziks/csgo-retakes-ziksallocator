@@ -7,7 +7,7 @@ RTLoadout GetLoadout()
 {
     int rand = GetRandomInt( 0, 99 );
     int pistolChance = GetLoadoutTypeProbability( LOADOUT_PISTOL );
-    int forceChance = GetLoadoutTypeProbability( LOADOUT_PISTOL );
+    int forceChance = GetLoadoutTypeProbability( LOADOUT_FORCE );
 
     if ( rand < pistolChance )
     {
@@ -20,6 +20,97 @@ RTLoadout GetLoadout()
     }
 
     return LOADOUT_FULL;
+}
+
+/**
+ * A randomly selected primary weapon for LOADOUT_RANDOM rounds.
+ */
+CSWeapon g_RandomPrimary;
+
+/**
+ * A randomly selected secondary weapon for LOADOUT_RANDOM rounds.
+ */
+CSWeapon g_RandomSecondary;
+
+/**
+ * Weapons that can be selected for LOADOUT_RANDOM rounds.
+ */
+CSWeapon g_RandomWeapons[] = {
+    WEAPON_GLOCK,
+    WEAPON_HKP2000,
+    WEAPON_P250,
+    WEAPON_ELITE,
+    WEAPON_TEC9,
+    WEAPON_FIVESEVEN,
+    WEAPON_CZ75A,
+    WEAPON_DEAGLE,
+
+    WEAPON_MAC10,
+    WEAPON_MP9,
+    WEAPON_UMP45,
+    WEAPON_BIZON,
+    WEAPON_MP7,
+    WEAPON_P90,
+
+    WEAPON_NOVA,
+    WEAPON_XM1014,
+    WEAPON_SAWEDOFF,
+    WEAPON_MAG7,
+    WEAPON_M249,
+    WEAPON_NEGEV,
+
+    WEAPON_GALILAR,
+    WEAPON_FAMAS,
+    WEAPON_SSG08,
+    WEAPON_AK47,
+    WEAPON_M4A1,
+    WEAPON_M4A1_SILENCER,
+    WEAPON_SG556,
+    WEAPON_AUG,
+    WEAPON_AWP,
+    WEAPON_G3SG1,
+    WEAPON_SCAR20
+};
+
+/**
+ * A randomly selected primary weapon for LOADOUT_RANDOM rounds.
+ *
+ * @return          Randomly selected primary weapon.
+ */
+CSWeapon GetRandomPrimary()
+{
+    return g_RandomPrimary;
+}
+
+/**
+ * A randomly selected secondary weapon for LOADOUT_RANDOM rounds.
+ *
+ * @return          Randomly selected secondary weapon.
+ */
+CSWeapon GetRandomSecondary()
+{
+    return g_RandomSecondary;
+}
+
+/**
+ * Randomly selects a primary and secondary weapon for LOADOUT_RANDOM rounds.
+ *
+ * @noreturn
+ */
+void SelectRandomWeapon()
+{
+    CSWeapon weapon = g_RandomWeapons[GetRandomInt(0, sizeof(g_RandomWeapons) - 1)];
+
+    if ( GetWeaponCategory( weapon ) == WCAT_PISTOL )
+    {
+        g_RandomPrimary = WEAPON_NONE;
+        g_RandomSecondary = weapon;
+    }
+    else
+    {
+        g_RandomPrimary = weapon;
+        g_RandomSecondary = WEAPON_NONE;
+    }
 }
 
 /**
@@ -93,6 +184,20 @@ int ChooseSniperPlayer( ArrayList players, int team )
 }
 
 /**
+ * Decides if there should be a T-side force buy round.
+ *
+ * @param loadout   Current loadout type.
+ * @param tPlayers  List of Terrorist clients.
+ * @param ctPlayers List of Counter-Terrorist clients.
+ * @return          True if there should be a T-side force buy round.
+ */
+bool ShouldHaveTerroristForceRound( RTLoadout loadout, ArrayList tPlayers, ArrayList ctPlayers )
+{
+    return loadout == LOADOUT_FORCE && GetArraySize( tPlayers ) == GetArraySize( ctPlayers )
+        && GetRandomInt( 0, 99 ) < GetTerroristForceProbability();
+}
+
+/**
  * Handles allocating weapons to both teams.
  *
  * @param tPlayers  List of Terrorist clients.
@@ -104,28 +209,49 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
 {
     RTLoadout loadout = GetLoadout();
 
-    int tSniper = -1; 
+    RTLoadout tLoadout = loadout;
+    RTLoadout ctLoadout = loadout;
+
+    if ( ShouldHaveTerroristForceRound( loadout, tPlayers, ctPlayers ) )
+    {
+        tLoadout = LOADOUT_FORCE;
+    }
+
+    int tSniper = -1;
     int ctSniper = -1;
 
-    if ( loadout == LOADOUT_FULL )
+    if ( tLoadout == LOADOUT_FULL ) tSniper = ChooseSniperPlayer( tPlayers, CS_TEAM_T );
+    if ( ctLoadout == LOADOUT_FULL ) ctSniper = ChooseSniperPlayer( ctPlayers, CS_TEAM_CT );
+
+    if ( loadout == LOADOUT_RANDOM )
     {
-        tSniper = ChooseSniperPlayer( tPlayers, CS_TEAM_T );
-        ctSniper = ChooseSniperPlayer( ctPlayers, CS_TEAM_CT );
+        SelectRandomWeapon();
     }
 
     int tCount = GetArraySize( tPlayers );
     int ctCount = GetArraySize( ctPlayers );
 
+    if ( tLoadout == LOADOUT_FORCE && ctLoadout == LOADOUT_FULL )
+    {
+        Retakes_MessageToAll( "Terrorist Force Buy round!" );
+    }
+    else
+    {
+        char loadoutName[32];
+        GetLoadoutName( loadout, loadoutName, sizeof(loadoutName) );
+        Retakes_MessageToAll( "%s round!", loadoutName );
+    }
+
     for ( int i = 0; i < tCount; i++ )
     {
         int client = GetArrayCell( tPlayers, i );
-        HandleLoadout( client, CS_TEAM_T, client == tSniper ? LOADOUT_SNIPER : loadout );
+        HandleLoadout( client, CS_TEAM_T, client == tSniper ? LOADOUT_SNIPER : tLoadout );
     }
 
     for ( int i = 0; i < ctCount; i++ )
     {
         int client = GetArrayCell(ctPlayers, i);
-        HandleLoadout( client, CS_TEAM_CT, client == ctSniper ? LOADOUT_SNIPER : loadout );
+        HandleLoadout( client, CS_TEAM_CT, client == ctSniper ? LOADOUT_SNIPER : ctLoadout );
     }
 }
 
@@ -151,19 +277,26 @@ void HandleLoadout( int client, int team, RTLoadout loadout )
     secondary = "";
     nades = "";
 
-    GetWeaponClassName( GetPrimary( client, team, loadout ), primary, sizeof(primary) );
-    GetWeaponClassName( GetSecondary( client, team, loadout ), secondary, sizeof(secondary) );
+    if ( loadout == LOADOUT_RANDOM )
+    {
+        GetWeaponClassName( GetRandomPrimary(), primary, sizeof(primary) );
+        GetWeaponClassName( GetRandomSecondary(), secondary, sizeof(secondary) );
+    }
+    else
+    {
+        GetWeaponClassName( GetPrimary( client, team, loadout ), primary, sizeof(primary) );
+        GetWeaponClassName( GetSecondary( client, team, loadout ), secondary, sizeof(secondary) );
+        
+        int remaining = GetStartMoney( loadout ) - GetLoadoutCost( client, team, loadout );
+        
+        if ( remaining > GetMaxNadeValue( team, loadout ) ) remaining = GetMaxNadeValue( team, loadout );
 
-    int remaining = GetStartMoney( loadout ) - GetLoadoutCost( client, team, loadout );
-    
-    if ( remaining > GetMaxNadeValue( team, loadout ) ) remaining = GetMaxNadeValue( team, loadout );
+        FillGrenades( team, loadout, remaining, nades, sizeof(nades) );
 
-    FillGrenades( team, loadout, remaining, nades, sizeof(nades) );
-
-    health = 100;
-    kevlar = GetKevlar( client, team, loadout ) ? 100 : 0;
-    helmet = GetHelmet( client, team, loadout );
-    kit = GetDefuse( client, team, loadout );
+        kevlar = GetKevlar( client, team, loadout ) ? 100 : 0;
+        helmet = GetHelmet( client, team, loadout );
+        kit = GetDefuse( client, team, loadout );
+    }
 
     Retakes_SetPlayerInfo( client, primary, secondary, nades, health, kevlar, helmet, kit );
 }

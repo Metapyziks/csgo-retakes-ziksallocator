@@ -128,11 +128,42 @@ void GetWeaponCategoryName( CSWeaponCategory category, char[] buffer, int maxLen
 {
     switch ( category )
     {
-        case WCAT_PISTOL: strcopy( buffer, maxLength, "Pistols" );
-        case WCAT_SMG:    strcopy( buffer, maxLength, "SMGs" );
-        case WCAT_HEAVY:  strcopy( buffer, maxLength, "Heavys" );
-        case WCAT_RIFLE:  strcopy( buffer, maxLength, "Rifles" );
+        case WCAT_PISTOL:  strcopy( buffer, maxLength, "Pistols" );
+        case WCAT_SMG:     strcopy( buffer, maxLength, "SMGs" );
+        case WCAT_HEAVY:   strcopy( buffer, maxLength, "Heavys" );
+        case WCAT_RIFLE:   strcopy( buffer, maxLength, "Rifles" );
+        case WCAT_UNKNOWN: strcopy( buffer, maxLength, "Unknown" );
     }
+}
+
+/**
+ * Gets the weapon category of the given weapon.
+ *
+ * @param weapon    Weapon to get the category for.
+ * @return          Weapon category of the given weapon.
+ */
+CSWeaponCategory GetWeaponCategory( CSWeapon weapon )
+{
+    CSWeaponCategory categories[] = {
+        WCAT_PISTOL,
+        WCAT_SMG,
+        WCAT_HEAVY,
+        WCAT_RIFLE
+    };
+
+    int index = view_as<int>( weapon );
+
+    for ( int i = 0; i < sizeof(categories); ++i )
+    {
+        CSWeaponCategory category = categories[i];
+
+        if ( index >= GetWeaponListMin( category ) && index <= GetWeaponListMax( category ) )
+        {
+            return category;
+        }
+    }
+
+    return WCAT_UNKNOWN;
 }
 
 /**

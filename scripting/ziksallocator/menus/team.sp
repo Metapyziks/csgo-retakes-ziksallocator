@@ -9,7 +9,7 @@ void GiveTeamMenu( int client, RTLoadout loadout )
 {
     g_MenuStateLoadout[client] = loadout;
 
-    char loadoutName[16];
+    char loadoutName[32];
     GetLoadoutName( loadout, loadoutName, sizeof(loadoutName) );
 
     char buffer[128];

@@ -9,6 +9,12 @@ A more complex weapon allocator with extra configurable preferences.
 - `sm_retakes_force_chance`
   - **Description**: Percentage chance of a force-buy round
   - **Default**: `20`
+- `sm_retakes_random_chance`
+  - **Description**: Percentage chance of a random weapon round
+  - **Default**: `5`
+- `sm_retakes_terror_force_chance`
+  - **Description**: Percentage chance of a terrorist force-buy round when teams are even
+  - **Default**: `50`
 - `sm_retakes_pistol_startmoney`
   - **Description**: Pistol round start money
   - **Default**: `800`

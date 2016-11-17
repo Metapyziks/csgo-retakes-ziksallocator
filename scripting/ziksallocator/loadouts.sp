@@ -14,6 +14,21 @@ void GetLoadoutName( RTLoadout loadout, char[] buffer, int maxLength )
         case LOADOUT_FORCE:  strcopy( buffer, maxLength, "Force Buy" );
         case LOADOUT_FULL:   strcopy( buffer, maxLength, "Full Buy" );
         case LOADOUT_SNIPER: strcopy( buffer, maxLength, "AWP" );
+        case LOADOUT_RANDOM:
+        {
+            if ( GetRandomPrimary() != WEAPON_NONE )
+            {
+                GetWeaponName( GetRandomPrimary(), buffer, maxLength );
+            }
+            else if ( GetRandomSecondary() != WEAPON_NONE )
+            {
+                GetWeaponName( GetRandomSecondary(), buffer, maxLength );
+            }
+            else
+            {
+                strcopy( buffer, maxLength, "Knife" );
+            }
+        }
     }
 }
 

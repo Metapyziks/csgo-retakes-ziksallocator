@@ -11,7 +11,8 @@ enum RTLoadout
     LOADOUT_PISTOL, /**< Pistol round loadout. */
     LOADOUT_FORCE,	/**< Force-buy round loadout. */
     LOADOUT_FULL,	/**< Full-buy round loadout. */
-    LOADOUT_SNIPER	/**< AWP round loadout. */
+    LOADOUT_SNIPER, /**< AWP round loadout. */
+    LOADOUT_RANDOM  /**< Round where everyone has the same random weapon. */
 }
 
 /**
@@ -35,10 +36,11 @@ enum RTSniperFlag
  */
 enum CSWeaponCategory
 {
-    WCAT_PISTOL,    /**< Sidearms. */
-    WCAT_SMG,       /**< Submachine guns. */
-    WCAT_HEAVY,     /**< Shotguns and light machine guns. */
-    WCAT_RIFLE      /**< Assault and sniper rifles. */
+    WCAT_PISTOL,        /**< Sidearms. */
+    WCAT_SMG,           /**< Submachine guns. */
+    WCAT_HEAVY,         /**< Shotguns and light machine guns. */
+    WCAT_RIFLE,         /**< Assault and sniper rifles. */
+    WCAT_UNKNOWN = -1   /**< Unknown. */
 }
 
 /**
