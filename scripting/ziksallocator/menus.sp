@@ -69,9 +69,9 @@ void AddBackExitItems( Panel menu )
     menu.DrawItem( "Exit" );
 }
 
-#include "menus/main.sp"
-#include "menus/team.sp"
-#include "menus/resetconfirm.sp"
-#include "menus/loadout.sp"
-#include "menus/weaponcategory.sp"
-#include "menus/weapon.sp"
+#include "ziksallocator/menus/main.sp"
+#include "ziksallocator/menus/team.sp"
+#include "ziksallocator/menus/resetconfirm.sp"
+#include "ziksallocator/menus/loadout.sp"
+#include "ziksallocator/menus/weaponcategory.sp"
+#include "ziksallocator/menus/weapon.sp"

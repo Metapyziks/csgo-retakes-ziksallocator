@@ -1,0 +1,32 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "0.1.0",
+    "command": "%SOURCEMOD%/scripting/spcomp.exe",
+    "isShellCommand": true,
+    "options": {
+        "cwd": "${workspaceRoot}/scripting",
+        "env": {
+            "SOURCEMOD": "C:/Users/James/Documents/GitHub/sourcemod/addons/sourcemod",
+            "SCRIPT_NAME": "retakes_ziksallocator"
+        }
+    },
+    "args":
+    [
+        "%SCRIPT_NAME%.sp",
+        "-i%SOURCEMOD%/scripting",
+        "-o${workspaceRoot}/plugins/%SCRIPT_NAME%.smx"
+    ],
+    "problemMatcher": {
+        "owner": "sp",
+        "fileLocation": ["relative", "${workspaceRoot}/scripting"],
+        "pattern": {
+            "regexp": "^(.*)\\((\\d+)\\)\\s+:\\s+(fatal\\s+)?(warning|error)\\s+(\\d+):\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "severity": 4,
+            "message": 6
+        }
+    },
+    "showOutput": "always"
+}
