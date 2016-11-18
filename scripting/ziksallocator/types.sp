@@ -59,6 +59,7 @@ enum CSWeapon
     WEAPON_FIVESEVEN,   /**< Five-SeveN. */
     WEAPON_CZ75A,       /**< CZ75-Auto. */
     WEAPON_DEAGLE,      /**< Desert Eagle. */
+    WEAPON_REVOLVER,    /**< R8 Revolver. */
 
     WEAPON_MAC10,       /**< MAC-10 */
     WEAPON_MP9,         /**< MP9 */

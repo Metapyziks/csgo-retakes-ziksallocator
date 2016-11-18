@@ -29,6 +29,7 @@ void GetWeaponName( CSWeapon weapon, char[] buffer, int maxLength )
         case WEAPON_FIVESEVEN: strcopy( buffer, maxLength, "Five-SeveN" );
         case WEAPON_CZ75A:     strcopy( buffer, maxLength, "CZ75 Auto" );
         case WEAPON_DEAGLE:    strcopy( buffer, maxLength, "Desert Eagle" );
+        case WEAPON_REVOLVER:  strcopy( buffer, maxLength, "R8 Revolver" );
 
         case WEAPON_MAC10:     strcopy( buffer, maxLength, "MAC-10" );
         case WEAPON_MP9:       strcopy( buffer, maxLength, "MP9" );
@@ -87,6 +88,7 @@ void GetWeaponClassName( CSWeapon weapon, char[] buffer, int maxLength )
         case WEAPON_FIVESEVEN: strcopy( buffer, maxLength, "weapon_fiveseven" );
         case WEAPON_CZ75A:     strcopy( buffer, maxLength, "weapon_cz75a" );
         case WEAPON_DEAGLE:    strcopy( buffer, maxLength, "weapon_deagle" );
+        case WEAPON_REVOLVER:  strcopy( buffer, maxLength, "weapon_revolver" );
 
         case WEAPON_MAC10:     strcopy( buffer, maxLength, "weapon_mac10" );
         case WEAPON_MP9:       strcopy( buffer, maxLength, "weapon_mp9" );
@@ -195,7 +197,7 @@ int GetWeaponListMax( CSWeaponCategory category )
 {
     switch ( category )
     {
-        case WCAT_PISTOL: return view_as<int>( WEAPON_DEAGLE );
+        case WCAT_PISTOL: return view_as<int>( WEAPON_REVOLVER );
         case WCAT_SMG: return view_as<int>( WEAPON_P90 );
         case WCAT_HEAVY: return view_as<int>( WEAPON_NEGEV );
         case WCAT_RIFLE: return view_as<int>( WEAPON_AUG );
@@ -220,6 +222,8 @@ bool CanBuyWeapon( int client, int team, RTLoadout loadout, CSWeapon weapon )
 
     switch ( weapon )
     {
+        case WEAPON_REVOLVER:
+            return false;
         case WEAPON_GLOCK, WEAPON_TEC9, WEAPON_MAC10, WEAPON_SAWEDOFF,
             WEAPON_GALILAR, WEAPON_AK47, WEAPON_SG556, WEAPON_G3SG1:
             return team == CS_TEAM_T;

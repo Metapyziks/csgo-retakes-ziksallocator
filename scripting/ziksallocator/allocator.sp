@@ -8,6 +8,7 @@ RTLoadout GetLoadout()
     int rand = GetRandomInt( 0, 99 );
     int pistolChance = GetLoadoutTypeProbability( LOADOUT_PISTOL );
     int forceChance = GetLoadoutTypeProbability( LOADOUT_FORCE );
+    int randomChance = GetLoadoutTypeProbability( LOADOUT_RANDOM );
 
     if ( rand < pistolChance )
     {
@@ -19,8 +20,16 @@ RTLoadout GetLoadout()
         return LOADOUT_FORCE;
     }
 
+    if ( rand < pistolChance + forceChance + randomChance )
+    {
+        return LOADOUT_RANDOM;
+    }
+
     return LOADOUT_FULL;
 }
+
+bool g_RandomHelmet;
+bool g_RandomArmour;
 
 /**
  * A randomly selected primary weapon for LOADOUT_RANDOM rounds.
@@ -44,6 +53,7 @@ CSWeapon g_RandomWeapons[] = {
     WEAPON_FIVESEVEN,
     WEAPON_CZ75A,
     WEAPON_DEAGLE,
+    WEAPON_REVOLVER,
 
     WEAPON_MAC10,
     WEAPON_MP9,
@@ -72,6 +82,21 @@ CSWeapon g_RandomWeapons[] = {
     WEAPON_SCAR20
 };
 
+int GetRandomWeaponWeight( CSWeapon weapon )
+{
+    switch( weapon )
+    {
+        case WEAPON_REVOLVER, WEAPON_DEAGLE, WEAPON_SG556, WEAPON_MAG7:
+            return 10;
+        case WEAPON_SAWEDOFF, WEAPON_ELITE, WEAPON_G3SG1, WEAPON_SCAR20:
+            return 5;
+        case WEAPON_GLOCK, WEAPON_HKP2000:
+            return 0;
+    }
+
+    return 1;
+}
+
 /**
  * A randomly selected primary weapon for LOADOUT_RANDOM rounds.
  *
@@ -92,24 +117,55 @@ CSWeapon GetRandomSecondary()
     return g_RandomSecondary;
 }
 
+bool GetRandomArmour()
+{
+    return g_RandomArmour;
+}
+
+bool GetRandomHelmet()
+{
+    return g_RandomHelmet;
+}
+
 /**
  * Randomly selects a primary and secondary weapon for LOADOUT_RANDOM rounds.
  *
  * @noreturn
  */
-void SelectRandomWeapon()
+void SelectRandomLoadout()
 {
-    CSWeapon weapon = g_RandomWeapons[GetRandomInt(0, sizeof(g_RandomWeapons) - 1)];
+    int totalWeight = 0;
+    for ( int index = 0; index < sizeof(g_RandomWeapons); ++index )
+    {
+        totalWeight += GetRandomWeaponWeight( g_RandomWeapons[index] );
+    }
+
+    int selection = GetRandomInt( 0, totalWeight - 1 );
+    CSWeapon weapon = WEAPON_NONE;
+    
+    for ( int index = 0; index < sizeof(g_RandomWeapons); ++index )
+    {
+        weapon = g_RandomWeapons[index];
+        int weight = GetRandomWeaponWeight( weapon );
+        if ( selection < weight ) break;
+        selection -= weight;
+    }
 
     if ( GetWeaponCategory( weapon ) == WCAT_PISTOL )
     {
         g_RandomPrimary = WEAPON_NONE;
         g_RandomSecondary = weapon;
+        
+        g_RandomArmour = GetRandomInt( 0, 99 ) < 85;
+        g_RandomHelmet = g_RandomArmour && GetRandomInt( 0, 99 ) < 50;
     }
     else
     {
         g_RandomPrimary = weapon;
         g_RandomSecondary = WEAPON_NONE;
+
+        g_RandomArmour = GetRandomInt( 0, 99 ) < 95;
+        g_RandomHelmet = g_RandomArmour && GetRandomInt( 0, 99 ) < 85;
     }
 }
 
@@ -225,7 +281,7 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
 
     if ( loadout == LOADOUT_RANDOM )
     {
-        SelectRandomWeapon();
+        SelectRandomLoadout();
     }
 
     int tCount = GetArraySize( tPlayers );
@@ -281,6 +337,9 @@ void HandleLoadout( int client, int team, RTLoadout loadout )
     {
         GetWeaponClassName( GetRandomPrimary(), primary, sizeof(primary) );
         GetWeaponClassName( GetRandomSecondary(), secondary, sizeof(secondary) );
+
+        kevlar = GetRandomArmour() ? 100 : 0;
+        helmet = GetRandomHelmet();
     }
     else
     {

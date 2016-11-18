@@ -163,7 +163,7 @@ bool GetSniperFlag( int client, int team, RTSniperFlag flag )
  */
 void SetPrimary( int client, int team, RTLoadout loadout, CSWeapon weapon )
 {
-    g_Primary[client][GetTeamLoadoutIndex( team , loadout )] = weapon;
+    g_Primary[client][GetTeamLoadoutIndex( team, loadout )] = weapon;
 }
 
 /**
@@ -178,7 +178,7 @@ void SetPrimary( int client, int team, RTLoadout loadout, CSWeapon weapon )
  */
 CSWeapon GetPrimary( int client, int team, RTLoadout loadout )
 {
-    return g_Primary[client][GetTeamLoadoutIndex( team , loadout )];
+    return g_Primary[client][GetTeamLoadoutIndex( team, loadout )];
 }
 
 /**
@@ -194,7 +194,7 @@ CSWeapon GetPrimary( int client, int team, RTLoadout loadout )
  */
 void SetSecondary( int client, int team, RTLoadout loadout, CSWeapon weapon )
 {
-    g_Secondary[client][GetTeamLoadoutIndex( team , loadout )] = weapon;
+    g_Secondary[client][GetTeamLoadoutIndex( team, loadout )] = weapon;
 }
 
 /**
@@ -209,7 +209,7 @@ void SetSecondary( int client, int team, RTLoadout loadout, CSWeapon weapon )
  */
 CSWeapon GetSecondary( int client, int team, RTLoadout loadout )
 {
-    return g_Secondary[client][GetTeamLoadoutIndex( team , loadout )];
+    return g_Secondary[client][GetTeamLoadoutIndex( team, loadout )];
 }
 
 /**
@@ -220,7 +220,7 @@ CSWeapon GetSecondary( int client, int team, RTLoadout loadout )
  */
 void ResetAllLoadouts( int client )
 {
-    for ( int i = 0; i < view_as<int>(RTLoadout); ++i )
+    for ( int i = 0; i < LOADOUT_COUNT; ++i )
     {
         RTLoadout loadout = view_as<RTLoadout>(i);
         ResetLoadout( client, CS_TEAM_T, loadout );
