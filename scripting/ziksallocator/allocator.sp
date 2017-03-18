@@ -5,24 +5,14 @@
  */
 RTLoadout GetLoadout()
 {
-    int rand = GetRandomInt( 0, 99 );
-    int pistolChance = GetLoadoutTypeProbability( LOADOUT_PISTOL );
-    int forceChance = GetLoadoutTypeProbability( LOADOUT_FORCE );
-    int randomChance = GetLoadoutTypeProbability( LOADOUT_RANDOM );
-
-    if ( rand < pistolChance )
-    {
-        return LOADOUT_PISTOL;
-    }
-
-    if ( rand < pistolChance + forceChance )
-    {
-        return LOADOUT_FORCE;
-    }
-
-    if ( rand < pistolChance + forceChance + randomChance )
+    if ( GetRandomInt( 0, 99 ) < GetLoadoutTypeProbability( LOADOUT_RANDOM ) )
     {
         return LOADOUT_RANDOM;
+    }
+
+    if ( GetWinStreak() == 0 )
+    {
+        return LOADOUT_PISTOL;
     }
 
     return LOADOUT_FULL;
@@ -328,19 +318,19 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
     int tCount = GetArraySize( tPlayers );
     int ctCount = GetArraySize( ctPlayers );
 
-    if ( tLoadout == LOADOUT_FORCE && ctLoadout == LOADOUT_FULL )
+    char loadoutNameT[32];
+    GetLoadoutName( CS_TEAM_T, tLoadout, loadoutNameT, sizeof(loadoutNameT) );
+    
+    char loadoutNameCT[32];
+    GetLoadoutName( CS_TEAM_CT, ctLoadout, loadoutNameCT, sizeof(loadoutNameCT) );
+
+    if ( strcmp( loadoutNameT, loadoutNameCT, false ) == 0 )
     {
-        Retakes_MessageToAll( "Terrorist Force Buy round!" );
+        Retakes_MessageToAll( "{GREEN}%s{NORMAL} round!", loadoutNameT );
     }
     else
     {
-        char loadoutNameT[32];
-        GetLoadoutName( CS_TEAM_T, loadout, loadoutNameT, sizeof(loadoutNameT) );
-        
-        char loadoutNameCT[32];
-        GetLoadoutName( CS_TEAM_T, loadout, loadoutNameCT, sizeof(loadoutNameCT) );
-
-        Retakes_MessageToAll( "%s vs %s round!", loadoutNameT, loadoutNameCT );
+        Retakes_MessageToAll( "{LIGHT_RED}%s{NORMAL} vs {PURPLE}%s{NORMAL} round!", loadoutNameT, loadoutNameCT );
     }
 
     for ( int i = 0; i < tCount; i++ )

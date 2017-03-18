@@ -66,14 +66,8 @@ public void Retakes_OnGunsCommand( int client )
 
 public void Retakes_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlayers )
 {
-    if ( winner == CS_TEAM_T )
-    {
-        OnTerroristsWon();
-    }
-    else
-    {
-        OnCounterTerroristsWon();
-    }
+    if ( winner == CS_TEAM_T ) OnTerroristsWon();
+    else OnCounterTerroristsWon();
 }
 
 /**
