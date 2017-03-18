@@ -8,6 +8,8 @@ Handle g_CVMenuTimeSeconds = INVALID_HANDLE;
  */
 Handle g_CVRandomProbability = INVALID_HANDLE;
 
+Handle g_CVPistolOnly = INVALID_HANDLE;
+
 Handle g_CVHeadshotOnly = INVALID_HANDLE;
 
 /**
@@ -60,6 +62,7 @@ void SetupConVars()
     g_CVMenuTimeSeconds = CreateConVar( "sm_retakes_menu_time", "15", "Time in seconds that menus should remain open for before automatically closing.", FCVAR_NOTIFY );
 
     g_CVRandomProbability = CreateConVar( "sm_retakes_random_chance", "5", "Percentage chance of a random weapon round", FCVAR_NOTIFY );
+    g_CVPistolOnly = CreateConVar( "sm_retakes_pistol_only", "0", "Enable pistol round only mode", FCVAR_NOTIFY );
     g_CVHeadshotOnly = CreateConVar( "sm_retakes_headshot_only", "0", "Enable headshot only mode", FCVAR_NOTIFY );
 
     g_CVPistolStartMoney = CreateConVar( "sm_retakes_pistol_startmoney", "800", "Pistol round start money", FCVAR_NOTIFY );
@@ -92,6 +95,11 @@ int GetMenuTimeSeconds()
 int GetRandomLoadoutProbability()
 {
     return GetConVarInt( g_CVRandomProbability );
+}
+
+bool GetIsPistolRoundOnly()
+{
+    return GetConVarBool( g_CVPistolOnly );
 }
 
 bool GetIsHeadshotOnly()

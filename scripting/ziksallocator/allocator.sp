@@ -10,7 +10,7 @@ RTLoadout GetLoadout()
         return LOADOUT_RANDOM;
     }
 
-    if ( GetWinStreak() == 0 )
+    if ( GetWinStreak() == 0 || GetIsPistolRoundOnly() )
     {
         return LOADOUT_PISTOL;
     }
@@ -83,10 +83,6 @@ int GetRandomWeaponWeight( CSWeapon weapon )
 {
     switch( weapon )
     {
-        case WEAPON_REVOLVER, WEAPON_DEAGLE, WEAPON_SG556, WEAPON_MAG7:
-            return 3;
-        case WEAPON_SAWEDOFF, WEAPON_ELITE, WEAPON_G3SG1, WEAPON_SCAR20:
-            return 2;
         case WEAPON_GLOCK, WEAPON_HKP2000:
             return 0;
     }
