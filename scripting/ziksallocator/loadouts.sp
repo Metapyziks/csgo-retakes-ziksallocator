@@ -6,7 +6,7 @@
  * @param maxLength Size of the destination character array.
  * @noreturn
  */
-void GetLoadoutName( RTLoadout loadout, char[] buffer, int maxLength )
+void GetLoadoutName( int team, RTLoadout loadout, char[] buffer, int maxLength )
 {
     switch ( loadout )
     {
@@ -16,13 +16,13 @@ void GetLoadoutName( RTLoadout loadout, char[] buffer, int maxLength )
         case LOADOUT_SNIPER: strcopy( buffer, maxLength, "AWP" );
         case LOADOUT_RANDOM:
         {
-            if ( GetRandomPrimary() != WEAPON_NONE )
+            if ( GetRandomPrimary( team ) != WEAPON_NONE )
             {
-                GetWeaponName( GetRandomPrimary(), buffer, maxLength );
+                GetWeaponName( GetRandomPrimary( team ), buffer, maxLength );
             }
-            else if ( GetRandomSecondary() != WEAPON_NONE )
+            else if ( GetRandomSecondary( team ) != WEAPON_NONE )
             {
-                GetWeaponName( GetRandomSecondary(), buffer, maxLength );
+                GetWeaponName( GetRandomSecondary( team ), buffer, maxLength );
             }
             else
             {

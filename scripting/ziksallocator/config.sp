@@ -19,11 +19,6 @@ Handle g_CVForceProbability = INVALID_HANDLE;
 Handle g_CVRandomProbability = INVALID_HANDLE;
 
 /**
- * Percentage chance of a terrorist force-buy weapon round when the teams are even.
- */
-Handle g_CVTForceProbability = INVALID_HANDLE;
-
-/**
  * Pistol round start money.
  */
 Handle g_CVPistolStartMoney = INVALID_HANDLE;
@@ -75,7 +70,6 @@ void SetupConVars()
     g_CVPistolProbability = CreateConVar( "sm_retakes_pistol_chance", "30", "Percentage chance of a pistol round", FCVAR_NOTIFY );
     g_CVForceProbability = CreateConVar( "sm_retakes_force_chance", "15", "Percentage chance of a force-buy round", FCVAR_NOTIFY );
     g_CVRandomProbability = CreateConVar( "sm_retakes_random_chance", "5", "Percentage chance of a random weapon round", FCVAR_NOTIFY );
-    g_CVTForceProbability = CreateConVar( "sm_retakes_terror_force_chance", "50", "Percentage chance of a terrorist force-buy round when teams are even", FCVAR_NOTIFY );
 
     g_CVPistolStartMoney = CreateConVar( "sm_retakes_pistol_startmoney", "800", "Pistol round start money", FCVAR_NOTIFY );
     g_CVForceStartMoney = CreateConVar( "sm_retakes_forcebuy_startmoney", "2400", "Force-buy round start money", FCVAR_NOTIFY );
@@ -124,16 +118,6 @@ int GetLoadoutTypeProbability( RTLoadout loadout )
     }
 
     return 0;
-}
-
-/**
- * Percentage chance of a terrorist force-buy weapon round when the teams are even.
- *
- * @return          Probability in percent.
- */
-int GetTerroristForceProbability()
-{
-    return GetConVarInt( g_CVTForceProbability );
 }
 
 /**

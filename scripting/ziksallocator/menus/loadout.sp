@@ -46,7 +46,7 @@ void GiveLoadoutMenu( int client, int team, RTLoadout loadout )
     GetTeamAbbreviation( team, teamAbbrev, sizeof(teamAbbrev) );
 
     char loadoutName[16];
-    GetLoadoutName( loadout, loadoutName, sizeof(loadoutName) );
+    GetLoadoutName( 0, loadout, loadoutName, sizeof(loadoutName) );
 
     char buffer[128];
     Format( buffer, sizeof(buffer), "%s %s loadout:", teamAbbrev, loadoutName );

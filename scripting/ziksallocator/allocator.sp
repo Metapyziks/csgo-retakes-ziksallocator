@@ -28,18 +28,25 @@ RTLoadout GetLoadout()
     return LOADOUT_FULL;
 }
 
-bool g_RandomHelmet;
-bool g_RandomArmour;
+/**
+ * Random choice of helmets for each team on LOADOUT_RANDOM rounds.
+ */
+bool g_RandomHelmet[TEAM_COUNT];
 
 /**
- * A randomly selected primary weapon for LOADOUT_RANDOM rounds.
+ * Random choice of armour for each team on LOADOUT_RANDOM rounds.
  */
-CSWeapon g_RandomPrimary;
+bool g_RandomArmour[TEAM_COUNT];
 
 /**
- * A randomly selected secondary weapon for LOADOUT_RANDOM rounds.
+ * A randomly selected primary weapon for each team on LOADOUT_RANDOM rounds.
  */
-CSWeapon g_RandomSecondary;
+CSWeapon g_RandomPrimary[TEAM_COUNT];
+
+/**
+ * A randomly selected secondary weapon for each team on LOADOUT_RANDOM rounds.
+ */
+CSWeapon g_RandomSecondary[TEAM_COUNT];
 
 /**
  * Weapons that can be selected for LOADOUT_RANDOM rounds.
@@ -100,40 +107,45 @@ int GetRandomWeaponWeight( CSWeapon weapon )
 /**
  * A randomly selected primary weapon for LOADOUT_RANDOM rounds.
  *
+ * @param client    Team to select for.
  * @return          Randomly selected primary weapon.
  */
-CSWeapon GetRandomPrimary()
+CSWeapon GetRandomPrimary( int team )
 {
-    return g_RandomPrimary;
+    return g_RandomPrimary[GetTeamIndex( team )];
 }
 
 /**
  * A randomly selected secondary weapon for LOADOUT_RANDOM rounds.
  *
+ * @param client    Team to select for.
  * @return          Randomly selected secondary weapon.
  */
-CSWeapon GetRandomSecondary()
+CSWeapon GetRandomSecondary( int team )
 {
-    return g_RandomSecondary;
+    return g_RandomSecondary[GetTeamIndex( team )];
 }
 
-bool GetRandomArmour()
+bool GetRandomArmour( int team )
 {
-    return g_RandomArmour;
+    return g_RandomArmour[GetTeamIndex( team )];
 }
 
-bool GetRandomHelmet()
+bool GetRandomHelmet( int team )
 {
-    return g_RandomHelmet;
+    return g_RandomHelmet[GetTeamIndex( team )];
 }
 
 /**
  * Randomly selects a primary and secondary weapon for LOADOUT_RANDOM rounds.
  *
+ * @param client    Team to select for.
  * @noreturn
  */
-void SelectRandomLoadout()
+void SelectRandomLoadout( int team )
 {
+    int teamIndex = GetTeamIndex( team );
+
     int totalWeight = 0;
     for ( int index = 0; index < sizeof(g_RandomWeapons); ++index )
     {
@@ -153,19 +165,19 @@ void SelectRandomLoadout()
 
     if ( GetWeaponCategory( weapon ) == WCAT_PISTOL )
     {
-        g_RandomPrimary = WEAPON_NONE;
-        g_RandomSecondary = weapon;
+        g_RandomPrimary[teamIndex] = WEAPON_NONE;
+        g_RandomSecondary[teamIndex] = weapon;
         
-        g_RandomArmour = GetRandomInt( 0, 99 ) < 85;
-        g_RandomHelmet = g_RandomArmour && GetRandomInt( 0, 99 ) < 50;
+        g_RandomArmour[teamIndex] = GetRandomInt( 0, 99 ) < 85;
+        g_RandomHelmet[teamIndex] = g_RandomArmour[teamIndex] && GetRandomInt( 0, 99 ) < 50;
     }
     else
     {
-        g_RandomPrimary = weapon;
-        g_RandomSecondary = WEAPON_NONE;
+        g_RandomPrimary[teamIndex] = weapon;
+        g_RandomSecondary[teamIndex] = WEAPON_NONE;
 
-        g_RandomArmour = GetRandomInt( 0, 99 ) < 95;
-        g_RandomHelmet = g_RandomArmour && GetRandomInt( 0, 99 ) < 85;
+        g_RandomArmour[teamIndex] = GetRandomInt( 0, 99 ) < 95;
+        g_RandomHelmet[teamIndex] = g_RandomArmour[teamIndex] && GetRandomInt( 0, 99 ) < 85;
     }
 }
 
@@ -240,6 +252,35 @@ int ChooseSniperPlayer( ArrayList players, int team )
 }
 
 /**
+ * Records how many rounds the terrorists have won in a row.
+ */
+int g_WinStreak = 0;
+
+/**
+ * Gets the number of rounds the terrorists have won in a row.
+ */
+int GetWinStreak()
+{
+    return g_WinStreak;
+}
+
+/**
+ * Called when the terrorists win a round.
+ */
+void OnTerroristsWon()
+{
+    ++g_WinStreak;
+}
+
+/**
+ * Called when the counter-terrorists win a round.
+ */
+void OnCounterTerroristsWon()
+{
+    g_WinStreak = 0;
+}
+
+/**
  * Decides if there should be a T-side force buy round.
  *
  * @param loadout   Current loadout type.
@@ -249,8 +290,7 @@ int ChooseSniperPlayer( ArrayList players, int team )
  */
 bool ShouldHaveTerroristForceRound( RTLoadout loadout, ArrayList tPlayers, ArrayList ctPlayers )
 {
-    return loadout == LOADOUT_FORCE && GetArraySize( tPlayers ) == GetArraySize( ctPlayers )
-        && GetRandomInt( 0, 99 ) < GetTerroristForceProbability();
+    return loadout == LOADOUT_FULL && GetWinStreak() >= 2;
 }
 
 /**
@@ -281,7 +321,8 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
 
     if ( loadout == LOADOUT_RANDOM )
     {
-        SelectRandomLoadout();
+        SelectRandomLoadout( CS_TEAM_T );
+        SelectRandomLoadout( CS_TEAM_CT );
     }
 
     int tCount = GetArraySize( tPlayers );
@@ -293,9 +334,13 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
     }
     else
     {
-        char loadoutName[32];
-        GetLoadoutName( loadout, loadoutName, sizeof(loadoutName) );
-        Retakes_MessageToAll( "%s round!", loadoutName );
+        char loadoutNameT[32];
+        GetLoadoutName( CS_TEAM_T, loadout, loadoutNameT, sizeof(loadoutNameT) );
+        
+        char loadoutNameCT[32];
+        GetLoadoutName( CS_TEAM_T, loadout, loadoutNameCT, sizeof(loadoutNameCT) );
+
+        Retakes_MessageToAll( "%s vs %s round!", loadoutNameT, loadoutNameCT );
     }
 
     for ( int i = 0; i < tCount; i++ )
@@ -335,11 +380,11 @@ void HandleLoadout( int client, int team, RTLoadout loadout )
 
     if ( loadout == LOADOUT_RANDOM )
     {
-        GetWeaponClassName( GetRandomPrimary(), primary, sizeof(primary) );
-        GetWeaponClassName( GetRandomSecondary(), secondary, sizeof(secondary) );
+        GetWeaponClassName( GetRandomPrimary( team ), primary, sizeof(primary) );
+        GetWeaponClassName( GetRandomSecondary( team ), secondary, sizeof(secondary) );
 
-        kevlar = GetRandomArmour() ? 100 : 0;
-        helmet = GetRandomHelmet();
+        kevlar = GetRandomArmour( team ) ? 100 : 0;
+        helmet = GetRandomHelmet( team );
     }
     else
     {

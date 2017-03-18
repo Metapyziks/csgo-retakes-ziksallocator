@@ -64,6 +64,18 @@ public void Retakes_OnGunsCommand( int client )
     GiveMainMenu( client );
 }
 
+public void Retakes_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlayers )
+{
+    if ( winner == CS_TEAM_T )
+    {
+        OnTerroristsWon();
+    }
+    else
+    {
+        OnCounterTerroristsWon();
+    }
+}
+
 /**
  * Called when player weapons are being allocated for the round.
  *
