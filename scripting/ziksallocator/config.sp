@@ -4,19 +4,11 @@
 Handle g_CVMenuTimeSeconds = INVALID_HANDLE;
 
 /**
- * Percentage chance of a pistol round.
- */
-Handle g_CVPistolProbability = INVALID_HANDLE;
-
-/**
- * Percentage chance of a force-buy round.
- */
-Handle g_CVForceProbability = INVALID_HANDLE;
-
-/**
  * Percentage chance of a random weapon round.
  */
 Handle g_CVRandomProbability = INVALID_HANDLE;
+
+Handle g_CVHeadshotOnly = INVALID_HANDLE;
 
 /**
  * Pistol round start money.
@@ -67,9 +59,8 @@ void SetupConVars()
 {
     g_CVMenuTimeSeconds = CreateConVar( "sm_retakes_menu_time", "15", "Time in seconds that menus should remain open for before automatically closing.", FCVAR_NOTIFY );
 
-    g_CVPistolProbability = CreateConVar( "sm_retakes_pistol_chance", "30", "Percentage chance of a pistol round", FCVAR_NOTIFY );
-    g_CVForceProbability = CreateConVar( "sm_retakes_force_chance", "15", "Percentage chance of a force-buy round", FCVAR_NOTIFY );
     g_CVRandomProbability = CreateConVar( "sm_retakes_random_chance", "5", "Percentage chance of a random weapon round", FCVAR_NOTIFY );
+    g_CVHeadshotOnly = CreateConVar( "sm_retakes_headshot_only", "0", "Enable headshot only mode", FCVAR_NOTIFY );
 
     g_CVPistolStartMoney = CreateConVar( "sm_retakes_pistol_startmoney", "800", "Pistol round start money", FCVAR_NOTIFY );
     g_CVForceStartMoney = CreateConVar( "sm_retakes_forcebuy_startmoney", "2400", "Force-buy round start money", FCVAR_NOTIFY );
@@ -94,30 +85,18 @@ int GetMenuTimeSeconds()
 }
 
 /**
- * Finds the percentage probability of the given loadout type being
- * randomly selected.
+ * Finds the percentage probability of a random weapon round.
  *
- * @param loadout   Loadout type to find the probability for.
  * @return          Probability in percent.
  */
-int GetLoadoutTypeProbability( RTLoadout loadout )
+int GetRandomLoadoutProbability()
 {
-    switch ( loadout )
-    {
-        case LOADOUT_PISTOL:
-            return GetConVarInt( g_CVPistolProbability );
-        case LOADOUT_FORCE:
-            return GetConVarInt( g_CVForceProbability );
-        case LOADOUT_RANDOM:
-            return GetConVarInt( g_CVRandomProbability );
-        case LOADOUT_FULL:
-            return 100
-                - GetLoadoutTypeProbability( LOADOUT_PISTOL )
-                - GetLoadoutTypeProbability( LOADOUT_FORCE )
-                - GetLoadoutTypeProbability( LOADOUT_RANDOM );
-    }
+    return GetConVarInt( g_CVRandomProbability );
+}
 
-    return 0;
+bool GetIsHeadshotOnly()
+{
+    return GetConVarBool( g_CVHeadshotOnly );
 }
 
 /**

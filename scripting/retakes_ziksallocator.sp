@@ -1,4 +1,5 @@
 #include <sourcemod>
+#include <sdkhooks>
 #include <cstrike>
 #include <clientprefs>
 #include "include/retakes.inc"
@@ -38,6 +39,15 @@ public void OnPluginStart()
 {
     SetupClientCookies();
     SetupConVars();
+
+    for( int client = 1; client <= MaxClients; client++ )
+    {
+		if( IsClientInGame( client ) )
+        {
+            OnClientConnected( client );
+            OnClientPutInServer( client );
+		}
+	}
 }
 
 /**
@@ -50,6 +60,25 @@ public void OnClientConnected( int client )
 {
     ResetAllLoadouts( client );
     InvalidateLoadedCookies( client );
+}
+
+public void OnClientPutInServer( int client )
+{
+    SDKHook( client, SDKHook_OnTakeDamage, OnTakeDamage );
+}
+
+public Action OnTakeDamage( int victim,
+    int &attacker, int &inflictor,
+    float &damage, int &damagetype, int &weapon,
+    float damageForce[3], float damagePosition[3], int damagecustom )
+{
+    if ( !GetIsHeadshotOnly() ) return Plugin_Continue;
+    if ( victim <= 0 || victim > MaxClients || !IsClientInGame( victim ) ) return Plugin_Continue;
+
+    bool headShot = (damagetype & CS_DMG_HEADSHOT) == CS_DMG_HEADSHOT;
+    bool willDie = GetClientHealth( victim ) <= damage;
+
+	return (headShot || willDie) ? Plugin_Continue : Plugin_Handled;
 }
 
 /**

@@ -5,7 +5,7 @@
  */
 RTLoadout GetLoadout()
 {
-    if ( GetRandomInt( 0, 99 ) < GetLoadoutTypeProbability( LOADOUT_RANDOM ) )
+    if ( GetRandomInt( 0, 99 ) < GetRandomLoadoutProbability() )
     {
         return LOADOUT_RANDOM;
     }
@@ -158,16 +158,16 @@ void SelectRandomLoadout( int team )
         g_RandomPrimary[teamIndex] = WEAPON_NONE;
         g_RandomSecondary[teamIndex] = weapon;
         
-        g_RandomArmour[teamIndex] = GetRandomInt( 0, 99 ) < 85;
-        g_RandomHelmet[teamIndex] = g_RandomArmour[teamIndex] && GetRandomInt( 0, 99 ) < 50;
+        g_RandomArmour[teamIndex] = GetRandomInt( 0, 99 ) <= 95;
+        g_RandomHelmet[teamIndex] = g_RandomArmour[teamIndex] && GetRandomInt( 0, 99 ) <= 95;
     }
     else
     {
         g_RandomPrimary[teamIndex] = weapon;
         g_RandomSecondary[teamIndex] = WEAPON_NONE;
 
-        g_RandomArmour[teamIndex] = GetRandomInt( 0, 99 ) < 95;
-        g_RandomHelmet[teamIndex] = g_RandomArmour[teamIndex] && GetRandomInt( 0, 99 ) < 85;
+        g_RandomArmour[teamIndex] = GetRandomInt( 0, 99 ) <= 90;
+        g_RandomHelmet[teamIndex] = g_RandomArmour[teamIndex] && GetRandomInt( 0, 99 ) <= 75;
     }
 }
 
