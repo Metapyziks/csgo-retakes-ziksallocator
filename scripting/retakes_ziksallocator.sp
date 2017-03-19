@@ -78,7 +78,7 @@ public Action OnTakeDamage( int victim,
     bool headShot = (damagetype & CS_DMG_HEADSHOT) == CS_DMG_HEADSHOT;
     bool willDie = GetClientHealth( victim ) <= damage;
 
-	return (headShot || willDie) ? Plugin_Continue : Plugin_Handled;
+    return (headShot || willDie) ? Plugin_Continue : Plugin_Handled;
 }
 
 /**

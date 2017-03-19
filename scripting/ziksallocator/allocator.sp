@@ -85,6 +85,8 @@ int GetRandomWeaponWeight( CSWeapon weapon )
     {
         case WEAPON_GLOCK, WEAPON_HKP2000:
             return 0;
+        case WEAPON_AWP, WEAPON_SSG08:
+            return GetIsHeadshotOnly() ? 0 : 1;
     }
 
     return 1;
@@ -153,17 +155,11 @@ void SelectRandomLoadout( int team )
     {
         g_RandomPrimary[teamIndex] = WEAPON_NONE;
         g_RandomSecondary[teamIndex] = weapon;
-        
-        g_RandomArmour[teamIndex] = GetRandomInt( 0, 99 ) <= 95;
-        g_RandomHelmet[teamIndex] = g_RandomArmour[teamIndex] && GetRandomInt( 0, 99 ) <= 95;
     }
     else
     {
         g_RandomPrimary[teamIndex] = weapon;
         g_RandomSecondary[teamIndex] = WEAPON_NONE;
-
-        g_RandomArmour[teamIndex] = GetRandomInt( 0, 99 ) <= 90;
-        g_RandomHelmet[teamIndex] = g_RandomArmour[teamIndex] && GetRandomInt( 0, 99 ) <= 75;
     }
 }
 
@@ -302,13 +298,25 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
     int tSniper = -1;
     int ctSniper = -1;
 
-    if ( tLoadout == LOADOUT_FULL ) tSniper = ChooseSniperPlayer( tPlayers, CS_TEAM_T );
-    if ( ctLoadout == LOADOUT_FULL ) ctSniper = ChooseSniperPlayer( ctPlayers, CS_TEAM_CT );
+    if ( !GetIsHeadshotOnly() )
+    {
+        if ( tLoadout == LOADOUT_FULL ) tSniper = ChooseSniperPlayer( tPlayers, CS_TEAM_T );
+        if ( ctLoadout == LOADOUT_FULL ) ctSniper = ChooseSniperPlayer( ctPlayers, CS_TEAM_CT );
+    }
 
     if ( loadout == LOADOUT_RANDOM )
     {
         SelectRandomLoadout( CS_TEAM_T );
         SelectRandomLoadout( CS_TEAM_CT );
+
+        bool hasArmour = GetRandomInt( 0, 99 ) <= 90;
+        bool hasHelmet = hasArmour && GetRandomInt( 0, 99 ) <= 75;
+
+        g_RandomArmour[GetTeamIndex( CS_TEAM_T )] = hasArmour;
+        g_RandomHelmet[GetTeamIndex( CS_TEAM_T )] = hasHelmet;
+        
+        g_RandomArmour[GetTeamIndex( CS_TEAM_CT )] = hasArmour;
+        g_RandomHelmet[GetTeamIndex( CS_TEAM_CT )] = hasHelmet;
     }
 
     int tCount = GetArraySize( tPlayers );
