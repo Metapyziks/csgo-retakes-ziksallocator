@@ -72,11 +72,48 @@ public Action OnTakeDamage( int victim,
     float &damage, int &damagetype, int &weapon,
     float damageForce[3], float damagePosition[3], int damagecustom )
 {
+    if ( !IsClientInGame( victim ) ) return Plugin_Continue;
+
+    bool willDie = GetClientHealth( victim ) <= damage;
+    if ( IsClientInGame( attacker ) )
+    {
+        char weaponClassName[64];
+        GetClientWeapon( attacker, weaponClassName, sizeof(weaponClassName) );
+
+        bool canNoScope = GetWeaponCanNoScope( weaponClassName );
+        bool scoped = GetEntProp( attacker, Prop_Send, "m_bIsScoped" ) != 0;
+
+        if ( canNoScope && !scoped )
+        {
+            float posDiff[3];
+            GetClientAbsOrigin( attacker, posDiff );
+
+            posDiff[0] -= damagePosition[0];
+            posDiff[1] -= damagePosition[1];
+            posDiff[2] -= damagePosition[2];
+
+            float distance = SquareRoot(
+                posDiff[0] * posDiff[0] +
+                posDiff[1] * posDiff[1] +
+                posDiff[2] * posDiff[2] ) * 0.01905;
+
+            int distanceInt = RoundToFloor( distance );
+            int distanceFrac = RoundFloat( (distance - distanceInt) * 10 );
+
+            char attackerName[64];
+            char victimName[64];
+
+            GetClientName( attacker, attackerName, sizeof(attackerName) );
+            GetClientName( victim, victimName, sizeof(victimName) );
+
+            Retakes_MessageToAll( "{GREEN}%s{NORMAL} noscoped {GREEN}%s{NORMAL} from {LIGHT_RED}%i.%im{NORMAL} away!",
+                attackerName, victimName, distanceInt, distanceFrac );
+        }
+    }
+
     if ( !GetIsHeadshotOnly() ) return Plugin_Continue;
-    if ( victim <= 0 || victim > MaxClients || !IsClientInGame( victim ) ) return Plugin_Continue;
 
     bool headShot = (damagetype & CS_DMG_HEADSHOT) == CS_DMG_HEADSHOT;
-    bool willDie = GetClientHealth( victim ) <= damage;
 
     return (headShot || willDie) ? Plugin_Continue : Plugin_Handled;
 }

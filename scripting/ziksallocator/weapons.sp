@@ -66,6 +66,15 @@ void GetWeaponName( CSWeapon weapon, char[] buffer, int maxLength )
     */
 }
 
+bool GetWeaponCanNoScope( const char[] className )
+{
+    if ( strcmp( className, "weapon_ssg08", false ) == 0 ) return true;
+    if ( strcmp( className, "weapon_awp", false ) == 0 ) return true;
+    if ( strcmp( className, "weapon_g3sg1", false ) == 0 ) return true;
+    if ( strcmp( className, "weapon_scar20", false ) == 0 ) return true;
+    return false;
+}
+
 /**
  * Gets the class name of the given weapon.
  *
