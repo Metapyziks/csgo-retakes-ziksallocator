@@ -18,6 +18,7 @@
 #include "ziksallocator/preferences.sp"
 #include "ziksallocator/persistence.sp"
 #include "ziksallocator/allocator.sp"
+#include "ziksallocator/noscope.sp"
 #include "ziksallocator/menus.sp"
 
 public Plugin myinfo =
@@ -39,6 +40,13 @@ public void OnPluginStart()
 {
     SetupClientCookies();
     SetupConVars();
+    
+    HookEvent( "player_death", Event_PlayerDeath, EventHookMode_Pre );
+    HookEvent( "bomb_beginplant", Event_BombBeginPlant, EventHookMode_Post );
+    HookEvent( "bomb_planted", Event_BombPlanted, EventHookMode_Post );
+    HookEvent( "bomb_defused", Event_BombDefused, EventHookMode_Post );
+    HookEvent( "bomb_begindefuse", Event_BombBeginDefuse, EventHookMode_Post );
+    HookEvent( "bomb_exploded", Event_BombExploded, EventHookMode_Post );
 
     for( int client = 1; client <= MaxClients; client++ )
     {
@@ -67,52 +75,107 @@ public void OnClientPutInServer( int client )
     SDKHook( client, SDKHook_OnTakeDamage, OnTakeDamage );
 }
 
+public Action Event_PlayerDeath( Event event, const char[] name, bool dontBroadcast )
+{
+    NoScope_PlayerDeath( event );
+    return Plugin_Continue;
+}
+
+public Action Event_BombBeginPlant( Event event, const char[] name, bool dontBroadcast )
+{
+    int bomb = FindEntityByClassname( -1, "weapon_c4" );
+    if ( bomb != -1 )
+    {
+        float armedTime = GetEntPropFloat( bomb, Prop_Send, "m_fArmedTime", 0 );
+        SetEntPropFloat( bomb, Prop_Send, "m_fArmedTime", armedTime - 3, 0 );
+    }
+
+    return Plugin_Continue;
+}
+
+float g_DetonateTime = 0.0;
+float g_DefuseEndTime = 0.0;
+int g_DefusingClient = -1;
+
+public Action Event_BombPlanted( Event event, const char[] name, bool dontBroadcast )
+{
+    g_DetonateTime = GetGameTime() + GetC4Timer();
+    g_DefusingClient = -1;
+
+    return Plugin_Continue;
+}
+
+void GetTimeRoundedParts( float time, int &whole, int &tenths, int &hundreths )
+{
+    whole = RoundToFloor( time );
+    tenths = RoundToFloor( (time - whole) * 10 );
+    hundreths = RoundToNearest( (time - whole) * 100 - tenths * 10 );
+}
+
+public Action Event_BombDefused( Event event, const char[] name, bool dontBroadcast )
+{
+    int defuser = GetClientOfUserId( event.GetInt( "userid" ) );
+
+    if ( defuser > MAXPLAYERS || !IsClientInGame( defuser ) ) return Plugin_Continue;
+
+    float timeRemaining = g_DetonateTime - GetGameTime();
+
+    char defuserName[64];
+    GetClientName( defuser, defuserName, sizeof(defuserName) );
+
+    int whole, tenths, hundreths;
+    GetTimeRoundedParts( timeRemaining, whole, tenths, hundreths );
+
+    Retakes_MessageToAll( "{GREEN}%s{NORMAL} defused with {LIGHT_RED}%i.%i%i seconds{NORMAL} remaining!",
+        defuserName, whole, tenths, hundreths );
+
+    return Plugin_Continue;
+}
+
+public Action Event_BombBeginDefuse( Event event, const char[] name, bool dontBroadcast )
+{
+    int defuser = GetClientOfUserId( event.GetInt( "userid" ) );
+    bool hasKit = event.GetBool( "haskit" );
+
+    g_DefuseEndTime = GetGameTime() + (hasKit ? 5.0 : 10.0);
+    g_DefusingClient = defuser;
+
+    return Plugin_Continue;
+}
+
+public Action Event_BombExploded( Event event, const char[] name, bool dontBroadcast )
+{
+    float remaining = g_DefuseEndTime - g_DetonateTime;
+
+    if ( g_DefusingClient != -1 && IsClientInGame( g_DefusingClient ) && remaining >= 0.0 )
+    {
+        char defuserName[64];
+        GetClientName( g_DefusingClient, defuserName, sizeof(defuserName) );
+        
+        int whole, tenths, hundreths;
+        GetTimeRoundedParts( remaining, whole, tenths, hundreths );
+
+        Retakes_MessageToAll( "{GREEN}%s{NORMAL} was too late by {LIGHT_RED}%i.%i%i seconds{NORMAL}!",
+            defuserName, whole, tenths, hundreths );
+    }
+
+    g_DetonateTime = GetGameTime() + GetC4Timer();
+    return Plugin_Continue;
+}
+
 public Action OnTakeDamage( int victim,
     int &attacker, int &inflictor,
     float &damage, int &damagetype, int &weapon,
     float damageForce[3], float damagePosition[3], int damagecustom )
 {
-    if ( !IsClientInGame( victim ) ) return Plugin_Continue;
+    if ( victim > MAXPLAYERS || !IsClientInGame( victim ) ) return Plugin_Continue;
 
-    bool willDie = GetClientHealth( victim ) <= damage;
-    if ( IsClientInGame( attacker ) )
-    {
-        char weaponClassName[64];
-        GetClientWeapon( attacker, weaponClassName, sizeof(weaponClassName) );
-
-        bool canNoScope = GetWeaponCanNoScope( weaponClassName );
-        bool scoped = GetEntProp( attacker, Prop_Send, "m_bIsScoped" ) != 0;
-
-        if ( canNoScope && !scoped )
-        {
-            float posDiff[3];
-            GetClientAbsOrigin( attacker, posDiff );
-
-            posDiff[0] -= damagePosition[0];
-            posDiff[1] -= damagePosition[1];
-            posDiff[2] -= damagePosition[2];
-
-            float distance = SquareRoot(
-                posDiff[0] * posDiff[0] +
-                posDiff[1] * posDiff[1] +
-                posDiff[2] * posDiff[2] ) * 0.01905;
-
-            int distanceInt = RoundToFloor( distance );
-            int distanceFrac = RoundFloat( (distance - distanceInt) * 10 );
-
-            char attackerName[64];
-            char victimName[64];
-
-            GetClientName( attacker, attackerName, sizeof(attackerName) );
-            GetClientName( victim, victimName, sizeof(victimName) );
-
-            Retakes_MessageToAll( "{GREEN}%s{NORMAL} noscoped {GREEN}%s{NORMAL} from {LIGHT_RED}%i.%im{NORMAL} away!",
-                attackerName, victimName, distanceInt, distanceFrac );
-        }
-    }
+    NoScope_OnTakeDamage( victim, attacker, inflictor, damage,
+        damagetype, weapon, damageForce, damagePosition, damagecustom );
 
     if ( !GetIsHeadshotOnly() ) return Plugin_Continue;
 
+    bool willDie = GetClientHealth( victim ) <= damage;
     bool headShot = (damagetype & CS_DMG_HEADSHOT) == CS_DMG_HEADSHOT;
 
     return (headShot || willDie) ? Plugin_Continue : Plugin_Handled;

@@ -52,6 +52,8 @@ Handle g_CVNadeLimitDefault = INVALID_HANDLE;
  */
 Handle g_CVNadeLimitFlash = INVALID_HANDLE;
 
+Handle g_CVC4Timer = INVALID_HANDLE;
+
 /**
  * Creates or finds all convars used by this plugin.
  *
@@ -75,6 +77,8 @@ void SetupConVars()
     g_CVNadeLimitTotal = FindConVar( "ammo_grenade_limit_total" );
     g_CVNadeLimitDefault = FindConVar( "ammo_grenade_limit_default" );
     g_CVNadeLimitFlash = FindConVar( "ammo_grenade_limit_flashbang" );
+
+    g_CVC4Timer = FindConVar( "mp_c4timer" );
 }
 
 /**
@@ -189,4 +193,9 @@ int GetMaxGrenades( int team, RTLoadout loadout, char nadeChar )
     }
 
     return 0;
+}
+
+int GetC4Timer()
+{
+    return GetConVarInt( g_CVC4Timer );
 }
