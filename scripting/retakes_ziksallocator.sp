@@ -46,6 +46,7 @@ public void OnPluginStart()
     HookEvent( "bomb_planted", Event_BombPlanted, EventHookMode_Post );
     HookEvent( "bomb_defused", Event_BombDefused, EventHookMode_Post );
     HookEvent( "bomb_begindefuse", Event_BombBeginDefuse, EventHookMode_Post );
+    HookEvent( "bomb_abortdefuse", Event_BombAbortDefuse, EventHookMode_Post );
     HookEvent( "bomb_exploded", Event_BombExploded, EventHookMode_Post );
 
     for( int client = 1; client <= MaxClients; client++ )
@@ -96,11 +97,13 @@ public Action Event_BombBeginPlant( Event event, const char[] name, bool dontBro
 float g_DetonateTime = 0.0;
 float g_DefuseEndTime = 0.0;
 int g_DefusingClient = -1;
+bool g_CurrentlyDefusing = false;
 
 public Action Event_BombPlanted( Event event, const char[] name, bool dontBroadcast )
 {
     g_DetonateTime = GetGameTime() + GetC4Timer();
     g_DefusingClient = -1;
+    g_CurrentlyDefusing = false;
 
     return Plugin_Continue;
 }
@@ -130,8 +133,25 @@ public Action Event_BombBeginDefuse( Event event, const char[] name, bool dontBr
     int defuser = GetClientOfUserId( event.GetInt( "userid" ) );
     bool hasKit = event.GetBool( "haskit" );
 
-    g_DefuseEndTime = GetGameTime() + (hasKit ? 5.0 : 10.0);
-    g_DefusingClient = defuser;
+    float endTime = GetGameTime() + (hasKit ? 5.0 : 10.0);
+
+    if ( g_DefusingClient == -1 || g_DefuseEndTime < g_DetonateTime )
+    {
+        g_DefuseEndTime = endTime;
+        g_DefusingClient = defuser;
+    }
+
+    return Plugin_Continue;
+}
+
+public Action Event_BombAbortDefuse( Event event, const char[] name, bool dontBroadcast )
+{
+    int defuser = GetClientOfUserId( event.GetInt( "userid" ) );
+
+    if ( g_DefusingClient == defuser )
+    {
+        g_CurrentlyDefusing = false;
+    }
 
     return Plugin_Continue;
 }
@@ -168,10 +188,11 @@ public Action OnTakeDamage( int victim,
 
     if ( !GetIsHeadshotOnly() ) return Plugin_Continue;
 
+    bool defusing = g_DefusingClient == victim && g_CurrentlyDefusing;
     bool willDie = GetClientHealth( victim ) <= damage;
     bool headShot = (damagetype & CS_DMG_HEADSHOT) == CS_DMG_HEADSHOT;
 
-    return (headShot || willDie) ? Plugin_Continue : Plugin_Handled;
+    return (defusing || willDie || headShot) ? Plugin_Continue : Plugin_Handled;
 }
 
 /**
