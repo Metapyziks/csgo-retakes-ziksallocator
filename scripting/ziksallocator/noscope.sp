@@ -7,7 +7,7 @@ void NoScope_OnTakeDamage( int victim,
 {
     g_WasNoScoped[victim] = false;
 
-    if ( attacker > MAXPLAYERS || !IsClientInGame( attacker ) ) return;
+    if ( !IsClientValidAndInGame( attacker ) ) return;
 
     char weaponClassName[64];
     GetClientWeapon( attacker, weaponClassName, sizeof(weaponClassName) );
@@ -21,7 +21,7 @@ void NoScope_OnTakeDamage( int victim,
 void NoScope_PlayerDeath( Event event )
 {
     int victim = GetClientOfUserId( event.GetInt( "userid" ) );
-    if ( victim > MAXPLAYERS || !IsClientInGame( victim ) ) return;
+    if ( !IsClientValidAndInGame( victim ) ) return;
 
     if ( g_WasNoScoped[victim] )
     {

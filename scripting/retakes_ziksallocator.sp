@@ -51,7 +51,7 @@ public void OnPluginStart()
 
     for( int client = 1; client <= MaxClients; client++ )
     {
-		if( IsClientInGame( client ) )
+		if( IsClientValidAndInGame( client ) )
         {
             OnClientConnected( client );
             OnClientPutInServer( client );
@@ -112,7 +112,7 @@ public Action Event_BombDefused( Event event, const char[] name, bool dontBroadc
 {
     int defuser = GetClientOfUserId( event.GetInt( "userid" ) );
 
-    if ( defuser > MAXPLAYERS || !IsClientInGame( defuser ) ) return Plugin_Continue;
+    if ( !IsClientValidAndInGame( defuser ) ) return Plugin_Continue;
 
     float timeRemaining = g_DetonateTime - GetGameTime();
 
@@ -134,6 +134,8 @@ public Action Event_BombBeginDefuse( Event event, const char[] name, bool dontBr
     bool hasKit = event.GetBool( "haskit" );
 
     float endTime = GetGameTime() + (hasKit ? 5.0 : 10.0);
+    
+    g_CurrentlyDefusing = true;
 
     if ( g_DefusingClient == -1 || g_DefuseEndTime < g_DetonateTime )
     {
@@ -160,7 +162,7 @@ public Action Event_BombExploded( Event event, const char[] name, bool dontBroad
 {
     float timeRemaining = g_DefuseEndTime - g_DetonateTime;
 
-    if ( g_DefusingClient != -1 && IsClientInGame( g_DefusingClient ) && timeRemaining >= 0.0 )
+    if ( IsClientValidAndInGame( g_DefusingClient ) && timeRemaining >= 0.0 )
     {
         char defuserName[64];
         GetClientName( g_DefusingClient, defuserName, sizeof(defuserName) );
@@ -181,7 +183,7 @@ public Action OnTakeDamage( int victim,
     float &damage, int &damagetype, int &weapon,
     float damageForce[3], float damagePosition[3], int damagecustom )
 {
-    if ( victim > MAXPLAYERS || !IsClientInGame( victim ) ) return Plugin_Continue;
+    if ( !IsClientValidAndInGame( victim ) ) return Plugin_Continue;
 
     NoScope_OnTakeDamage( victim, attacker, inflictor, damage,
         damagetype, weapon, damageForce, damagePosition, damagecustom );

@@ -39,6 +39,11 @@ int GetTeamSniperFlagIndex( int team, RTSniperFlag flag )
     return GetTeamIndex( team ) + view_as<int>(flag) * TEAM_COUNT;
 }
 
+bool IsClientValidAndInGame( int client )
+{
+    return client > 0 && client <= MAXPLAYERS && IsClientInGame( client );
+}
+
 /**
  * Gets an initialism of the given team number.
  *
@@ -63,8 +68,8 @@ int FloatToStringFixedPoint( float value, int fractionalDigits, char[] buffer, i
         return IntToString( RoundFloat( value ), buffer, maxLength );
     }
 
-    int scale = RoundFloat( Pow( 10, fractionalDigits ) );
-    int valueInt = value * scale;
+    int scale = RoundFloat( Pow( 10.0, fractionalDigits * 1.0 ) );
+    int valueInt = view_as<int>( RoundFloat( value * scale ) );
 
     int offset = IntToString( valueInt / scale, buffer, maxLength );
     if ( offset >= maxLength - 2 ) return offset;
