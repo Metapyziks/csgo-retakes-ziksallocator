@@ -56,6 +56,32 @@ void GetTeamAbbreviation( int team, char[] buffer, int maxLength )
     }
 }
 
+int FloatToStringFixedPoint( float value, int fractionalDigits, char[] buffer, int maxLength )
+{
+    if ( fractionalDigits == 0 )
+    {
+        return IntToString( RoundFloat( value ), buffer, maxLength );
+    }
+
+    int scale = RoundFloat( Pow( 10, fractionalDigits ) );
+    int valueInt = value * scale;
+
+    int offset = IntToString( valueInt / scale, buffer, maxLength );
+    if ( offset >= maxLength - 2 ) return offset;
+
+    buffer[offset++] = '.';
+
+    for ( int i = 0; i < fractionalDigits && offset < maxLength - 1; ++i, ++offset )
+    {
+        scale /= 10;
+        buffer[offset] = '0' + ((valueInt / scale) % 10);
+    }
+
+    buffer[offset] = 0;
+
+    return offset;
+}
+
 /**
  * Maps values within the range [0, 63] to a single character.
  *

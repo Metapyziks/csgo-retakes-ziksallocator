@@ -47,8 +47,8 @@ void DisplayNoScopeMessage( int victim, int attacker )
         posDiff[1] * posDiff[1] +
         posDiff[2] * posDiff[2] ) * 0.01905;
 
-    int distanceInt = RoundToFloor( distance );
-    int distanceFrac = RoundFloat( (distance - distanceInt) * 10 );
+    char distanceString[32];
+    FloatToStringFixedPoint( distance, 1, distanceString, sizeof(distanceString) );
 
     char attackerName[64];
     char victimName[64];
@@ -56,6 +56,6 @@ void DisplayNoScopeMessage( int victim, int attacker )
     GetClientName( attacker, attackerName, sizeof(attackerName) );
     GetClientName( victim, victimName, sizeof(victimName) );
 
-    Retakes_MessageToAll( "{GREEN}%s{NORMAL} noscoped {GREEN}%s{NORMAL} from {LIGHT_RED}%i.%im{NORMAL} away!",
-        attackerName, victimName, distanceInt, distanceFrac );
+    Retakes_MessageToAll( "{GREEN}%s{NORMAL} noscoped {GREEN}%s{NORMAL} from {LIGHT_RED}%sm{NORMAL} away!",
+        attackerName, victimName, distanceString );
 }

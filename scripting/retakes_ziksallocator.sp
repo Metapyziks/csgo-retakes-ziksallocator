@@ -105,13 +105,6 @@ public Action Event_BombPlanted( Event event, const char[] name, bool dontBroadc
     return Plugin_Continue;
 }
 
-void GetTimeRoundedParts( float time, int &whole, int &tenths, int &hundreths )
-{
-    whole = RoundToFloor( time );
-    tenths = RoundToFloor( (time - whole) * 10 );
-    hundreths = RoundToNearest( (time - whole) * 100 - tenths * 10 );
-}
-
 public Action Event_BombDefused( Event event, const char[] name, bool dontBroadcast )
 {
     int defuser = GetClientOfUserId( event.GetInt( "userid" ) );
@@ -123,11 +116,11 @@ public Action Event_BombDefused( Event event, const char[] name, bool dontBroadc
     char defuserName[64];
     GetClientName( defuser, defuserName, sizeof(defuserName) );
 
-    int whole, tenths, hundreths;
-    GetTimeRoundedParts( timeRemaining, whole, tenths, hundreths );
+    char timeString[32];
+    FloatToStringFixedPoint( timeRemaining, 2, timeString, sizeof(timeString) );
 
-    Retakes_MessageToAll( "{GREEN}%s{NORMAL} defused with {LIGHT_RED}%i.%i%i seconds{NORMAL} remaining!",
-        defuserName, whole, tenths, hundreths );
+    Retakes_MessageToAll( "{GREEN}%s{NORMAL} defused with {LIGHT_RED}%s seconds{NORMAL} remaining!",
+        defuserName, timeString );
 
     return Plugin_Continue;
 }
@@ -145,18 +138,18 @@ public Action Event_BombBeginDefuse( Event event, const char[] name, bool dontBr
 
 public Action Event_BombExploded( Event event, const char[] name, bool dontBroadcast )
 {
-    float remaining = g_DefuseEndTime - g_DetonateTime;
+    float timeRemaining = g_DefuseEndTime - g_DetonateTime;
 
-    if ( g_DefusingClient != -1 && IsClientInGame( g_DefusingClient ) && remaining >= 0.0 )
+    if ( g_DefusingClient != -1 && IsClientInGame( g_DefusingClient ) && timeRemaining >= 0.0 )
     {
         char defuserName[64];
         GetClientName( g_DefusingClient, defuserName, sizeof(defuserName) );
-        
-        int whole, tenths, hundreths;
-        GetTimeRoundedParts( remaining, whole, tenths, hundreths );
 
-        Retakes_MessageToAll( "{GREEN}%s{NORMAL} was too late by {LIGHT_RED}%i.%i%i seconds{NORMAL}!",
-            defuserName, whole, tenths, hundreths );
+        char timeString[32];
+        FloatToStringFixedPoint( timeRemaining, 2, timeString, sizeof(timeString) );
+
+        Retakes_MessageToAll( "{GREEN}%s{NORMAL} was too late by {LIGHT_RED}%s seconds{NORMAL}!",
+            defuserName, timeString );
     }
 
     g_DetonateTime = GetGameTime() + GetC4Timer();
