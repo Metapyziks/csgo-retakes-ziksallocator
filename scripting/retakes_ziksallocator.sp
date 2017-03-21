@@ -18,6 +18,7 @@
 #include "ziksallocator/preferences.sp"
 #include "ziksallocator/persistence.sp"
 #include "ziksallocator/allocator.sp"
+#include "ziksallocator/bombtime.sp"
 #include "ziksallocator/noscope.sp"
 #include "ziksallocator/menus.sp"
 
@@ -78,103 +79,51 @@ public void OnClientPutInServer( int client )
 
 public Action Event_PlayerDeath( Event event, const char[] name, bool dontBroadcast )
 {
+    BombTime_PlayerDeath( event );
     NoScope_PlayerDeath( event );
+
     return Plugin_Continue;
 }
 
 public Action Event_BombBeginPlant( Event event, const char[] name, bool dontBroadcast )
 {
-    int bomb = FindEntityByClassname( -1, "weapon_c4" );
-    if ( bomb != -1 )
-    {
-        float armedTime = GetEntPropFloat( bomb, Prop_Send, "m_fArmedTime", 0 );
-        SetEntPropFloat( bomb, Prop_Send, "m_fArmedTime", armedTime - 3, 0 );
-    }
+    BombTime_BombBeginPlant( event );
 
     return Plugin_Continue;
 }
 
-float g_DetonateTime = 0.0;
-float g_DefuseEndTime = 0.0;
-int g_DefusingClient = -1;
-bool g_CurrentlyDefusing = false;
-
 public Action Event_BombPlanted( Event event, const char[] name, bool dontBroadcast )
 {
-    g_DetonateTime = GetGameTime() + GetC4Timer();
-    g_DefusingClient = -1;
-    g_CurrentlyDefusing = false;
+    BombTime_BombPlanted( event );
 
     return Plugin_Continue;
 }
 
 public Action Event_BombDefused( Event event, const char[] name, bool dontBroadcast )
 {
-    int defuser = GetClientOfUserId( event.GetInt( "userid" ) );
-
-    if ( !IsClientValidAndInGame( defuser ) ) return Plugin_Continue;
-
-    float timeRemaining = g_DetonateTime - GetGameTime();
-
-    char defuserName[64];
-    GetClientName( defuser, defuserName, sizeof(defuserName) );
-
-    char timeString[32];
-    FloatToStringFixedPoint( timeRemaining, 2, timeString, sizeof(timeString) );
-
-    Retakes_MessageToAll( "{GREEN}%s{NORMAL} defused with {LIGHT_RED}%s seconds{NORMAL} remaining!",
-        defuserName, timeString );
+    BombTime_BombDefused( event );
 
     return Plugin_Continue;
 }
 
 public Action Event_BombBeginDefuse( Event event, const char[] name, bool dontBroadcast )
 {
-    int defuser = GetClientOfUserId( event.GetInt( "userid" ) );
-    bool hasKit = event.GetBool( "haskit" );
-
-    float endTime = GetGameTime() + (hasKit ? 5.0 : 10.0);
-    
-    g_CurrentlyDefusing = true;
-
-    if ( g_DefusingClient == -1 || g_DefuseEndTime < g_DetonateTime )
-    {
-        g_DefuseEndTime = endTime;
-        g_DefusingClient = defuser;
-    }
+    BombTime_BombBeginDefuse( event );
 
     return Plugin_Continue;
 }
 
 public Action Event_BombAbortDefuse( Event event, const char[] name, bool dontBroadcast )
 {
-    int defuser = GetClientOfUserId( event.GetInt( "userid" ) );
-
-    if ( g_DefusingClient == defuser )
-    {
-        g_CurrentlyDefusing = false;
-    }
+    BombTime_BombAbortDefuse( event );
 
     return Plugin_Continue;
 }
 
 public Action Event_BombExploded( Event event, const char[] name, bool dontBroadcast )
 {
-    float timeRemaining = g_DefuseEndTime - g_DetonateTime;
-
-    if ( IsClientValidAndInGame( g_DefusingClient ) && timeRemaining >= 0.0 )
-    {
-        char defuserName[64];
-        GetClientName( g_DefusingClient, defuserName, sizeof(defuserName) );
-
-        char timeString[32];
-        FloatToStringFixedPoint( timeRemaining, 2, timeString, sizeof(timeString) );
-
-        Retakes_MessageToAll( "{GREEN}%s{NORMAL} was too late by {LIGHT_RED}%s seconds{NORMAL}!",
-            defuserName, timeString );
-    }
-
-    g_DetonateTime = GetGameTime() + GetC4Timer();
+    BombTime_BombExploded( event );
+    
     return Plugin_Continue;
 }
 
