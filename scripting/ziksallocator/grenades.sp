@@ -38,6 +38,7 @@ int GetGrenadeCost( int team, char nadeChar )
  */
 int AppendGrenadeIfAvailable( char[] nades, int index, char nade, int team, RTLoadout loadout, int money, int count )
 {
+    if ( nade == 's' && team == CS_TEAM_CT ) return index;
     if ( count >= GetMaxGrenades( team, loadout, nade ) ) return index;
     if ( money < GetGrenadeCost( team, nade ) ) return index;
 
