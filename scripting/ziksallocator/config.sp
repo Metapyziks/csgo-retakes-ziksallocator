@@ -12,15 +12,12 @@ Handle g_CVPistolOnly = INVALID_HANDLE;
 
 Handle g_CVHeadshotOnly = INVALID_HANDLE;
 
+Handle g_CVWinsUntilForce = INVALID_HANDLE;
+
 /**
  * Pistol round start money.
  */
 Handle g_CVPistolStartMoney = INVALID_HANDLE;
-
-/**
- * Force-buy round start money.
- */
-Handle g_CVForceStartMoney = INVALID_HANDLE;
 
 /**
  * Normal round start money.
@@ -66,9 +63,9 @@ void SetupConVars()
     g_CVRandomProbability = CreateConVar( "sm_retakes_random_chance", "5", "Percentage chance of a random weapon round", FCVAR_NOTIFY );
     g_CVPistolOnly = CreateConVar( "sm_retakes_pistol_only", "0", "Enable pistol round only mode", FCVAR_NOTIFY );
     g_CVHeadshotOnly = CreateConVar( "sm_retakes_headshot_only", "0", "Enable headshot only mode", FCVAR_NOTIFY );
+    g_CVWinsUntilForce = CreateConVar( "sm_retakes_wins_until_force", "3", "Win streak until T force buys", FCVAR_NOTIFY );
 
     g_CVPistolStartMoney = CreateConVar( "sm_retakes_pistol_startmoney", "800", "Pistol round start money", FCVAR_NOTIFY );
-    g_CVForceStartMoney = CreateConVar( "sm_retakes_forcebuy_startmoney", "2400", "Force-buy round start money", FCVAR_NOTIFY );
     g_CVFullStartMoney = CreateConVar( "sm_retakes_fullbuy_startmoney", "16000", "Normal round start money", FCVAR_NOTIFY );
 
     g_CVMaxGrenadeValue = CreateConVar( "sm_retakes_grenade_maxvalue", "800", "Maximum total value of randomly allocated grenades", FCVAR_NOTIFY );
@@ -111,6 +108,11 @@ bool GetIsHeadshotOnly()
     return GetConVarBool( g_CVHeadshotOnly );
 }
 
+int GetWinsUntilForceRounds()
+{
+    return GetConVarInt( g_CVWinsUntilForce );
+}
+
 /**
  * Gets the amount of money that a client can allocate between
  * different gear and weapons on a given loadout type.
@@ -124,8 +126,6 @@ int GetStartMoney( RTLoadout loadout )
     {
         case LOADOUT_PISTOL:
             return GetConVarInt( g_CVPistolStartMoney );
-        case LOADOUT_FORCE:
-            return GetConVarInt( g_CVForceStartMoney );
         case LOADOUT_FULL, LOADOUT_SNIPER:
             return GetConVarInt( g_CVFullStartMoney );
     }

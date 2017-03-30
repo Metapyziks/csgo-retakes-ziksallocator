@@ -1,3 +1,5 @@
+int g_SinceLastPistol = 99;
+
 /**
  * Chooses a loadout type for the next round.
  *
@@ -10,11 +12,13 @@ RTLoadout GetLoadout()
         return LOADOUT_RANDOM;
     }
 
-    if ( GetWinStreak() == 0 || GetIsPistolRoundOnly() )
+    if ( GetWinStreak() == 0 && g_SinceLastPistol >= 5 || GetIsPistolRoundOnly() )
     {
+        g_SinceLastPistol = 0;
         return LOADOUT_PISTOL;
     }
 
+    ++g_SinceLastPistol;
     return LOADOUT_FULL;
 }
 
@@ -163,6 +167,102 @@ void SelectRandomLoadout( int team )
     }
 }
 
+CSWeapon g_ForceWeapons[] = {
+    WEAPON_AK47,
+    WEAPON_M4A1,
+    WEAPON_M4A1_SILENCER,
+
+    WEAPON_FAMAS,
+    WEAPON_GALILAR,
+
+    WEAPON_UMP45,
+    WEAPON_MAC10,
+    
+    WEAPON_TEC9,
+    WEAPON_P250
+};
+
+float GetForceWeaponValue( CSWeapon weapon )
+{
+    switch ( weapon )
+    {
+        case WEAPON_AK47:
+            return 1.0;
+        case WEAPON_M4A1, WEAPON_M4A1_SILENCER:
+            return 0.85;
+        case WEAPON_FAMAS, WEAPON_GALILAR:
+            return 0.7;
+        case WEAPON_UMP45:
+            return 0.35;
+        case WEAPON_MAC10:
+            return 0.2;
+        case WEAPON_TEC9:
+            return 0.1;
+        case WEAPON_P250:
+            return 0.0;
+    }
+
+    return 0.0;
+}
+
+float AllocateForceWeapon( int client, int team, float maxValue )
+{
+    if ( maxValue < 0.0 ) maxValue = 0.0;
+
+    CSWeapon defaultPistol = team == CS_TEAM_CT ? WEAPON_HKP2000 : WEAPON_GLOCK;
+
+    CSWeapon chosenWeapon = defaultPistol;
+    for ( int i = 0; i < sizeof(g_ForceWeapons); ++i )
+    {
+        CSWeapon weapon = g_ForceWeapons[i];
+        float value = GetForceWeaponValue( weapon );
+        if ( value > maxValue ) continue;
+        if ( GetRandomInt( 0, 100 ) > 90 ) continue;
+
+        chosenWeapon = weapon;
+        maxValue -= value;
+        break;
+    }
+
+    if ( GetWeaponCategory( chosenWeapon ) == WCAT_PISTOL )
+    {
+        SetPrimary( client, team, LOADOUT_FORCE, WEAPON_NONE );
+        SetSecondary( client, team, LOADOUT_FORCE, chosenWeapon );
+    }
+    else
+    {
+        SetPrimary( client, team, LOADOUT_FORCE, chosenWeapon );
+        SetSecondary( client, team, LOADOUT_FORCE, defaultPistol );
+    }
+
+    SetKevlar( client, team, LOADOUT_FORCE, true );
+    SetHelmet( client, team, LOADOUT_FORCE, true );
+    SetDefuse( client, team, LOADOUT_FORCE, true );
+
+    return maxValue;
+}
+
+void AllocateForceWeapons( int team, ArrayList players )
+{
+    int wins = GetWinStreak() - GetWinsUntilForceRounds();
+    int count = players.Length;
+
+    float totalValue = count * (0.8 - wins * 0.15);
+
+    ArrayList shuffle = players.Clone();
+
+    while ( shuffle.Length > 0 )
+    {
+        int index = GetRandomInt( 0, shuffle.Length - 1 );
+        int client = shuffle.Get( index );
+        shuffle.Erase( index );
+
+        totalValue = AllocateForceWeapon( client, team, totalValue );
+    }
+
+    CloseHandle( shuffle );
+}
+
 /**
  * Records which clients were allocated an AWP in the previous round.
  */
@@ -272,7 +372,7 @@ void OnCounterTerroristsWon()
  */
 bool ShouldHaveTerroristForceRound( RTLoadout loadout, ArrayList tPlayers, ArrayList ctPlayers )
 {
-    return loadout == LOADOUT_FULL && GetWinStreak() >= 2;
+    return loadout == LOADOUT_FULL && GetWinStreak() >= GetWinsUntilForceRounds();
 }
 
 /**
@@ -295,15 +395,6 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
         tLoadout = LOADOUT_FORCE;
     }
 
-    int tSniper = -1;
-    int ctSniper = -1;
-
-    if ( !GetIsHeadshotOnly() )
-    {
-        if ( tLoadout == LOADOUT_FULL ) tSniper = ChooseSniperPlayer( tPlayers, CS_TEAM_T );
-        if ( ctLoadout == LOADOUT_FULL ) ctSniper = ChooseSniperPlayer( ctPlayers, CS_TEAM_CT );
-    }
-
     if ( loadout == LOADOUT_RANDOM )
     {
         SelectRandomLoadout( CS_TEAM_T );
@@ -318,9 +409,6 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
         g_RandomArmour[GetTeamIndex( CS_TEAM_CT )] = hasArmour;
         g_RandomHelmet[GetTeamIndex( CS_TEAM_CT )] = hasHelmet;
     }
-
-    int tCount = GetArraySize( tPlayers );
-    int ctCount = GetArraySize( ctPlayers );
 
     char loadoutNameT[32];
     GetLoadoutName( CS_TEAM_T, tLoadout, loadoutNameT, sizeof(loadoutNameT) );
@@ -337,16 +425,29 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
         Retakes_MessageToAll( "{LIGHT_RED}%s{NORMAL} vs {PURPLE}%s{NORMAL} round!", loadoutNameT, loadoutNameCT );
     }
 
-    for ( int i = 0; i < tCount; i++ )
+    HandleTeamLoadout( CS_TEAM_T, tPlayers, tLoadout );
+    HandleTeamLoadout( CS_TEAM_CT, ctPlayers, ctLoadout );
+}
+
+void HandleTeamLoadout( int team, ArrayList players, RTLoadout loadout )
+{
+    if ( loadout == LOADOUT_FORCE )
     {
-        int client = GetArrayCell( tPlayers, i );
-        HandleLoadout( client, CS_TEAM_T, client == tSniper ? LOADOUT_SNIPER : tLoadout );
+        AllocateForceWeapons( team, players );
     }
 
-    for ( int i = 0; i < ctCount; i++ )
+    int sniper = -1;
+    if ( !GetIsHeadshotOnly() )
     {
-        int client = GetArrayCell(ctPlayers, i);
-        HandleLoadout( client, CS_TEAM_CT, client == ctSniper ? LOADOUT_SNIPER : ctLoadout );
+        sniper = ChooseSniperPlayer( players, team );
+    }
+
+    int count = GetArraySize( players );
+    
+    for ( int i = 0; i < count; i++ )
+    {
+        int client = GetArrayCell( players, i );
+        HandleLoadout( client, team, client == sniper ? LOADOUT_SNIPER : loadout );
     }
 }
 
@@ -389,7 +490,7 @@ void HandleLoadout( int client, int team, RTLoadout loadout )
         
         if ( remaining > GetMaxNadeValue( team, loadout ) ) remaining = GetMaxNadeValue( team, loadout );
 
-        FillGrenades( team, loadout, remaining, nades, sizeof(nades) );
+        FillGrenades( team, loadout, remaining, 2, nades, sizeof(nades) );
 
         kevlar = GetKevlar( client, team, loadout ) ? 100 : 0;
         helmet = GetHelmet( client, team, loadout );
