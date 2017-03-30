@@ -437,7 +437,7 @@ void HandleTeamLoadout( int team, ArrayList players, RTLoadout loadout )
     }
 
     int sniper = -1;
-    if ( !GetIsHeadshotOnly() )
+    if ( !GetIsHeadshotOnly() && loadout == LOADOUT_FULL )
     {
         sniper = ChooseSniperPlayer( players, team );
     }

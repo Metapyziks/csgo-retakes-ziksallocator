@@ -1,14 +1,15 @@
 bool g_WasNoScoped[MAXPLAYERS+1];
 
-bool GetWeaponCanNoScope( int weaponId )
+bool GetWeaponCanNoScope( int weapon )
 {
-    switch ( weaponId )
-    {
-        case CSWeapon_SSG08: return true;
-        case CSWeapon_AWP: return true;
-        case CSWeapon_G3SG1: return true;
-        case CSWeapon_SCAR20: return true;
-    }
+    char className[WEAPON_STRING_LENGTH];
+    if ( !GetEntityClassname( weapon, className, sizeof(className) ) ) return false;
+
+    if ( strcmp( className, "weapon_ssg08", false ) == 0 ) return true;
+    if ( strcmp( className, "weapon_awp", false ) == 0 ) return true;
+    if ( strcmp( className, "weapon_g3sg1", false ) == 0 ) return true;
+    if ( strcmp( className, "weapon_scar20", false ) == 0 ) return true;
+    
     return false;
 }
 
