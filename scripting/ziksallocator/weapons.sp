@@ -66,15 +66,6 @@ void GetWeaponName( CSWeapon weapon, char[] buffer, int maxLength )
     */
 }
 
-bool GetWeaponCanNoScope( const char[] className )
-{
-    if ( strcmp( className, "weapon_ssg08", false ) == 0 ) return true;
-    if ( strcmp( className, "weapon_awp", false ) == 0 ) return true;
-    if ( strcmp( className, "weapon_g3sg1", false ) == 0 ) return true;
-    if ( strcmp( className, "weapon_scar20", false ) == 0 ) return true;
-    return false;
-}
-
 /**
  * Gets the class name of the given weapon.
  *
@@ -263,6 +254,8 @@ int GetWeaponCost( int client, CSWeapon weapon )
             return 500;
         case WEAPON_DEAGLE:
             return 700;
+        case WEAPON_REVOLVER:
+            return 850;
 
         case WEAPON_MAC10:
             return 1050;
@@ -286,7 +279,7 @@ int GetWeaponCost( int client, CSWeapon weapon )
         case WEAPON_M249:
             return 5200;
         case WEAPON_NEGEV:
-            return 5700;
+            return 4000;
 
         case WEAPON_GALILAR:
             return 2000;

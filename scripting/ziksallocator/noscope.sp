@@ -1,5 +1,17 @@
 bool g_WasNoScoped[MAXPLAYERS+1];
 
+bool GetWeaponCanNoScope( int weaponId )
+{
+    switch ( weaponId )
+    {
+        case CSWeapon_SSG08: return true;
+        case CSWeapon_AWP: return true;
+        case CSWeapon_G3SG1: return true;
+        case CSWeapon_SCAR20: return true;
+    }
+    return false;
+}
+
 void NoScope_OnTakeDamage( int victim,
     int &attacker, int &inflictor,
     float &damage, int &damagetype, int &weapon,
@@ -9,10 +21,7 @@ void NoScope_OnTakeDamage( int victim,
 
     if ( !IsClientValidAndInGame( attacker ) ) return;
 
-    char weaponClassName[64];
-    GetClientWeapon( attacker, weaponClassName, sizeof(weaponClassName) );
-
-    bool canNoScope = GetWeaponCanNoScope( weaponClassName );
+    bool canNoScope = GetWeaponCanNoScope( weapon );
     bool scoped = GetEntProp( attacker, Prop_Send, "m_bIsScoped" ) != 0;
     
     g_WasNoScoped[victim] = canNoScope && !scoped;
