@@ -9,7 +9,6 @@ void GiveMainMenu( int client )
     Handle menu = CreateMenu( MenuHandler_Main );
     SetMenuTitle( menu, "Configure loadouts:" );
     AddMenuInt( menu, view_as<int>( LOADOUT_PISTOL ), "Pistol loadout" );
-    AddMenuInt( menu, view_as<int>( LOADOUT_FORCE ), "Force Buy loadout" );
     AddMenuInt( menu, view_as<int>( LOADOUT_FULL ), "Full Buy loadout" );
     AddMenuInt( menu, view_as<int>( LOADOUT_SNIPER ), "AWP loadout" );
     AddMenuInt( menu, -1, "Reset all" );
