@@ -111,12 +111,12 @@ int GetAvailableGrenades( int team, RTLoadout loadout, int money, char[] current
  *                  grenades currently owned by the client.
  * @param maxLength Size of nades array.
  */
-void FillGrenades( int team, RTLoadout loadout, int money, char[] nades, int maxLength )
+void FillGrenades( int team, RTLoadout loadout, int money, int maxTotal, char[] nades, int maxLength )
 {
     int index = strlen( nades );
 
     char available[NADE_STRING_LENGTH];
-    while ( index < maxLength - 1 )
+    while ( index < maxLength - 1 && index < maxTotal )
     {
         int availableCount = GetAvailableGrenades( team, loadout, money, nades, available );
         if ( availableCount == 0 ) break;
