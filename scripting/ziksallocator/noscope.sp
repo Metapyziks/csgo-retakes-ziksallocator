@@ -2,6 +2,8 @@ bool g_WasNoScoped[MAXPLAYERS+1];
 
 bool GetWeaponCanNoScope( int weapon )
 {
+    if ( weapon == -1 ) return false;
+
     char className[WEAPON_STRING_LENGTH];
     if ( !GetEntityClassname( weapon, className, sizeof(className) ) ) return false;
 

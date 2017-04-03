@@ -47,7 +47,7 @@ void BombTime_BombDefused( Event event )
 {
     int defuser = GetClientOfUserId( event.GetInt( "userid" ) );
 
-    if ( !IsClientValidAndInGame( defuser ) ) return Plugin_Continue;
+    if ( !IsClientValidAndInGame( defuser ) ) return;
 
     float timeRemaining = g_DetonateTime - GetGameTime();
 
