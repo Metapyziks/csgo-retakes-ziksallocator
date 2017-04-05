@@ -60,6 +60,11 @@ public void OnPluginStart()
 	}
 }
 
+public void OnMapStart()
+{
+    ResetWinStreak();
+}
+
 /**
  * Called once a client successfully connects.
  *

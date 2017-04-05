@@ -211,7 +211,7 @@ float AllocateForceWeapon( int client, int team, float maxValue )
 
     CSWeapon defaultPistol = team == CS_TEAM_CT ? WEAPON_HKP2000 : WEAPON_GLOCK;
 
-    CSWeapon chosenWeapon = defaultPistol;
+    CSWeapon chosenWeapon = WEAPON_P250;
     for ( int i = 0; i < sizeof(g_ForceWeapons); ++i )
     {
         CSWeapon weapon = g_ForceWeapons[i];
@@ -338,6 +338,11 @@ int ChooseSniperPlayer( ArrayList players, int team )
  */
 int g_WinStreak = 0;
 
+void ResetWinStreak()
+{
+    g_WinStreak = 0;
+}
+
 /**
  * Gets the number of rounds the terrorists have won in a row.
  */
@@ -359,7 +364,7 @@ void OnTerroristsWon()
  */
 void OnCounterTerroristsWon()
 {
-    g_WinStreak = 0;
+    ResetWinStreak();
 }
 
 /**
