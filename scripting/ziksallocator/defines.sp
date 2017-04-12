@@ -3,6 +3,8 @@
  */
 #define TEAM_COUNT 2
 
+#define CS_TEAM_SPEC 1
+
 /**
  * Cost of kevlar.
  */

@@ -20,6 +20,7 @@
 #include "ziksallocator/allocator.sp"
 #include "ziksallocator/bombtime.sp"
 #include "ziksallocator/noscope.sp"
+#include "ziksallocator/afk.sp"
 #include "ziksallocator/menus.sp"
 
 public Plugin myinfo =
@@ -49,10 +50,11 @@ public void OnPluginStart()
     HookEvent( "bomb_begindefuse", Event_BombBeginDefuse, EventHookMode_Post );
     HookEvent( "bomb_abortdefuse", Event_BombAbortDefuse, EventHookMode_Post );
     HookEvent( "bomb_exploded", Event_BombExploded, EventHookMode_Post );
+    HookEvent( "round_poststart", Event_RoundPostStart, EventHookMode_Post );
 
-    for( int client = 1; client <= MaxClients; client++ )
+    for ( int client = 1; client <= MaxClients; ++client )
     {
-		if( IsClientValidAndInGame( client ) )
+		if ( IsClientValidAndInGame( client ) )
         {
             OnClientConnected( client );
             OnClientPutInServer( client );
@@ -75,6 +77,8 @@ public void OnClientConnected( int client )
 {
     ResetAllLoadouts( client );
     InvalidateLoadedCookies( client );
+
+    Afk_OnClientConnected( client );
 }
 
 public void OnClientPutInServer( int client )
@@ -132,6 +136,22 @@ public Action Event_BombExploded( Event event, const char[] name, bool dontBroad
     return Plugin_Continue;
 }
 
+public Action Event_RoundPostStart( Event event, const char[] name, bool dontBroadcast )
+{
+    Afk_OnRoundStart();
+    
+    return Plugin_Continue;
+}
+
+public Action OnPlayerRunCmd( int client, int &buttons,
+    int &impulse, float vel[3], float angles[3],
+    int &weapon, int &subtype, int &cmdnum,
+    int &tickcount, int &seed, int mouse[2] )
+{
+    Afk_OnPlayerInput( client, buttons, mouse );
+    return Plugin_Continue;
+}
+
 public Action OnTakeDamage( int victim,
     int &attacker, int &inflictor,
     float &damage, int &damagetype, int &weapon,
@@ -165,6 +185,7 @@ public void Retakes_OnGunsCommand( int client )
 
 public void Retakes_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlayers )
 {
+    Afk_OnRoundEnd();
     if ( winner == CS_TEAM_T ) OnTerroristsWon();
     else OnCounterTerroristsWon();
 }
