@@ -51,6 +51,7 @@ public void OnPluginStart()
     HookEvent( "bomb_abortdefuse", Event_BombAbortDefuse, EventHookMode_Post );
     HookEvent( "bomb_exploded", Event_BombExploded, EventHookMode_Post );
     HookEvent( "round_poststart", Event_RoundPostStart, EventHookMode_Post );
+    HookEvent( "round_end", Event_RoundEnd, EventHookMode_Post );
 
     for ( int client = 1; client <= MaxClients; ++client )
     {
@@ -143,6 +144,13 @@ public Action Event_RoundPostStart( Event event, const char[] name, bool dontBro
     return Plugin_Continue;
 }
 
+public Action Event_RoundEnd( Event event, const char[] name, bool dontBroadcast )
+{
+    Afk_OnRoundEnd();
+
+    return Plugin_Continue;
+}
+
 public Action OnPlayerRunCmd( int client, int &buttons,
     int &impulse, float vel[3], float angles[3],
     int &weapon, int &subtype, int &cmdnum,
@@ -185,7 +193,6 @@ public void Retakes_OnGunsCommand( int client )
 
 public void Retakes_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlayers )
 {
-    Afk_OnRoundEnd();
     if ( winner == CS_TEAM_T ) OnTerroristsWon();
     else OnCounterTerroristsWon();
 }

@@ -48,9 +48,9 @@ void Afk_ForceSpectate( int client )
     char clientName[64];
     GetClientName( client, clientName, sizeof(clientName) );
     
-    Retakes_MessageToAll( "Moving {GREEN}%s{NORMAL} to spectator team for being AFK.", clientName );
+    Retakes_MessageToAll( "Moving {GREEN}%s{NORMAL} to spectate for being {LIGHT_RED}AFK{NORMAL}.", clientName );
 
-    CS_SwitchTeam( client, CS_TEAM_SPEC );
+    ChangeClientTeam( client, CS_TEAM_SPEC );
 }
 
 void Afk_OnRoundEnd()
