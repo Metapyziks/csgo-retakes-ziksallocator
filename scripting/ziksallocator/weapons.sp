@@ -118,6 +118,57 @@ void GetWeaponClassName( CSWeapon weapon, char[] buffer, int maxLength )
     }
 }
 
+CSWeapon GetWeaponFromEntity( int weapon )
+{
+    if ( weapon == -1 ) return WEAPON_NONE;
+    
+    char classname[WEAPON_STRING_LENGTH];
+    if ( !GetEntityClassname( weapon, classname, sizeof(classname) ) ) return WEAPON_NONE;
+
+    return GetWeaponFromClassname( classname );
+}
+
+CSWeapon GetWeaponFromClassname( char[] classname )
+{
+    if ( strcmp( classname, "weapon_glock" ) == 0 ) return WEAPON_GLOCK;
+    if ( strcmp( classname, "weapon_hkp2000" ) == 0 ) return WEAPON_HKP2000;
+    if ( strcmp( classname, "weapon_p250" ) == 0 ) return WEAPON_P250;
+    if ( strcmp( classname, "weapon_elite" ) == 0 ) return WEAPON_ELITE;
+    if ( strcmp( classname, "weapon_tec9" ) == 0 ) return WEAPON_TEC9;
+    if ( strcmp( classname, "weapon_fiveseven" ) == 0 ) return WEAPON_FIVESEVEN;
+    if ( strcmp( classname, "weapon_cz75a" ) == 0 ) return WEAPON_CZ75A;
+    if ( strcmp( classname, "weapon_deagle" ) == 0 ) return WEAPON_DEAGLE;
+    if ( strcmp( classname, "weapon_revolver" ) == 0 ) return WEAPON_REVOLVER;
+
+    if ( strcmp( classname, "weapon_mac10" ) == 0 ) return WEAPON_MAC10;
+    if ( strcmp( classname, "weapon_mp9" ) == 0 ) return WEAPON_MP9;
+    if ( strcmp( classname, "weapon_ump45" ) == 0 ) return WEAPON_UMP45;
+    if ( strcmp( classname, "weapon_bizon" ) == 0 ) return WEAPON_BIZON;
+    if ( strcmp( classname, "weapon_mp7" ) == 0 ) return WEAPON_MP7;
+    if ( strcmp( classname, "weapon_p90" ) == 0 ) return WEAPON_P90;
+
+    if ( strcmp( classname, "weapon_nova" ) == 0 ) return WEAPON_NOVA;
+    if ( strcmp( classname, "weapon_sawedoff" ) == 0 ) return WEAPON_SAWEDOFF;
+    if ( strcmp( classname, "weapon_mag7" ) == 0 ) return WEAPON_MAG7;
+    if ( strcmp( classname, "weapon_xm1014" ) == 0 ) return WEAPON_XM1014;
+    if ( strcmp( classname, "weapon_m249" ) == 0 ) return WEAPON_M249;
+    if ( strcmp( classname, "weapon_negev" ) == 0 ) return WEAPON_NEGEV;
+
+    if ( strcmp( classname, "weapon_galilar" ) == 0 ) return WEAPON_GALILAR;
+    if ( strcmp( classname, "weapon_famas" ) == 0 ) return WEAPON_FAMAS;
+    if ( strcmp( classname, "weapon_ssg08" ) == 0 ) return WEAPON_SSG08;
+    if ( strcmp( classname, "weapon_ak47" ) == 0 ) return WEAPON_AK47;
+    if ( strcmp( classname, "weapon_m4a1" ) == 0 ) return WEAPON_M4A1;
+    if ( strcmp( classname, "weapon_m4a1_silencer" ) == 0 ) return WEAPON_M4A1_SILENCER;
+    if ( strcmp( classname, "weapon_sg556" ) == 0 ) return WEAPON_SG556;
+    if ( strcmp( classname, "weapon_aug" ) == 0 ) return WEAPON_AUG;
+    if ( strcmp( classname, "weapon_awp" ) == 0 ) return WEAPON_AWP;
+    if ( strcmp( classname, "weapon_g3sg1" ) == 0 ) return WEAPON_G3SG1;
+    if ( strcmp( classname, "weapon_scar20" ) == 0 ) return WEAPON_SCAR20;
+
+    return WEAPON_NONE;
+}
+
 /**
  * Gets the display name of the given weapon category.
  *

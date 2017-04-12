@@ -1,33 +1,40 @@
 bool g_WasNoScoped[MAXPLAYERS+1];
+bool g_WasJumpShot[MAXPLAYERS+1];
+CSWeapon g_KilledWeapon[MAXPLAYERS+1];
 
-bool GetWeaponCanNoScope( int weapon )
+bool GetWeaponCanNoScope( CSWeapon weapon )
 {
-    if ( weapon == -1 ) return false;
+    switch ( weapon )
+    {
+        case WEAPON_SSG08: return true;
+        case WEAPON_AWP: return true;
+        case WEAPON_G3SG1: return true;
+        case WEAPON_SCAR20: return true;
+    }
 
-    char className[WEAPON_STRING_LENGTH];
-    if ( !GetEntityClassname( weapon, className, sizeof(className) ) ) return false;
-
-    if ( strcmp( className, "weapon_ssg08", false ) == 0 ) return true;
-    if ( strcmp( className, "weapon_awp", false ) == 0 ) return true;
-    if ( strcmp( className, "weapon_g3sg1", false ) == 0 ) return true;
-    if ( strcmp( className, "weapon_scar20", false ) == 0 ) return true;
-    
     return false;
 }
 
 void NoScope_OnTakeDamage( int victim,
     int &attacker, int &inflictor,
-    float &damage, int &damagetype, int &weapon,
+    float &damage, int &damagetype, int &weaponEnt,
     float damageForce[3], float damagePosition[3], int damagecustom )
 {
     g_WasNoScoped[victim] = false;
+    g_WasJumpShot[victim] = false;
+    g_KilledWeapon[victim] = WEAPON_NONE;
 
     if ( !IsClientValidAndInGame( attacker ) ) return;
 
+    CSWeapon weapon = GetWeaponFromEntity( weaponEnt );
+
     bool canNoScope = GetWeaponCanNoScope( weapon );
     bool scoped = GetEntProp( attacker, Prop_Send, "m_bIsScoped" ) != 0;
+    bool inAir = !(GetEntityFlags( attacker ) & FL_ONGROUND);
     
     g_WasNoScoped[victim] = canNoScope && !scoped;
+    g_WasJumpShot[victim] = inAir;
+    g_KilledWeapon[victim] = weapon;
 }
 
 void NoScope_PlayerDeath( Event event )
@@ -35,14 +42,14 @@ void NoScope_PlayerDeath( Event event )
     int victim = GetClientOfUserId( event.GetInt( "userid" ) );
     if ( !IsClientValidAndInGame( victim ) ) return;
 
-    if ( g_WasNoScoped[victim] )
+    if ( g_WasNoScoped[victim] || g_WasJumpShot[victim] )
     {
         int attacker = GetClientOfUserId( event.GetInt( "attacker" ) );
-        DisplayNoScopeMessage( victim, attacker );
+        DisplayTrickKillMessage( victim, attacker, g_KilledWeapon[victim], g_WasNoScoped[victim], g_WasJumpShot[victim] );
     }
 }
 
-void DisplayNoScopeMessage( int victim, int attacker )
+void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool noScope, bool jumpShot )
 {
     float victimPos[3];
     GetClientAbsOrigin( victim, victimPos );
@@ -68,6 +75,26 @@ void DisplayNoScopeMessage( int victim, int attacker )
     GetClientName( attacker, attackerName, sizeof(attackerName) );
     GetClientName( victim, victimName, sizeof(victimName) );
 
-    Retakes_MessageToAll( "{GREEN}%s{NORMAL} noscoped {GREEN}%s{NORMAL} from {LIGHT_RED}%sm{NORMAL} away!",
-        attackerName, victimName, distanceString );
+    char killType[64];
+
+    if (noScope && jumpShot) {
+        killType = "jumping noscoped";
+    } else if (noScope) {
+        killType = "noscoped";
+    } else if (jumpShot) {
+        killType = "jump shot";
+    } else {
+        return;
+    }
+
+    char weaponName[64];
+    GetWeaponName( weapon, weaponName, sizeof(weaponName) );
+
+    char prefix[4];
+
+    if ( weaponName[0] == 'A' ) prefix = "an";
+    else prefix = "a";
+
+    Retakes_MessageToAll( "{GREEN}%s{NORMAL} %s {GREEN}%s{NORMAL} with %s {PURPLE}%s{NORMAL} from {LIGHT_RED}%sm{NORMAL} away!",
+        attackerName, killType, victimName, prefix, weaponName, distanceString );
 }
