@@ -28,6 +28,8 @@ void BombTime_PlayerDeath( Event event )
 
 void BombTime_BombBeginPlant( Event event )
 {
+    if ( !Retakes_Enabled() ) return;
+
     int bomb = FindEntityByClassname( -1, "weapon_c4" );
     if ( bomb != -1 )
     {

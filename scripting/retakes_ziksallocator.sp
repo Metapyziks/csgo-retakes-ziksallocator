@@ -139,6 +139,8 @@ public Action Event_BombExploded( Event event, const char[] name, bool dontBroad
 
 public Action Event_RoundPostStart( Event event, const char[] name, bool dontBroadcast )
 {
+    if ( !Retakes_Enabled() ) return Plugin_Continue;
+    
     Afk_OnRoundStart();
     
     return Plugin_Continue;
@@ -146,6 +148,8 @@ public Action Event_RoundPostStart( Event event, const char[] name, bool dontBro
 
 public Action Event_RoundEnd( Event event, const char[] name, bool dontBroadcast )
 {
+    if ( !Retakes_Enabled() ) return Plugin_Continue;
+
     Afk_OnRoundEnd();
 
     return Plugin_Continue;
@@ -156,6 +160,8 @@ public Action OnPlayerRunCmd( int client, int &buttons,
     int &weapon, int &subtype, int &cmdnum,
     int &tickcount, int &seed, int mouse[2] )
 {
+    if ( !Retakes_Enabled() ) return Plugin_Continue;
+
     Afk_OnPlayerInput( client, buttons, mouse );
     return Plugin_Continue;
 }
