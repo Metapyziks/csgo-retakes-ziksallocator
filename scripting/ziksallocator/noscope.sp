@@ -33,7 +33,7 @@ void NoScope_OnTakeDamage( int victim,
     bool inAir = !(GetEntityFlags( attacker ) & FL_ONGROUND);
     
     g_WasNoScoped[victim] = canNoScope && !scoped;
-    g_WasJumpShot[victim] = inAir;
+    g_WasJumpShot[victim] = weapon != WEAPON_NONE && inAir;
     g_KilledWeapon[victim] = weapon;
 }
 
