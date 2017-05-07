@@ -273,8 +273,6 @@ bool CanBuyWeapon( int client, int team, RTLoadout loadout, CSWeapon weapon )
 
     switch ( weapon )
     {
-        case WEAPON_REVOLVER:
-            return false;
         case WEAPON_GLOCK, WEAPON_TEC9, WEAPON_MAC10, WEAPON_SAWEDOFF,
             WEAPON_GALILAR, WEAPON_AK47, WEAPON_SG556, WEAPON_G3SG1:
             return team == CS_TEAM_T;
@@ -303,10 +301,9 @@ int GetWeaponCost( int client, CSWeapon weapon )
             return 300;
         case WEAPON_ELITE, WEAPON_TEC9, WEAPON_FIVESEVEN, WEAPON_CZ75A:
             return 500;
+        case WEAPON_REVOLVER:
         case WEAPON_DEAGLE:
             return 700;
-        case WEAPON_REVOLVER:
-            return 850;
 
         case WEAPON_MAC10:
             return 1050;
@@ -330,7 +327,7 @@ int GetWeaponCost( int client, CSWeapon weapon )
         case WEAPON_M249:
             return 5200;
         case WEAPON_NEGEV:
-            return 4000;
+            return 2000;
 
         case WEAPON_GALILAR:
             return 2000;
