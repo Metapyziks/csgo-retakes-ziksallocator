@@ -21,6 +21,7 @@
 #include "ziksallocator/bombtime.sp"
 #include "ziksallocator/noscope.sp"
 #include "ziksallocator/afk.sp"
+#include "ziksallocator/clutchmode.sp"
 #include "ziksallocator/menus.sp"
 
 public Plugin myinfo =
@@ -187,16 +188,7 @@ public Action OnTakeDamage( int victim,
 
 public void Retakes_OnTeamSizesSet( int& tCount, int& ctCount )
 {
-    if ( GetWinStreak() == 0 && tCount == ctCount && tCount > 1 )
-    {
-        if ( GetRandomInt( 0, 99 ) < GetClutchModeProbability() )
-        {
-            --tCount;
-            ++ctCount;
-
-            Retakes_MessageToAll( "{GREEN}CLUTCH MODE{NORMAL}!" );
-        }
-    }
+    ClutchMode_OnTeamSizesSet( tCount, ctCount );
 }
 
 /**
@@ -215,6 +207,8 @@ public void Retakes_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlay
 {
     if ( winner == CS_TEAM_T ) OnTerroristsWon();
     else OnCounterTerroristsWon();
+
+    ClutchMode_OnRoundWon( winner, tPlayers, ctPlayers );
 }
 
 /**
