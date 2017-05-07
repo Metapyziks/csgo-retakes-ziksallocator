@@ -8,11 +8,15 @@ Handle g_CVMenuTimeSeconds = INVALID_HANDLE;
  */
 Handle g_CVRandomProbability = INVALID_HANDLE;
 
+Handle g_CVClutchModeProbability = INVALID_HANDLE;
+
 Handle g_CVPistolOnly = INVALID_HANDLE;
 
 Handle g_CVHeadshotOnly = INVALID_HANDLE;
 
 Handle g_CVWinsUntilForce = INVALID_HANDLE;
+
+Handle g_CVRoundsToScramble = INVALID_HANDLE;
 
 /**
  * Pistol round start money.
@@ -61,6 +65,7 @@ void SetupConVars()
     g_CVMenuTimeSeconds = CreateConVar( "sm_retakes_menu_time", "15", "Time in seconds that menus should remain open for before automatically closing.", FCVAR_NOTIFY );
 
     g_CVRandomProbability = CreateConVar( "sm_retakes_random_chance", "5", "Percentage chance of a random weapon round", FCVAR_NOTIFY );
+    g_CVClutchModeProbability = CreateConVar( "sm_retakes_clutch_chance", "50", "Percentage chance of clutch mode when even teams", FCVAR_NOTIFY );
     g_CVPistolOnly = CreateConVar( "sm_retakes_pistol_only", "0", "Enable pistol round only mode", FCVAR_NOTIFY );
     g_CVHeadshotOnly = CreateConVar( "sm_retakes_headshot_only", "0", "Enable headshot only mode", FCVAR_NOTIFY );
     g_CVWinsUntilForce = CreateConVar( "sm_retakes_wins_until_force", "3", "Win streak until T force buys", FCVAR_NOTIFY );
@@ -70,6 +75,8 @@ void SetupConVars()
 
     g_CVMaxGrenadeValue = CreateConVar( "sm_retakes_grenade_maxvalue", "800", "Maximum total value of randomly allocated grenades", FCVAR_NOTIFY );
     g_CVDecoyProbability = CreateConVar( "sm_retakes_decoy_chance", "10", "Percentage chance of decoys being considered for random grenade allocation", FCVAR_NOTIFY );
+
+    g_CVRoundsToScramble = FindConVar( "sm_retakes_scramble_rounds" );
 
     g_CVNadeLimitTotal = FindConVar( "ammo_grenade_limit_total" );
     g_CVNadeLimitDefault = FindConVar( "ammo_grenade_limit_default" );
@@ -98,6 +105,11 @@ int GetRandomLoadoutProbability()
     return GetConVarInt( g_CVRandomProbability );
 }
 
+int GetClutchModeProbability()
+{
+    return GetConVarInt( g_CVClutchModeProbability );
+}
+
 bool GetIsPistolRoundOnly()
 {
     return GetConVarBool( g_CVPistolOnly );
@@ -111,6 +123,11 @@ bool GetIsHeadshotOnly()
 int GetWinsUntilForceRounds()
 {
     return GetConVarInt( g_CVWinsUntilForce );
+}
+
+int GetWinsUntilScramble()
+{
+    return GetConVarInt( g_CVRoundsToScramble );
 }
 
 /**

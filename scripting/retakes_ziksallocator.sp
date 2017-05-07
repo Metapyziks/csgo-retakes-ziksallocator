@@ -185,6 +185,20 @@ public Action OnTakeDamage( int victim,
     return (defusing || willDie || headShot) ? Plugin_Continue : Plugin_Handled;
 }
 
+public void Retakes_OnTeamSizesSet( int& tCount, int& ctCount )
+{
+    if ( GetWinStreak() == 0 && tCount == ctCount && tCount > 1 )
+    {
+        if ( GetRandomInt( 0, 99 ) < GetClutchModeProbability() )
+        {
+            --tCount;
+            ++ctCount;
+
+            Retakes_MessageToAll( "{GREEN}CLUTCH MODE{NORMAL}!" );
+        }
+    }
+}
+
 /**
  * Called when a client issues a command to bring up a "guns" menu.
  *

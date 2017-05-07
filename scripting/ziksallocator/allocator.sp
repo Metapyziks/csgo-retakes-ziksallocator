@@ -357,6 +357,12 @@ int GetWinStreak()
 void OnTerroristsWon()
 {
     ++g_WinStreak;
+    
+    int toScramble = GetWinsUntilScramble();
+    if ( toScramble > 0 && g_WinStreak >= toScramble )
+    {
+        ResetWinStreak();
+    }
 }
 
 /**
