@@ -24,6 +24,17 @@ void BombTime_PlayerDeath( Event event )
         Retakes_MessageToAll( "{GREEN}%s{NORMAL} was {LIGHT_RED}%ss{NORMAL} away from defusing!",
             defuserName, timeString );
     }
+    else
+    {
+        char attackerName[64];
+        GetClientName( attacker, attackerName, sizeof(attackerName) );
+
+        char timeString[32];
+        FloatToStringFixedPoint( -timeRemaining, 2, timeString, sizeof(timeString) );
+        
+        Retakes_MessageToAll( "{GREEN}%s{NORMAL} was {LIGHT_RED}%ss{NORMAL} too late to stop the defuser!",
+            attackerName, timeString );
+    }
 }
 
 void BombTime_BombBeginPlant( Event event )
