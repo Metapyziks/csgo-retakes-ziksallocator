@@ -71,7 +71,7 @@ void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool no
 
     char attackerName[64];
     char victimName[64];
-
+    
     GetClientName( attacker, attackerName, sizeof(attackerName) );
     GetClientName( victim, victimName, sizeof(victimName) );
 

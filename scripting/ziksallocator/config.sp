@@ -14,8 +14,6 @@ Handle g_CVHeadshotOnly = INVALID_HANDLE;
 
 Handle g_CVWinsUntilForce = INVALID_HANDLE;
 
-Handle g_CVRoundsToScramble = INVALID_HANDLE;
-
 /**
  * Pistol round start money.
  */
@@ -73,8 +71,6 @@ void SetupConVars()
     g_CVMaxGrenadeValue = CreateConVar( "sm_retakes_grenade_maxvalue", "800", "Maximum total value of randomly allocated grenades", FCVAR_NOTIFY );
     g_CVDecoyProbability = CreateConVar( "sm_retakes_decoy_chance", "10", "Percentage chance of decoys being considered for random grenade allocation", FCVAR_NOTIFY );
 
-    g_CVRoundsToScramble = FindConVar( "sm_retakes_scramble_rounds" );
-
     g_CVNadeLimitTotal = FindConVar( "ammo_grenade_limit_total" );
     g_CVNadeLimitDefault = FindConVar( "ammo_grenade_limit_default" );
     g_CVNadeLimitFlash = FindConVar( "ammo_grenade_limit_flashbang" );
@@ -119,7 +115,8 @@ int GetWinsUntilForceRounds()
 
 int GetWinsUntilScramble()
 {
-    return GetConVarInt( g_CVRoundsToScramble );
+    // TODO
+    return 10;
 }
 
 /**

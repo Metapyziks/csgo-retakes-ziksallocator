@@ -27,20 +27,29 @@ void ClutchMode_OnTeamSizesSet( int& tCount, int& ctCount )
 
 void ClutchMode_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlayers )
 {
-    if ( winner == CS_TEAM_CT || tPlayers.Length < 2 || ctPlayers.Length >= 5 )
+    if ( winner == CS_TEAM_CT )
     {
         g_ClutchModeActive = false;
         return;
     }
 
     if ( g_ClutchModeActive ) return;
-    
+
     for ( int i = 0; i < tPlayers.Length; ++i )
     {
-        int roundPoints = Retakes_GetRoundPoints( tPlayers.Get( i ) );
+        int client = tPlayers.Get( i );
+        int roundPoints = Retakes_GetRoundPoints( client );
+
+        char clientName[64];
+        GetClientName( client, clientName, sizeof(clientName) );
+
         if ( roundPoints < 50 )
         {
             g_ClutchModeActive = true;
+        }
+        else if ( !IsClientValidAndInGame( client ) || GetClientTeam( client ) != CS_TEAM_T )
+        {
+            g_ClutchModeActive = false;
             return;
         }
     }
