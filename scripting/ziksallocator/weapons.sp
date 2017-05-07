@@ -301,8 +301,7 @@ int GetWeaponCost( int client, CSWeapon weapon )
             return 300;
         case WEAPON_ELITE, WEAPON_TEC9, WEAPON_FIVESEVEN, WEAPON_CZ75A:
             return 500;
-        case WEAPON_REVOLVER:
-        case WEAPON_DEAGLE:
+        case WEAPON_REVOLVER, WEAPON_DEAGLE:
             return 700;
 
         case WEAPON_MAC10:
