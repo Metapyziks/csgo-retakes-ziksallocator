@@ -81,6 +81,7 @@ public void OnClientConnected( int client )
     InvalidateLoadedCookies( client );
 
     Afk_OnClientConnected( client );
+    ClutchMode_OnClientConnected( client );
 }
 
 public void OnClientPutInServer( int client )

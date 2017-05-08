@@ -1,11 +1,40 @@
+#define CLUTCH_MODE_COST 3
+
 bool g_WasClutchMode = false;
 bool g_ClutchModeActive = false;
+
+int g_ClutchPoints[MAXPLAYERS+1];
+
+void ClutchMode_OnClientConnected( int client )
+{
+    g_ClutchPoints[client] = 0;
+}
+
+bool CanClutchMode( int client )
+{
+    return IsClientValidAndInGame( client ) && g_ClutchPoints[client] > CLUTCH_MODE_COST;
+}
+
+void GiveClutchPoints( int client, int points )
+{
+    char clientName[64];
+    GetClientName( client, clientName, sizeof(clientName) );
+
+    Retakes_MessageToAll( "{GREEN}%s{NORMAL} gained {LIGHT_RED}%i{NORMAL} clutch points!", clientName, points );
+
+    g_ClutchPoints[ client ] += points;
+}
+
+void TakeClutchPoints( int client, int points )
+{
+    g_ClutchPoints[ client ] -= points;
+}
 
 void ClutchMode_OnTeamSizesSet( int& tCount, int& ctCount )
 {
     if ( tCount < 2 || ctCount >= 5 )
     {
-        g_ClutchModeActive = false; 
+        g_ClutchModeActive = false;
     }
 
     if ( g_ClutchModeActive )
@@ -51,17 +80,35 @@ void ClutchMode_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlayers 
         int client = tPlayers.Get( i );
         int roundPoints = Retakes_GetRoundPoints( client );
 
-        char clientName[64];
-        GetClientName( client, clientName, sizeof(clientName) );
-
         if ( roundPoints < 50 )
         {
             g_ClutchModeActive = true;
+            continue;
         }
-        else if ( !IsClientValidAndInGame( client ) || GetClientTeam( client ) != CS_TEAM_T )
+        
+        if ( !IsClientValidAndInGame( client ) || GetClientTeam( client ) != CS_TEAM_T )
         {
             g_ClutchModeActive = false;
-            return;
+            continue;
+        }
+
+        if ( !CanClutchMode( client ) )
+        {
+            GiveClutchPoints( client, 1 );
+            g_ClutchModeActive = false;
+            continue;
+        }
+    }
+
+    if ( !g_ClutchModeActive ) return;
+
+    for ( int i = 0; i < tPlayers.Length; ++i )
+    {
+        int client = tPlayers.Get( i );
+
+        if ( CanClutchMode( client ) )
+        {
+            TakeClutchPoints( client, CLUTCH_MODE_COST );
         }
     }
 }
