@@ -16,7 +16,18 @@ void ClutchMode_OnTeamSizesSet( int& tCount, int& ctCount )
         if ( !g_WasClutchMode )
         {
             g_WasClutchMode = true;
-            Retakes_MessageToAll( "{GREEN}CLUTCH MODE{NORMAL}!" );
+
+            char modeType[8] = "CLUTCH";
+
+            if ( GetRandomInt( 0, 99 ) == 0 )
+            {
+                modeType[1] = modeType[2];
+                modeType[2] = modeType[4];
+                modeType[3] = modeType[5] + 3;
+                modeType[4] = modeType[5] = 0;
+            }
+            
+            Retakes_MessageToAll( "{GREEN}%s MODE{NORMAL}!", modeType );
         }
     }
     else
@@ -27,14 +38,14 @@ void ClutchMode_OnTeamSizesSet( int& tCount, int& ctCount )
 
 void ClutchMode_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlayers )
 {
-    if ( winner == CS_TEAM_CT )
+    if ( winner == CS_TEAM_CT || tPlayers.Length + ctPlayers.Length < 4 )
     {
         g_ClutchModeActive = false;
         return;
     }
 
     if ( g_ClutchModeActive ) return;
-
+    
     for ( int i = 0; i < tPlayers.Length; ++i )
     {
         int client = tPlayers.Get( i );
