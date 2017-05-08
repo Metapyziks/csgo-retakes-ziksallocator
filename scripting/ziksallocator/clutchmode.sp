@@ -1,4 +1,4 @@
-#define CLUTCH_MODE_COST 3
+#define CLUTCH_MODE_COST 10
 
 bool g_WasClutchMode = false;
 bool g_ClutchModeActive = false;
@@ -12,22 +12,43 @@ void ClutchMode_OnClientConnected( int client )
 
 bool CanClutchMode( int client )
 {
-    return IsClientValidAndInGame( client ) && g_ClutchPoints[client] > CLUTCH_MODE_COST;
+    return IsClientValidAndInGame( client ) && g_ClutchPoints[client] >= CLUTCH_MODE_COST;
 }
 
 void GiveClutchPoints( int client, int points )
 {
+    if ( points == 0 ) return;
+
+    g_ClutchPoints[client] += points;
+    
     char clientName[64];
     GetClientName( client, clientName, sizeof(clientName) );
 
-    Retakes_MessageToAll( "{GREEN}%s{NORMAL} gained {LIGHT_RED}%i{NORMAL} clutch points!", clientName, points );
+    char plural[2] = "s";
+    if ( points == 1 || points == -1 ) plural[0] = 0;
 
-    g_ClutchPoints[ client ] += points;
+    Retakes_MessageToAll( "{GREEN}%s{NORMAL} %s {LIGHT_RED}%i{NORMAL} clutch point%s ({LIGHT_RED}%i{NORMAL} total)!",
+        clientName, points < 0 ? "lost" : "gained", points < 0 ? -points : points, plural, g_ClutchPoints[client] );
 }
 
 void TakeClutchPoints( int client, int points )
 {
     g_ClutchPoints[ client ] -= points;
+}
+
+void ClutchMode_PlayerDeath( Event event )
+{
+    int victim = GetClientOfUserId( event.GetInt( "userid" ) );
+    if ( !IsClientValidAndInGame( victim ) ) return;
+
+    int attacker = GetClientOfUserId( event.GetInt( "attacker" ) );
+    if ( !IsClientValidAndInGame( attacker ) ) return;
+
+    bool teamKill = GetClientTeam( victim ) == GetClientTeam( attacker );
+    if ( teamKill )
+    {
+        GiveClutchPoints( attacker, -1 );
+    }
 }
 
 void ClutchMode_OnTeamSizesSet( int& tCount, int& ctCount )
@@ -67,48 +88,39 @@ void ClutchMode_OnTeamSizesSet( int& tCount, int& ctCount )
 
 void ClutchMode_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlayers )
 {
-    if ( winner == CS_TEAM_CT || tPlayers.Length + ctPlayers.Length < 4 )
-    {
-        g_ClutchModeActive = false;
-        return;
-    }
+    ArrayList players = winner == CS_TEAM_CT ? ctPlayers : tPlayers;
 
-    if ( g_ClutchModeActive ) return;
-    
-    for ( int i = 0; i < tPlayers.Length; ++i )
+    if ( winner == CS_TEAM_CT ) g_ClutchModeActive = false;
+
+    if ( g_ClutchModeActive || tPlayers.Length < 2 || ctPlayers.Length < 2 ) return;
+
+    int totalPoints = 0;    
+    for ( int i = 0; i < players.Length; ++i )
     {
-        int client = tPlayers.Get( i );
+        int client = players.Get( i );
         int roundPoints = Retakes_GetRoundPoints( client );
 
-        if ( roundPoints < 50 )
-        {
-            g_ClutchModeActive = true;
-            continue;
-        }
-        
-        if ( !IsClientValidAndInGame( client ) || GetClientTeam( client ) != CS_TEAM_T )
-        {
-            g_ClutchModeActive = false;
-            continue;
-        }
-
-        if ( !CanClutchMode( client ) )
-        {
-            GiveClutchPoints( client, 1 );
-            g_ClutchModeActive = false;
-            continue;
-        }
+        totalPoints += roundPoints;
     }
 
-    if ( !g_ClutchModeActive ) return;
-
-    for ( int i = 0; i < tPlayers.Length; ++i )
+    for ( int i = 0; i < players.Length; ++i )
     {
-        int client = tPlayers.Get( i );
+        int client = players.Get( i );
+        int roundPoints = Retakes_GetRoundPoints( client );
+        
+        char clientName[64];
+        GetClientName( client, clientName, sizeof(clientName) );
 
-        if ( CanClutchMode( client ) )
+        if ( IsClientValidAndInGame( client ) && (roundPoints * 100) / totalPoints > 75 )
+        {
+            GiveClutchPoints( client, roundPoints / 50 );
+        }
+
+        if ( !g_ClutchModeActive && CanClutchMode( client ) )
         {
             TakeClutchPoints( client, CLUTCH_MODE_COST );
+            Retakes_SetRoundPoints( client, roundPoints + 1000 );
+            g_ClutchModeActive = true;
         }
     }
 }

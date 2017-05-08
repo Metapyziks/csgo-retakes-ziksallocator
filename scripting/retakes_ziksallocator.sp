@@ -93,6 +93,7 @@ public Action Event_PlayerDeath( Event event, const char[] name, bool dontBroadc
 {
     BombTime_PlayerDeath( event );
     NoScope_PlayerDeath( event );
+    ClutchMode_PlayerDeath( event );
 
     return Plugin_Continue;
 }

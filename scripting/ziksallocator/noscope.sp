@@ -45,6 +45,14 @@ void NoScope_PlayerDeath( Event event )
     if ( g_WasNoScoped[victim] || g_WasJumpShot[victim] )
     {
         int attacker = GetClientOfUserId( event.GetInt( "attacker" ) );
+
+        bool wasEnemy = GetClientTeam( victim ) != GetClientTeam( attacker );
+        if ( wasEnemy )
+        {
+            int points = g_WasNoScoped[victim] && g_WasJumpShot[victim] ? 2 : 1;
+            GiveClutchPoints( attacker, points );
+        }
+
         DisplayTrickKillMessage( victim, attacker, g_KilledWeapon[victim], g_WasNoScoped[victim], g_WasJumpShot[victim] );
     }
 }
