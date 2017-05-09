@@ -66,6 +66,7 @@ bool CanClutchMode( int client )
 
 void GiveClutchPoints( int client, int points )
 {
+    if ( !Retakes_Enabled() ) return;
     if ( points == 0 ) return;
 
     g_ClutchPoints[client] += points;
@@ -83,6 +84,7 @@ void GiveClutchPoints( int client, int points )
 
 void TakeClutchPoints( int client, int points )
 {
+    if ( !Retakes_Enabled() ) return;
     if ( points == 0 ) return;
 
     g_ClutchPoints[ client ] -= points;
@@ -91,6 +93,8 @@ void TakeClutchPoints( int client, int points )
 
 void ClutchMode_PlayerDeath( Event event )
 {
+    if ( !Retakes_Enabled() ) return;
+
     int victim = GetClientOfUserId( event.GetInt( "userid" ) );
     if ( !IsClientValidAndInGame( victim ) ) return;
 
@@ -98,9 +102,9 @@ void ClutchMode_PlayerDeath( Event event )
     if ( !IsClientValidAndInGame( attacker ) ) return;
 
     bool teamKill = GetClientTeam( victim ) == GetClientTeam( attacker );
-    if ( teamKill )
+    if ( teamKill && victim != attacker )
     {
-        GiveClutchPoints( attacker, -1 );
+        GiveClutchPoints( attacker, g_ClutchPoints[attacker] <= 0 ? -1 : -g_ClutchPoints[attacker] );
     }
 }
 
@@ -156,12 +160,10 @@ void ClutchMode_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlayers 
     {
         int client = players.Get( i );
         int roundPoints = Retakes_GetRoundPoints( client );
-        
-        if ( g_DefusingClient == client ) roundPoints -= 50;
 
         roundPoints /= 100;
 
-        int clutchPoints = (roundPoints * (roundPoints - 1)) / 2;
+        int clutchPoints = roundPoints - 1;
 
         if ( IsClientValidAndInGame( client ) && clutchPoints > 0 )
         {
