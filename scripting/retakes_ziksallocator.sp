@@ -42,6 +42,8 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
     SetupClientCookies();
+    ClutchMode_SetupClientCookies();
+
     SetupConVars();
     
     HookEvent( "player_death", Event_PlayerDeath, EventHookMode_Pre );
@@ -191,6 +193,11 @@ public Action OnTakeDamage( int victim,
 public void Retakes_OnTeamSizesSet( int& tCount, int& ctCount )
 {
     ClutchMode_OnTeamSizesSet( tCount, ctCount );
+}
+
+public void Retakes_OnTeamsSet( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite )
+{
+    ClutchMode_OnTeamsSet( tPlayers, ctPlayers, bombsite );
 }
 
 /**

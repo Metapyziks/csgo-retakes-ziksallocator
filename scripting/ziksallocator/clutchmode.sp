@@ -1,13 +1,62 @@
 #define CLUTCH_MODE_COST 10
 
+Handle g_ClutchPointsCookie = INVALID_HANDLE;
+
 bool g_WasClutchMode = false;
 bool g_ClutchModeActive = false;
 
+int g_ClutchModeTarget = -1;
 int g_ClutchPoints[MAXPLAYERS+1];
+bool g_ClutchPointsLoaded[MAXPLAYERS+1];
+
+void ClutchMode_SetupClientCookies()
+{
+    if ( g_ClutchPointsCookie != INVALID_HANDLE ) return;
+
+    g_ClutchPointsCookie = RegClientCookie( "retakes_ziks_points", "Clutch points", CookieAccess_Protected );
+}
+
+void SaveClutchPoints( int client )
+{
+    if ( !IsClientValidAndInGame( client ) || IsFakeClient( client ) ) return;
+
+    char buffer[8];
+    IntToString( g_ClutchPoints[client], buffer, sizeof(buffer) );
+
+    SetClientCookie( client, g_ClutchPointsCookie, buffer );
+}
+
+void ClutchMode_OnTeamsSet( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite )
+{
+    for ( int i = 0; i < tPlayers.Length; ++i )
+    {
+        int client = tPlayers.Get( i );
+        if ( !g_ClutchPointsLoaded[client] ) RestoreClutchPoints( client );
+    }
+
+    for ( int i = 0; i < ctPlayers.Length; ++i )
+    {
+        int client = ctPlayers.Get( i );
+        if ( !g_ClutchPointsLoaded[client] ) RestoreClutchPoints( client );
+    }
+}
+
+void RestoreClutchPoints( int client )
+{
+    if ( !IsClientValidAndInGame( client ) || IsFakeClient( client ) || !AreClientCookiesCached( client ) ) return;
+    if ( g_ClutchPointsLoaded[client] ) return;
+
+    char buffer[8];
+    GetClientCookie( client, g_ClutchPointsCookie, buffer, sizeof(buffer) );
+
+    g_ClutchPoints[client] = StringToInt( buffer );
+    g_ClutchPointsLoaded[client] = true;
+}
 
 void ClutchMode_OnClientConnected( int client )
 {
     g_ClutchPoints[client] = 0;
+    g_ClutchPointsLoaded[client] = false;
 }
 
 bool CanClutchMode( int client )
@@ -20,6 +69,7 @@ void GiveClutchPoints( int client, int points )
     if ( points == 0 ) return;
 
     g_ClutchPoints[client] += points;
+    SaveClutchPoints( client );
     
     char clientName[64];
     GetClientName( client, clientName, sizeof(clientName) );
@@ -33,7 +83,10 @@ void GiveClutchPoints( int client, int points )
 
 void TakeClutchPoints( int client, int points )
 {
+    if ( points == 0 ) return;
+
     g_ClutchPoints[ client ] -= points;
+    SaveClutchPoints( client );
 }
 
 void ClutchMode_PlayerDeath( Event event )
@@ -53,9 +106,10 @@ void ClutchMode_PlayerDeath( Event event )
 
 void ClutchMode_OnTeamSizesSet( int& tCount, int& ctCount )
 {
-    if ( tCount < 2 || ctCount >= 5 )
+    if ( tCount < 2 || ctCount >= 5 || !IsClientValidAndInGame( g_ClutchModeTarget ) )
     {
         g_ClutchModeActive = false;
+        g_ClutchModeTarget = -1;
     }
 
     if ( g_ClutchModeActive )
@@ -63,9 +117,13 @@ void ClutchMode_OnTeamSizesSet( int& tCount, int& ctCount )
         --tCount;
         ++ctCount;
         
+        Retakes_SetRoundPoints( g_ClutchModeTarget, 1000 );
+        
         if ( !g_WasClutchMode )
         {
             g_WasClutchMode = true;
+
+            TakeClutchPoints( g_ClutchModeTarget, CLUTCH_MODE_COST );
 
             char modeType[8] = "CLUTCH";
 
@@ -92,34 +150,27 @@ void ClutchMode_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlayers 
 
     if ( winner == CS_TEAM_CT ) g_ClutchModeActive = false;
 
-    if ( g_ClutchModeActive || tPlayers.Length < 2 || ctPlayers.Length < 2 ) return;
-
-    int totalPoints = 0;    
-    for ( int i = 0; i < players.Length; ++i )
-    {
-        int client = players.Get( i );
-        int roundPoints = Retakes_GetRoundPoints( client );
-
-        totalPoints += roundPoints;
-    }
+    bool clutchModeAvailable = !g_ClutchModeActive && tPlayers.Length >= 2 && ctPlayers.Length >= 2;
 
     for ( int i = 0; i < players.Length; ++i )
     {
         int client = players.Get( i );
         int roundPoints = Retakes_GetRoundPoints( client );
         
-        char clientName[64];
-        GetClientName( client, clientName, sizeof(clientName) );
+        if ( g_DefusingClient == client ) roundPoints -= 50;
 
-        if ( IsClientValidAndInGame( client ) && (roundPoints * 100) / totalPoints > 75 )
+        roundPoints /= 100;
+
+        int clutchPoints = (roundPoints * (roundPoints - 1)) / 2;
+
+        if ( IsClientValidAndInGame( client ) && clutchPoints > 0 )
         {
-            GiveClutchPoints( client, roundPoints / 50 );
+            GiveClutchPoints( client, clutchPoints );
         }
 
-        if ( !g_ClutchModeActive && CanClutchMode( client ) )
+        if ( clutchModeAvailable && CanClutchMode( client ) )
         {
-            TakeClutchPoints( client, CLUTCH_MODE_COST );
-            Retakes_SetRoundPoints( client, roundPoints + 1000 );
+            g_ClutchModeTarget = client;
             g_ClutchModeActive = true;
         }
     }
