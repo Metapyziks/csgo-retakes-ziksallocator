@@ -64,9 +64,14 @@ bool CanClutchMode( int client )
     return IsClientValidAndInGame( client ) && g_ClutchPoints[client] >= CLUTCH_MODE_COST;
 }
 
+bool IsClutchModePossible()
+{
+    return Retakes_Enabled() && Retakes_GetNumActivePlayers() >= 4 && Retakes_GetNumActivePlayers() <= 7;
+}
+
 void GiveClutchPoints( int client, int points )
 {
-    if ( !Retakes_Enabled() ) return;
+    if ( !IsClutchModePossible() ) return;
     if ( points == 0 ) return;
 
     g_ClutchPoints[client] += points;
