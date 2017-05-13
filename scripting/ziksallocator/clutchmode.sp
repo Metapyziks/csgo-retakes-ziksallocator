@@ -9,6 +9,28 @@ int g_ClutchModeTarget = -1;
 int g_ClutchPoints[MAXPLAYERS+1];
 bool g_ClutchPointsLoaded[MAXPLAYERS+1];
 
+void ClutchMode_OnPointsCommand( int client )
+{
+    char color[12];
+    if( points >= 0 ) {
+        color = "{GREEN}";
+    }
+    else {
+        color = "{LIGHT_RED}";
+    }
+
+    char clientName[64];
+    GetClientName( client, clientName, sizeof(clientName) );
+
+    int points = gClutchPoints[client];
+
+    char plural[2] = "s";
+    if ( points == 1 || points == -1 ) plural[0] = 0;
+
+    Retakes_MessageToAll( "%s%s has %i clutch point%s.",
+        color, clientName, points, plural );
+}
+
 void ClutchMode_SetupClientCookies()
 {
     if ( g_ClutchPointsCookie != INVALID_HANDLE ) return;
