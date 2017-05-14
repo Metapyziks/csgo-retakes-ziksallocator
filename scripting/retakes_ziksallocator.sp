@@ -202,7 +202,7 @@ public void Retakes_OnTeamsSet( ArrayList tPlayers, ArrayList ctPlayers, Bombsit
 
 public Action OnClientSayCommand( int client, const char[] command, const char[] args )
 {
-    if( !g_Enabled ) {
+    if( !Retakes_Enabled() ) {
         return Plugin_Continue;
     }
 
