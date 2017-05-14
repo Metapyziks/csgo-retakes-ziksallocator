@@ -165,7 +165,7 @@ void SelectRandomLoadout( int team, int class )
     int teamIndex = GetTeamIndex( team );
 
     CSWeaponCategory wclass = g_WeaponClass[class];
-    CSWeapon RandomWeapons[12];
+    CSWeapon RandomWeapons[11];
 
     switch( wclass )
     {
