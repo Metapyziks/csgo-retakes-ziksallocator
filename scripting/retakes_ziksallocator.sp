@@ -200,6 +200,20 @@ public void Retakes_OnTeamsSet( ArrayList tPlayers, ArrayList ctPlayers, Bombsit
     ClutchMode_OnTeamsSet( tPlayers, ctPlayers, bombsite );
 }
 
+public Action OnClientSayCommand( int client, const char[] command, const char[] args )
+{
+    if( !Retakes_Enabled() ) {
+        return Plugin_Continue;
+    }
+
+    if( strcmp( command, "points", false ) )
+    {
+        ClutchMode_OnPointsCommand( client );
+    }
+
+    return Plugin_Continue;
+}
+
 /**
  * Called when a client issues a command to bring up a "guns" menu.
  *

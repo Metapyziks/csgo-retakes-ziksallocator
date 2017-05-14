@@ -1,5 +1,12 @@
 int g_SinceLastPistol = 99;
 
+CSWeaponCategory[] g_WeaponClass = {
+    WCAT_PISTOL,
+    WCAT_SMG,
+    WCAT_HEAVY,
+    WCAT_RIFLE
+};
+
 /**
  * Chooses a loadout type for the next round.
  *
@@ -45,7 +52,7 @@ CSWeapon g_RandomSecondary[TEAM_COUNT];
 /**
  * Weapons that can be selected for LOADOUT_RANDOM rounds.
  */
-CSWeapon g_RandomWeapons[] = {
+CSWeapon g_RandomPistol[] = {
     WEAPON_GLOCK,
     WEAPON_HKP2000,
     WEAPON_P250,
@@ -55,21 +62,39 @@ CSWeapon g_RandomWeapons[] = {
     WEAPON_CZ75A,
     WEAPON_DEAGLE,
     WEAPON_REVOLVER,
+    WEAPON_DEAGLE,
+    WEAPON_REVOLVER
+};
 
+CSWeapon g_RandomSMG[] = {
     WEAPON_MAC10,
     WEAPON_MP9,
     WEAPON_UMP45,
     WEAPON_BIZON,
     WEAPON_MP7,
     WEAPON_P90,
+    WEAPON_MAC10,
+    WEAPON_MP9,
+    WEAPON_UMP45,
+    WEAPON_BIZON,
+    WEAPON_MP7
+};
 
+CSWeapon g_RandomHeavy[] = {
     WEAPON_NOVA,
     WEAPON_XM1014,
     WEAPON_SAWEDOFF,
     WEAPON_MAG7,
     WEAPON_M249,
     WEAPON_NEGEV,
+    WEAPON_NOVA,
+    WEAPON_XM1014,
+    WEAPON_SAWEDOFF,
+    WEAPON_MAG7,
+    WEAPON_M249
+};
 
+CSWeapon g_RandomRifle[] = {
     WEAPON_GALILAR,
     WEAPON_FAMAS,
     WEAPON_SSG08,
@@ -132,24 +157,40 @@ bool GetRandomHelmet( int team )
  * Randomly selects a primary and secondary weapon for LOADOUT_RANDOM rounds.
  *
  * @param client    Team to select for.
+ * @param class     Weapon class to select from.
  * @noreturn
  */
-void SelectRandomLoadout( int team )
+void SelectRandomLoadout( int team, int class )
 {
     int teamIndex = GetTeamIndex( team );
 
-    int totalWeight = 0;
-    for ( int index = 0; index < sizeof(g_RandomWeapons); ++index )
+    CSWeaponCategory wclass = g_WeaponClass[class];
+    CSWeapon RandomWeapons[11];
+
+    switch( wclass )
     {
-        totalWeight += GetRandomWeaponWeight( g_RandomWeapons[index] );
+        case WCAT_PISTOL:
+            RandomWeapons = g_RandomPistol;
+        case WCAT_SMG:
+            RandomWeapons = g_RandomSMG;
+        case WCAT_HEAVY:
+            RandomWeapons = g_RandomHeavy;
+        case WCAT_RIFLE:
+            RandomWeapons = g_RandomRifle;
+    }
+
+    int totalWeight = 0;
+    for ( int index = 0; index < sizeof(RandomWeapons); ++index )
+    {
+        totalWeight += GetRandomWeaponWeight( RandomWeapons[index] );
     }
 
     int selection = GetRandomInt( 0, totalWeight - 1 );
     CSWeapon weapon = WEAPON_NONE;
     
-    for ( int index = 0; index < sizeof(g_RandomWeapons); ++index )
+    for ( int index = 0; index < sizeof(RandomWeapons); ++index )
     {
-        weapon = g_RandomWeapons[index];
+        weapon = RandomWeapons[index];
         int weight = GetRandomWeaponWeight( weapon );
         if ( selection < weight ) break;
         selection -= weight;
@@ -408,8 +449,10 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
 
     if ( loadout == LOADOUT_RANDOM )
     {
-        SelectRandomLoadout( CS_TEAM_T );
-        SelectRandomLoadout( CS_TEAM_CT );
+        int class = GetRandomInt( 0, 3 );
+
+        SelectRandomLoadout( CS_TEAM_T, g_WeaponClass[class] );
+        SelectRandomLoadout( CS_TEAM_CT, g_WeaponClass[class] );
 
         bool hasArmour = GetRandomInt( 0, 99 ) <= 90;
         bool hasHelmet = hasArmour && GetRandomInt( 0, 99 ) <= 75;
