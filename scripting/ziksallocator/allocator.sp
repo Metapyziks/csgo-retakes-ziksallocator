@@ -1,5 +1,12 @@
 int g_SinceLastPistol = 99;
 
+CSWeaponCategory[] g_WeaponClass = {
+    WCAT_PISTOL,
+    WCAT_SMG,
+    WCAT_HEAVY,
+    WCAT_RIFLE
+};
+
 /**
  * Chooses a loadout type for the next round.
  *
@@ -45,7 +52,7 @@ CSWeapon g_RandomSecondary[TEAM_COUNT];
 /**
  * Weapons that can be selected for LOADOUT_RANDOM rounds.
  */
-CSWeapon g_RandomWeapons[] = {
+CSWeapon g_RandomPistol[] = {
     WEAPON_GLOCK,
     WEAPON_HKP2000,
     WEAPON_P250,
@@ -54,22 +61,28 @@ CSWeapon g_RandomWeapons[] = {
     WEAPON_FIVESEVEN,
     WEAPON_CZ75A,
     WEAPON_DEAGLE,
-    WEAPON_REVOLVER,
+    WEAPON_REVOLVER
+};
 
+CSWeapon g_RandomSMG[] = {
     WEAPON_MAC10,
     WEAPON_MP9,
     WEAPON_UMP45,
     WEAPON_BIZON,
     WEAPON_MP7,
-    WEAPON_P90,
+    WEAPON_P90
+};
 
+CSWeapon g_RandomHeavy[] = {
     WEAPON_NOVA,
     WEAPON_XM1014,
     WEAPON_SAWEDOFF,
     WEAPON_MAG7,
     WEAPON_M249,
-    WEAPON_NEGEV,
+    WEAPON_NEGEV
+};
 
+CSWeapon g_RandomRifle[] = {
     WEAPON_GALILAR,
     WEAPON_FAMAS,
     WEAPON_SSG08,
@@ -82,6 +95,29 @@ CSWeapon g_RandomWeapons[] = {
     WEAPON_G3SG1,
     WEAPON_SCAR20
 };
+
+void getWeaponClass( CSWeaponCategory class, CSWeapon[] toFill )
+{
+    switch( class )
+    {
+        case WCAT_PISTOL:
+            for( int index = 0; index < sizeof( g_RandomPistol ); ++index ) {
+                toFill[index] = g_RandomPistol[index];
+            }
+        case WCAT_SMG:
+            for( int index = 0; index < sizeof( g_RandomSMG ); ++index ) {
+                toFill[index] = g_RandomSMG[index];
+            }
+        case WCAT_HEAVY:
+            for( int index = 0; index < sizeof( g_RandomHeavy ); ++index ) {
+                toFill[index] = g_RandomHeavy[index];
+            }
+        case WCAT_RIFLE:
+            for( int index = 0; index < sizeof( g_RandomRifle ); ++index ) {
+                toFill[index] = g_RandomRifle[index];
+            }
+    }
+}
 
 int GetRandomWeaponWeight( CSWeapon weapon )
 {
@@ -132,11 +168,15 @@ bool GetRandomHelmet( int team )
  * Randomly selects a primary and secondary weapon for LOADOUT_RANDOM rounds.
  *
  * @param client    Team to select for.
+ * @param class     Weapon class to select from.
  * @noreturn
  */
-void SelectRandomLoadout( int team )
+void SelectRandomLoadout( int team, int class )
 {
     int teamIndex = GetTeamIndex( team );
+
+    CSWeapon g_RandomWeapons[11];
+    getWeaponClass( g_WeaponClass[class], g_RandomWeapons );
 
     int totalWeight = 0;
     for ( int index = 0; index < sizeof(g_RandomWeapons); ++index )
@@ -408,8 +448,10 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
 
     if ( loadout == LOADOUT_RANDOM )
     {
-        SelectRandomLoadout( CS_TEAM_T );
-        SelectRandomLoadout( CS_TEAM_CT );
+        int class = GetRandomInt( 0, 3 );
+
+        SelectRandomLoadout( CS_TEAM_T, g_WeaponClass[class] );
+        SelectRandomLoadout( CS_TEAM_CT, g_WeaponClass[class] );
 
         bool hasArmour = GetRandomInt( 0, 99 ) <= 90;
         bool hasHelmet = hasArmour && GetRandomInt( 0, 99 ) <= 75;
