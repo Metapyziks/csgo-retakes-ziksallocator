@@ -96,21 +96,27 @@ CSWeapon g_RandomRifle[] = {
     WEAPON_SCAR20
 };
 
-CSWeapon[] getWeaponClass( CSWeaponCategory class )
+void getWeaponClass( CSWeaponCategory class, CSWeapon[] toFill )
 {
     switch( class )
     {
         case WCAT_PISTOL:
-            return g_RandomPistol;
+            for( int index = 0; index < sizeof( g_RandomPistol ); ++index ) {
+                toFill[index] = g_RandomPistol[index];
+            }
         case WCAT_SMG:
-            return g_RandomSMG;
+            for( int index = 0; index < sizeof( g_RandomSMG ); ++index ) {
+                toFill[index] = g_RandomSMG[index];
+            }
         case WCAT_HEAVY:
-            return g_RandomHeavy;
+            for( int index = 0; index < sizeof( g_RandomHeavy ); ++index ) {
+                toFill[index] = g_RandomHeavy[index];
+            }
         case WCAT_RIFLE:
-            return g_RandomRifle;
+            for( int index = 0; index < sizeof( g_RandomRifle ); ++index ) {
+                toFill[index] = g_RandomRifle[index];
+            }
     }
-
-    return g_RandomRifle;
 }
 
 int GetRandomWeaponWeight( CSWeapon weapon )
@@ -169,7 +175,8 @@ void SelectRandomLoadout( int team, int class )
 {
     int teamIndex = GetTeamIndex( team );
 
-    CSWeapon[] g_RandomWeapons = getWeaponClass( class )
+    CSWeapon g_RandomWeapons[11];
+    getWeaponClass( g_WeaponClass[class], g_RandomWeapons );
 
     int totalWeight = 0;
     for ( int index = 0; index < sizeof(g_RandomWeapons); ++index )
@@ -441,7 +448,7 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
 
     if ( loadout == LOADOUT_RANDOM )
     {
-        int class = GetRandomInt( 0, 3 )
+        int class = GetRandomInt( 0, 3 );
 
         SelectRandomLoadout( CS_TEAM_T, g_WeaponClass[class] );
         SelectRandomLoadout( CS_TEAM_CT, g_WeaponClass[class] );

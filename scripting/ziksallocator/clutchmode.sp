@@ -12,6 +12,8 @@ bool g_ClutchPointsLoaded[MAXPLAYERS+1];
 void ClutchMode_OnPointsCommand( int client )
 {
     char color[12];
+    int points = g_ClutchPoints[client];
+
     if( points >= 0 ) {
         color = "{GREEN}";
     }
@@ -21,8 +23,6 @@ void ClutchMode_OnPointsCommand( int client )
 
     char clientName[64];
     GetClientName( client, clientName, sizeof(clientName) );
-
-    int points = gClutchPoints[client];
 
     char plural[2] = "s";
     if ( points == 1 || points == -1 ) plural[0] = 0;
