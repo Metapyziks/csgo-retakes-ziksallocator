@@ -61,6 +61,8 @@ CSWeapon g_RandomPistol[] = {
     WEAPON_FIVESEVEN,
     WEAPON_CZ75A,
     WEAPON_DEAGLE,
+    WEAPON_REVOLVER,
+    WEAPON_DEAGLE,
     WEAPON_REVOLVER
 };
 
@@ -70,7 +72,12 @@ CSWeapon g_RandomSMG[] = {
     WEAPON_UMP45,
     WEAPON_BIZON,
     WEAPON_MP7,
-    WEAPON_P90
+    WEAPON_P90,
+    WEAPON_MAC10,
+    WEAPON_MP9,
+    WEAPON_UMP45,
+    WEAPON_BIZON,
+    WEAPON_MP7
 };
 
 CSWeapon g_RandomHeavy[] = {
@@ -79,7 +86,12 @@ CSWeapon g_RandomHeavy[] = {
     WEAPON_SAWEDOFF,
     WEAPON_MAG7,
     WEAPON_M249,
-    WEAPON_NEGEV
+    WEAPON_NEGEV,
+    WEAPON_NOVA,
+    WEAPON_XM1014,
+    WEAPON_SAWEDOFF,
+    WEAPON_MAG7,
+    WEAPON_M249
 };
 
 CSWeapon g_RandomRifle[] = {
@@ -95,29 +107,6 @@ CSWeapon g_RandomRifle[] = {
     WEAPON_G3SG1,
     WEAPON_SCAR20
 };
-
-void getWeaponClass( CSWeaponCategory class, CSWeapon[] toFill )
-{
-    switch( class )
-    {
-        case WCAT_PISTOL:
-            for( int index = 0; index < sizeof( g_RandomPistol ); ++index ) {
-                toFill[index] = g_RandomPistol[index];
-            }
-        case WCAT_SMG:
-            for( int index = 0; index < sizeof( g_RandomSMG ); ++index ) {
-                toFill[index] = g_RandomSMG[index];
-            }
-        case WCAT_HEAVY:
-            for( int index = 0; index < sizeof( g_RandomHeavy ); ++index ) {
-                toFill[index] = g_RandomHeavy[index];
-            }
-        case WCAT_RIFLE:
-            for( int index = 0; index < sizeof( g_RandomRifle ); ++index ) {
-                toFill[index] = g_RandomRifle[index];
-            }
-    }
-}
 
 int GetRandomWeaponWeight( CSWeapon weapon )
 {
@@ -175,21 +164,33 @@ void SelectRandomLoadout( int team, int class )
 {
     int teamIndex = GetTeamIndex( team );
 
-    CSWeapon g_RandomWeapons[11];
-    getWeaponClass( g_WeaponClass[class], g_RandomWeapons );
+    CSWeaponCategory wclass = g_WeaponClass[class];
+    CSWeapon RandomWeapons[12];
+
+    switch( wclass )
+    {
+        case WCAT_PISTOL:
+            RandomWeapons = g_RandomPistol;
+        case WCAT_SMG:
+            RandomWeapons = g_RandomSMG;
+        case WCAT_HEAVY:
+            RandomWeapons = g_RandomHeavy;
+        case WCAT_RIFLE:
+            RandomWeapons = g_RandomRifle;
+    }
 
     int totalWeight = 0;
-    for ( int index = 0; index < sizeof(g_RandomWeapons); ++index )
+    for ( int index = 0; index < sizeof(RandomWeapons); ++index )
     {
-        totalWeight += GetRandomWeaponWeight( g_RandomWeapons[index] );
+        totalWeight += GetRandomWeaponWeight( RandomWeapons[index] );
     }
 
     int selection = GetRandomInt( 0, totalWeight - 1 );
     CSWeapon weapon = WEAPON_NONE;
     
-    for ( int index = 0; index < sizeof(g_RandomWeapons); ++index )
+    for ( int index = 0; index < sizeof(RandomWeapons); ++index )
     {
-        weapon = g_RandomWeapons[index];
+        weapon = RandomWeapons[index];
         int weight = GetRandomWeaponWeight( weapon );
         if ( selection < weight ) break;
         selection -= weight;
