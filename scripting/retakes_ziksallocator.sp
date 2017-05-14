@@ -18,6 +18,7 @@
 #include "ziksallocator/preferences.sp"
 #include "ziksallocator/persistence.sp"
 #include "ziksallocator/allocator.sp"
+#include "ziksallocator/zikspoints.sp"
 #include "ziksallocator/bombtime.sp"
 #include "ziksallocator/noscope.sp"
 #include "ziksallocator/afk.sp"

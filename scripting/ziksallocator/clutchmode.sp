@@ -1,63 +1,7 @@
-#define CLUTCH_MODE_COST 10
-
-Handle g_ClutchPointsCookie = INVALID_HANDLE;
-
 bool g_WasClutchMode = false;
 bool g_ClutchModeActive = false;
 
 int g_ClutchModeTarget = -1;
-int g_ClutchPoints[MAXPLAYERS+1];
-bool g_ClutchPointsLoaded[MAXPLAYERS+1];
-
-void ClutchMode_SetupClientCookies()
-{
-    if ( g_ClutchPointsCookie != INVALID_HANDLE ) return;
-
-    g_ClutchPointsCookie = RegClientCookie( "retakes_ziks_points", "Clutch points", CookieAccess_Protected );
-}
-
-void SaveClutchPoints( int client )
-{
-    if ( !IsClientValidAndInGame( client ) || IsFakeClient( client ) ) return;
-
-    char buffer[8];
-    IntToString( g_ClutchPoints[client], buffer, sizeof(buffer) );
-
-    SetClientCookie( client, g_ClutchPointsCookie, buffer );
-}
-
-void ClutchMode_OnTeamsSet( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite )
-{
-    for ( int i = 0; i < tPlayers.Length; ++i )
-    {
-        int client = tPlayers.Get( i );
-        if ( !g_ClutchPointsLoaded[client] ) RestoreClutchPoints( client );
-    }
-
-    for ( int i = 0; i < ctPlayers.Length; ++i )
-    {
-        int client = ctPlayers.Get( i );
-        if ( !g_ClutchPointsLoaded[client] ) RestoreClutchPoints( client );
-    }
-}
-
-void RestoreClutchPoints( int client )
-{
-    if ( !IsClientValidAndInGame( client ) || IsFakeClient( client ) || !AreClientCookiesCached( client ) ) return;
-    if ( g_ClutchPointsLoaded[client] ) return;
-
-    char buffer[8];
-    GetClientCookie( client, g_ClutchPointsCookie, buffer, sizeof(buffer) );
-
-    g_ClutchPoints[client] = StringToInt( buffer );
-    g_ClutchPointsLoaded[client] = true;
-}
-
-void ClutchMode_OnClientConnected( int client )
-{
-    g_ClutchPoints[client] = 0;
-    g_ClutchPointsLoaded[client] = false;
-}
 
 bool CanClutchMode( int client )
 {
