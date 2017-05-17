@@ -43,7 +43,7 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
     SetupClientCookies();
-    ZiksPoints_SetupClientCookies();
+    ZiksPoints_OnPluginStart();
 
     SetupConVars();
     
@@ -184,16 +184,27 @@ public Action OnTakeDamage( int victim,
 {
     if ( !IsClientValidAndInGame( victim ) ) return Plugin_Continue;
 
-    NoScope_OnTakeDamage( victim, attacker, inflictor, damage,
-        damagetype, weapon, damageForce, damagePosition, damagecustom );
+    bool ignored = false;
 
-    if ( !GetIsHeadshotOnly() ) return Plugin_Continue;
+    if ( GetIsHeadshotOnly() )
+    {
+        bool defusing = g_DefusingClient == victim && g_CurrentlyDefusing;
+        bool willDie = GetClientHealth( victim ) <= damage;
+        bool headShot = (damagetype & CS_DMG_HEADSHOT) == CS_DMG_HEADSHOT;
 
-    bool defusing = g_DefusingClient == victim && g_CurrentlyDefusing;
-    bool willDie = GetClientHealth( victim ) <= damage;
-    bool headShot = (damagetype & CS_DMG_HEADSHOT) == CS_DMG_HEADSHOT;
+        ignored = !defusing && !willDie && !headShot;
+    }
 
-    return (defusing || willDie || headShot) ? Plugin_Continue : Plugin_Handled;
+    if ( !ignored )
+    {
+        NoScope_OnTakeDamage( victim, attacker, inflictor, damage,
+            damagetype, weapon, damageForce, damagePosition, damagecustom );
+
+        ZiksPoints_OnTakeDamage( victim, attacker, inflictor, damage,
+            damagetype, weapon, damageForce, damagePosition, damagecustom );
+    }
+
+    return ignored ? Plugin_Handled : Plugin_Continue;
 }
 
 public void Retakes_OnTeamSizesSet( int& tCount, int& ctCount )
@@ -209,8 +220,10 @@ public Action OnClientSayCommand( int client, const char[] command, const char[]
         "!points", "!zikspoints", "!ziks"
     };
 
-    for ( int i = 0; i < sizeof(ziksPointsChatCommands); i++ ) {
-        if ( strcmp( args[0], ziksPointsChatCommands[i], false ) == 0 ) {
+    for ( int i = 0; i < sizeof(ziksPointsChatCommands); i++ )
+    {
+        if ( strcmp( args[0], ziksPointsChatCommands[i], false ) == 0 )
+        {
             ZiksPoints_OnChatCommand( client );
             break;
         }

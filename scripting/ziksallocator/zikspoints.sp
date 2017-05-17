@@ -4,11 +4,17 @@ int g_ZiksPoints[MAXPLAYERS+1];
 bool g_ZiksPointsLoaded[MAXPLAYERS+1];
 bool g_ZiksPointsModified[MAXPLAYERS+1];
 
-void ZiksPoints_SetupClientCookies()
-{
-    if ( g_ZiksPointsCookie != INVALID_HANDLE ) return;
+int g_RoundPoints[MAXPLAYERS+1];
 
-    g_ZiksPointsCookie = RegClientCookie( "retakes_ziks_points", "Ziks points", CookieAccess_Protected );
+void ZiksPoints_OnPluginStart()
+{
+    HookEvent( "round_poststart", ZiksPoints_RoundPostStart, EventHookMode_Post );
+    HookEvent( "round_end", ZiksPoints_RoundEnd, EventHookMode_Post );
+
+    if ( g_ZiksPointsCookie == INVALID_HANDLE )
+    {
+        g_ZiksPointsCookie = RegClientCookie( "retakes_ziks_points", "Ziks points", CookieAccess_Protected );
+    }
 }
 
 void ZiksPoints_OnClientConnected( int client )
@@ -16,11 +22,49 @@ void ZiksPoints_OnClientConnected( int client )
     g_ZiksPoints[client] = 0;
     g_ZiksPointsLoaded[client] = false;
     g_ZiksPointsModified[client] = false;
+    g_RoundPoints[client] = -1;
 }
 
 void ZiksPoints_OnClientDisconnect( int client )
 {
     SaveZiksPoints( client );
+}
+
+public Action ZiksPoints_RoundPostStart( Event event, const char[] name, bool dontBroadcast )
+{
+    for ( int client = 1; client < MaxClients; ++client )
+    {
+        int team = IsClientValidAndInGame( client ) ? GetClientTeam( client ) : -1;
+
+        if ( team != CS_TEAM_T && team != CS_TEAM_CT )
+        {
+            g_RoundPoints[client] = -1;
+            continue;
+        }
+
+        g_RoundPoints[client] = 0;
+    }
+
+    return Plugin_Continue;
+}
+
+public Action ZiksPoints_RoundEnd( Event event, const char[] name, bool dontBroadcast )
+{
+    int winner = event.GetInt( "winner" );
+
+    for ( int client = 1; client < MaxClients; ++client )
+    {
+        if ( !IsClientValidAndInGame( client ) ) continue;
+        if ( GetClientTeam( client ) != winner ) continue;
+
+        int roundPoints = g_RoundPoints[client];
+        if ( roundPoints < 0 ) continue;
+
+        int ziksPoints = (roundPoints / 150) - 1;
+        ZiksPoints_Award( client, ziksPoints );
+    }
+
+    return Plugin_Continue;
 }
 
 bool ZiksPointsLoaded( int client )
@@ -105,10 +149,28 @@ void ZiksPoints_PlayerDeath( Event event )
     if ( !IsClientValidAndInGame( attacker ) ) return;
 
     bool teamKill = GetClientTeam( victim ) == GetClientTeam( attacker );
-    if ( teamKill && victim != attacker )
+
+    if ( !teamKill )
+    {
+        g_RoundPoints[attacker] += 50;
+    }
+    else if ( victim != attacker )
     {
         ZiksPoints_Deduct( attacker, 1 );
     }
+}
+
+void ZiksPoints_OnTakeDamage( int victim,
+    int &attacker, int &inflictor,
+    float &damage, int &damagetype, int &weaponEnt,
+    float damageForce[3], float damagePosition[3], int damagecustom )
+{
+    if ( !IsClientValidAndInGame( attacker ) ) return;
+    
+    int health = GetClientHealth( victim );
+    int clampedDamage = damage > health ? health : RoundToFloor( damage );
+
+    g_RoundPoints[attacker] += clampedDamage;
 }
 
 void ZiksPoints_OnChatCommand( int client )
