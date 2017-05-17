@@ -12,7 +12,15 @@ void ClutchMode_OnTeamSizesSet( int& tCount, int& ctCount )
     
     if ( GetWinStreak() == 0 )
     {
-        ++g_SinceLastClutchMode;
+        if ( g_ClutchModeActive )
+        {
+            g_SinceLastClutchMode = 0;
+            g_ClutchModeActive = false;
+        }
+        else
+        {
+            ++g_SinceLastClutchMode;
+        }
     }
     
     if ( !g_ClutchModeActive && g_SinceLastClutchMode >= 3 )

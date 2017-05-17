@@ -41,7 +41,7 @@ int GetTeamSniperFlagIndex( int team, RTSniperFlag flag )
 
 bool IsClientValidAndInGame( int client )
 {
-    return client > 0 && client <= MaxClients && !IsFakeClient( client ) && IsClientInGame( client );
+    return client > 0 && client <= MaxClients && IsClientInGame( client ) && !IsFakeClient( client );
 }
 
 /**
