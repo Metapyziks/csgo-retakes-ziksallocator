@@ -201,11 +201,6 @@ public void Retakes_OnTeamSizesSet( int& tCount, int& ctCount )
     ClutchMode_OnTeamSizesSet( tCount, ctCount );
 }
 
-public void Retakes_OnTeamsSet( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite )
-{
-    ClutchMode_OnTeamsSet( tPlayers, ctPlayers, bombsite );
-}
-
 /**
  * Called when a client issues a command to bring up a "guns" menu.
  *
@@ -222,8 +217,6 @@ public void Retakes_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlay
 {
     if ( winner == CS_TEAM_T ) OnTerroristsWon();
     else OnCounterTerroristsWon();
-
-    ClutchMode_OnRoundWon( winner, tPlayers, ctPlayers );
 }
 
 /**

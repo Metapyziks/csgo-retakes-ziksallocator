@@ -1,24 +1,31 @@
-bool CanClutchMode( int client )
-{
-    return IsClientValidAndInGame( client ) && false;
-}
-
-bool IsClutchModePossible()
-{
-    return Retakes_Enabled() && Retakes_GetNumActivePlayers() >= 4 && Retakes_GetNumActivePlayers() <= 6;
-}
+bool g_ClutchModeActive = false;
+int g_SinceLastClutchMode = 0;
 
 void ClutchMode_OnTeamSizesSet( int& tCount, int& ctCount )
 {
-    // TODO
-}
+    if ( tCount != ctCount || tCount <= 1 )
+    {
+        g_ClutchModeActive = false;
+        g_SinceLastClutchMode = 0;
+        return;
+    }
+    
+    if ( GetWinStreak() == 0 )
+    {
+        ++g_SinceLastClutchMode;
+    }
+    
+    if ( !g_ClutchModeActive && g_SinceLastClutchMode >= 3 )
+    {
+        g_ClutchModeActive = true;
+        g_SinceLastClutchMode = 0;
+        
+        Retakes_MessageToAll( "{GREEN}CLUTCH MODE{NORMAL}!" );
+    }
 
-void ClutchMode_OnTeamsSet( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite )
-{
-    // TODO
-}
-
-void ClutchMode_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlayers )
-{
-    // TODO
+    if ( g_ClutchModeActive )
+    {
+        --tCount;
+        ++ctCount;
+    }
 }
