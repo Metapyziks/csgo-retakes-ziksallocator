@@ -43,7 +43,7 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
     SetupClientCookies();
-    ClutchMode_SetupClientCookies();
+    ZiksPoints_SetupClientCookies();
 
     SetupConVars();
     
@@ -84,7 +84,12 @@ public void OnClientConnected( int client )
     InvalidateLoadedCookies( client );
 
     Afk_OnClientConnected( client );
-    ClutchMode_OnClientConnected( client );
+    ZiksPoints_OnClientConnected( client );
+}
+
+public void OnClientDisconnect( int client )
+{
+    ZiksPoints_OnClientDisconnect( client );
 }
 
 public void OnClientPutInServer( int client )
@@ -96,7 +101,7 @@ public Action Event_PlayerDeath( Event event, const char[] name, bool dontBroadc
 {
     BombTime_PlayerDeath( event );
     NoScope_PlayerDeath( event );
-    ClutchMode_PlayerDeath( event );
+    ZiksPoints_PlayerDeath( event );
 
     return Plugin_Continue;
 }

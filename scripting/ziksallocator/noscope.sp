@@ -52,7 +52,7 @@ void NoScope_PlayerDeath( Event event )
         if ( wasEnemy )
         {
             int points = g_WasNoScoped[victim] && g_WasJumpShot[victim] ? 3 : 1;
-            GiveClutchPoints( attacker, points );
+            ZiksPoints_Award( attacker, points );
         }
     }
 }
