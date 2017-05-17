@@ -73,7 +73,7 @@ void ZiksPoints_Award( int client, int points )
     char plural[2] = "s";
     if ( points == 1 ) plural[0] = 0;
 
-    Retakes_MessageToAll( "{GREEN}%s{NORMAL} gained {LIGHT_RED}%i{NORMAL} clutch point%s! ({LIGHT_RED}%i{NORMAL} total)",
+    Retakes_MessageToAll( "{GREEN}%s{NORMAL} gained {LIGHT_RED}%i{NORMAL} ziks point%s! ({LIGHT_RED}%i{NORMAL} total)",
         clientName, points, plural, g_ZiksPoints[client] );
 }
 
@@ -92,7 +92,7 @@ void ZiksPoints_Deduct( int client, int points )
     char plural[2] = "s";
     if ( points == 1 ) plural[0] = 0;
 
-    Retakes_MessageToAll( "{GREEN}%s{NORMAL} lost {LIGHT_RED}%i{NORMAL} clutch point%s! ({LIGHT_RED}%i{NORMAL} total)",
+    Retakes_MessageToAll( "{GREEN}%s{NORMAL} lost {LIGHT_RED}%i{NORMAL} ziks point%s! ({LIGHT_RED}%i{NORMAL} total)",
         clientName, points, plural, g_ZiksPoints[client] );
 }
 
@@ -109,4 +109,16 @@ void ZiksPoints_PlayerDeath( Event event )
     {
         ZiksPoints_Deduct( attacker, 1 );
     }
+}
+
+void ZiksPoints_OnChatCommand( int client )
+{
+    if ( !IsClientValidAndInGame( client ) ) return;
+
+    int points = ZiksPoints_Get( client );
+    
+    char plural[2] = "s";
+    if ( points == 1 ) plural[0] = 0;
+
+    Retakes_Message( client, "You have {LIGHT_RED}%i{NORMAL} ziks point%s!", points, plural );
 }

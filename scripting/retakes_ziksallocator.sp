@@ -201,6 +201,24 @@ public void Retakes_OnTeamSizesSet( int& tCount, int& ctCount )
     ClutchMode_OnTeamSizesSet( tCount, ctCount );
 }
 
+public Action OnClientSayCommand( int client, const char[] command, const char[] args )
+{
+    static char ziksPointsChatCommands[][] = {
+        "points", "zikspoints",
+        ".points", ".zikspoints", ".ziks",
+        "!points", "!zikspoints", "!ziks"
+    };
+
+    for ( int i = 0; i < sizeof(ziksPointsChatCommands); i++ ) {
+        if ( strcmp( args[0], ziksPointsChatCommands[i], false ) == 0 ) {
+            ZiksPoints_OnChatCommand( client );
+            break;
+        }
+    }
+
+    return Plugin_Continue;
+}
+
 /**
  * Called when a client issues a command to bring up a "guns" menu.
  *
