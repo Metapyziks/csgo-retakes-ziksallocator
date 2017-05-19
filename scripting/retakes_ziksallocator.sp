@@ -59,12 +59,12 @@ public void OnPluginStart()
 
     for ( int client = 1; client <= MaxClients; ++client )
     {
-		if ( IsClientValidAndInGame( client ) )
+        if ( IsClientValidAndInGame( client ) )
         {
             OnClientConnected( client );
             OnClientPutInServer( client );
-		}
-	}
+        }
+    }
 }
 
 public void OnMapStart()
