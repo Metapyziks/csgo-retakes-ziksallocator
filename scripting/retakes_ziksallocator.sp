@@ -18,6 +18,7 @@
 #include "ziksallocator/preferences.sp"
 #include "ziksallocator/persistence.sp"
 #include "ziksallocator/allocator.sp"
+#include "ziksallocator/zikspoints.sp"
 #include "ziksallocator/bombtime.sp"
 #include "ziksallocator/noscope.sp"
 #include "ziksallocator/afk.sp"
@@ -42,7 +43,7 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
     SetupClientCookies();
-    ClutchMode_SetupClientCookies();
+    ZiksPoints_OnPluginStart();
 
     SetupConVars();
     
@@ -58,12 +59,12 @@ public void OnPluginStart()
 
     for ( int client = 1; client <= MaxClients; ++client )
     {
-		if ( IsClientValidAndInGame( client ) )
+        if ( IsClientValidAndInGame( client ) )
         {
             OnClientConnected( client );
             OnClientPutInServer( client );
-		}
-	}
+        }
+    }
 }
 
 public void OnMapStart()
@@ -83,7 +84,12 @@ public void OnClientConnected( int client )
     InvalidateLoadedCookies( client );
 
     Afk_OnClientConnected( client );
-    ClutchMode_OnClientConnected( client );
+    ZiksPoints_OnClientConnected( client );
+}
+
+public void OnClientDisconnect( int client )
+{
+    ZiksPoints_OnClientDisconnect( client );
 }
 
 public void OnClientPutInServer( int client )
@@ -95,7 +101,7 @@ public Action Event_PlayerDeath( Event event, const char[] name, bool dontBroadc
 {
     BombTime_PlayerDeath( event );
     NoScope_PlayerDeath( event );
-    ClutchMode_PlayerDeath( event );
+    ZiksPoints_PlayerDeath( event );
 
     return Plugin_Continue;
 }
@@ -178,16 +184,27 @@ public Action OnTakeDamage( int victim,
 {
     if ( !IsClientValidAndInGame( victim ) ) return Plugin_Continue;
 
-    NoScope_OnTakeDamage( victim, attacker, inflictor, damage,
-        damagetype, weapon, damageForce, damagePosition, damagecustom );
+    bool ignored = false;
 
-    if ( !GetIsHeadshotOnly() ) return Plugin_Continue;
+    if ( GetIsHeadshotOnly() )
+    {
+        bool defusing = g_DefusingClient == victim && g_CurrentlyDefusing;
+        bool willDie = GetClientHealth( victim ) <= damage;
+        bool headShot = (damagetype & CS_DMG_HEADSHOT) == CS_DMG_HEADSHOT;
 
-    bool defusing = g_DefusingClient == victim && g_CurrentlyDefusing;
-    bool willDie = GetClientHealth( victim ) <= damage;
-    bool headShot = (damagetype & CS_DMG_HEADSHOT) == CS_DMG_HEADSHOT;
+        ignored = !defusing && !willDie && !headShot;
+    }
 
-    return (defusing || willDie || headShot) ? Plugin_Continue : Plugin_Handled;
+    if ( !ignored )
+    {
+        NoScope_OnTakeDamage( victim, attacker, inflictor, damage,
+            damagetype, weapon, damageForce, damagePosition, damagecustom );
+
+        ZiksPoints_OnTakeDamage( victim, attacker, inflictor, damage,
+            damagetype, weapon, damageForce, damagePosition, damagecustom );
+    }
+
+    return ignored ? Plugin_Handled : Plugin_Continue;
 }
 
 public void Retakes_OnTeamSizesSet( int& tCount, int& ctCount )
@@ -195,9 +212,24 @@ public void Retakes_OnTeamSizesSet( int& tCount, int& ctCount )
     ClutchMode_OnTeamSizesSet( tCount, ctCount );
 }
 
-public void Retakes_OnTeamsSet( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite )
+public Action OnClientSayCommand( int client, const char[] command, const char[] args )
 {
-    ClutchMode_OnTeamsSet( tPlayers, ctPlayers, bombsite );
+    static char ziksPointsChatCommands[][] = {
+        "points", "zikspoints",
+        ".points", ".zikspoints", ".ziks",
+        "!points", "!zikspoints", "!ziks"
+    };
+
+    for ( int i = 0; i < sizeof(ziksPointsChatCommands); i++ )
+    {
+        if ( strcmp( args[0], ziksPointsChatCommands[i], false ) == 0 )
+        {
+            ZiksPoints_OnChatCommand( client );
+            break;
+        }
+    }
+
+    return Plugin_Continue;
 }
 
 /**
@@ -216,8 +248,6 @@ public void Retakes_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlay
 {
     if ( winner == CS_TEAM_T ) OnTerroristsWon();
     else OnCounterTerroristsWon();
-
-    ClutchMode_OnRoundWon( winner, tPlayers, ctPlayers );
 }
 
 /**
