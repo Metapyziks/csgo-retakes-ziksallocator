@@ -87,6 +87,13 @@ void BombTime_BombBeginDefuse( Event event )
     {
         g_DefuseEndTime = endTime;
         g_DefusingClient = defuser;
+
+        int bomb = FindEntityByClassname( -1, "weapon_c4" );
+        if ( !BombTime_AnyLivingTerrorists() && bomb != -1 )
+        {   
+            float defuseLength = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 0 );
+            SetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", defuseLength - 4, 0 );
+        } 
     }
 }
 
@@ -116,3 +123,19 @@ void BombTime_BombExploded( Event event )
             defuserName, timeString );
     }
 }
+
+bool BombTime_AnyLivingTerrorists()
+{
+    for ( int client = 1; client <= MaxClients; ++client )
+    {
+        if ( !IsClientValidAndInGame( client ) || !IsOnTeam( client ) ) continue;
+
+        int team = GetClientTeam( client );
+        if ( team != CS_TEAM_T ) continue;
+
+        if ( IsPlayerAlive( client ) ) return true;    
+    }
+    return false;
+}
+
+//TODO check for live grenades
