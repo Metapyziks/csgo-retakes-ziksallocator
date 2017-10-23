@@ -6,10 +6,19 @@
  */
 void GiveResetConfirmMenu( int client )
 {
+    char buffer[128];
+
     Handle menu = CreateMenu( MenuHandler_ResetConfirm );
-    SetMenuTitle( menu, "Are you sure?" );
-    AddMenuBool( menu, true, "Yes, reset all loadouts" );
-    AddMenuBool( menu, false, "Whoops, no thanks!" );
+
+    Format( buffer, sizeof(buffer), "%t", "ResetConfirmHeading" );
+    SetMenuTitle( menu, buffer );
+    
+    Format( buffer, sizeof(buffer), "%t", "ResetConfimYes" );
+    AddMenuBool( menu, true, buffer );
+    
+    Format( buffer, sizeof(buffer), "%t", "ResetConfimNo" );
+    AddMenuBool( menu, false, buffer );
+
     SetMenuExitBackButton( menu, true );
     DisplayMenu( menu, client, GetMenuTimeSeconds() );
 }
@@ -46,6 +55,6 @@ public int MenuHandler_ResetConfirm( Handle menu, MenuAction action, int param1,
         ResetAllLoadouts( client );
         SaveLoadouts( client );
     }
-    
+
     GiveMainMenu( client );
 }

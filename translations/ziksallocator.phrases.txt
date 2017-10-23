@@ -22,6 +22,18 @@
     {
         "en"        "Reset all"
     }
+    "ResetConfirmHeading"
+    {
+        "en"        "Are you sure?"
+    }
+    "ResetConfimYes"
+    {
+        "en"        "Yes, reset all loadouts"
+    }
+    "ResetConfimNo"
+    {
+        "en"        "Whoops, no thanks!"
+    }
 
     "TeamLoadoutHeading"
     {

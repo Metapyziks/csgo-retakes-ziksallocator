@@ -42,6 +42,8 @@ public Plugin myinfo =
  */
 public void OnPluginStart()
 {
+    LoadTranslations( "ziksallocator.phrases" );
+
     SetupClientCookies();
     ZiksPoints_OnPluginStart();
 
