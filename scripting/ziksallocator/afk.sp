@@ -48,7 +48,7 @@ void Afk_ForceSpectate( int client )
     char clientName[64];
     GetClientName( client, clientName, sizeof(clientName) );
     
-    Retakes_MessageToAll( "Moving {GREEN}%s{NORMAL} to spectate for being {LIGHT_RED}AFK{NORMAL}.", clientName );
+    Retakes_MessageToAll( "%t", "MovingAfkPlayerMessage", clientName );
 
     ChangeClientTeam( client, CS_TEAM_SPEC );
 }

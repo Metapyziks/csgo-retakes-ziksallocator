@@ -1,3 +1,5 @@
+#define ZIKS_POINTS 1
+
 Handle g_ZiksPointsCookie = INVALID_HANDLE;
 
 int g_ZiksPoints[MAXPLAYERS+1];

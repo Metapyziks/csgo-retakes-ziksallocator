@@ -427,19 +427,20 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
     char loadoutNameCT[32];
     GetLoadoutName( CS_TEAM_CT, ctLoadout, loadoutNameCT, sizeof(loadoutNameCT) );
 
-    char hudMessage[256];
+    //char hudMessage[256];
 
     if ( strcmp( loadoutNameT, loadoutNameCT, false ) == 0 )
     {
-        Retakes_MessageToAll( "{GREEN}%s{NORMAL} round!", loadoutNameT );
-        Format( hudMessage, sizeof(hudMessage), "Retake %s\n%s Round", SITESTRING( bombsite ), loadoutNameT );
+        Retakes_MessageToAll( "%t", "SymmetricRoundMessage", loadoutNameT );
+        //Format( hudMessage, sizeof(hudMessage), "Retake %s\n%s Round", SITESTRING( bombsite ), loadoutNameT );
     }
     else
     {
-        Retakes_MessageToAll( "{LIGHT_RED}%s{NORMAL} vs {PURPLE}%s{NORMAL} round!", loadoutNameT, loadoutNameCT );
-        Format( hudMessage, sizeof(hudMessage), "Retake %s\n%s vs %s Round", SITESTRING( bombsite ), loadoutNameT, loadoutNameCT );
+        Retakes_MessageToAll( "%t", "AsymmetricRoundMessage", loadoutNameT, loadoutNameCT );
+        //Format( hudMessage, sizeof(hudMessage), "Retake %s\n%s vs %s Round", SITESTRING( bombsite ), loadoutNameT, loadoutNameCT );
     }
 
+/*
     for ( int i = 0; i < tPlayers.Length; ++i )
     {
         int client = tPlayers.Get( i );
@@ -451,6 +452,7 @@ void WeaponAllocator( ArrayList tPlayers, ArrayList ctPlayers, Bombsite bombsite
         int client = ctPlayers.Get( i );
         DisplayRoundInfoMessage( client, hudMessage );
     }
+*/
 
     HandleTeamLoadout( CS_TEAM_T, tPlayers, tLoadout );
     HandleTeamLoadout( CS_TEAM_CT, ctPlayers, ctLoadout );

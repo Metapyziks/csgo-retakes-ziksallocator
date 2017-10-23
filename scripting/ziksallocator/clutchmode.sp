@@ -28,7 +28,7 @@ void ClutchMode_OnTeamSizesSet( int& tCount, int& ctCount )
         g_ClutchModeActive = true;
         g_SinceLastClutchMode = 0;
         
-        Retakes_MessageToAll( "{GREEN}CLUTCH MODE{NORMAL}!" );
+        Retakes_MessageToAll( "%t", "ClutchModeMessage" );
     }
 
     if ( g_ClutchModeActive )

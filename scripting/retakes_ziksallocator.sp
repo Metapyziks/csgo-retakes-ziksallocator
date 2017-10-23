@@ -18,7 +18,7 @@
 #include "ziksallocator/preferences.sp"
 #include "ziksallocator/persistence.sp"
 #include "ziksallocator/allocator.sp"
-#include "ziksallocator/zikspoints.sp"
+//#include "ziksallocator/zikspoints.sp"
 #include "ziksallocator/bombtime.sp"
 #include "ziksallocator/noscope.sp"
 #include "ziksallocator/afk.sp"
@@ -45,7 +45,9 @@ public void OnPluginStart()
     LoadTranslations( "ziksallocator.phrases" );
 
     SetupClientCookies();
+#if defined ZIKS_POINTS
     ZiksPoints_OnPluginStart();
+#endif
 
     SetupConVars();
     
@@ -86,12 +88,17 @@ public void OnClientConnected( int client )
     InvalidateLoadedCookies( client );
 
     Afk_OnClientConnected( client );
+    
+#if defined ZIKS_POINTS
     ZiksPoints_OnClientConnected( client );
+#endif
 }
 
 public void OnClientDisconnect( int client )
 {
+#if defined ZIKS_POINTS
     ZiksPoints_OnClientDisconnect( client );
+#endif
 }
 
 public void OnClientPutInServer( int client )
@@ -103,7 +110,9 @@ public Action Event_PlayerDeath( Event event, const char[] name, bool dontBroadc
 {
     BombTime_PlayerDeath( event );
     NoScope_PlayerDeath( event );
+#if defined ZIKS_POINTS
     ZiksPoints_PlayerDeath( event );
+#endif
 
     return Plugin_Continue;
 }
@@ -202,8 +211,10 @@ public Action OnTakeDamage( int victim,
         NoScope_OnTakeDamage( victim, attacker, inflictor, damage,
             damagetype, weapon, damageForce, damagePosition, damagecustom );
 
+#if defined ZIKS_POINTS
         ZiksPoints_OnTakeDamage( victim, attacker, inflictor, damage,
             damagetype, weapon, damageForce, damagePosition, damagecustom );
+#endif
     }
 
     return ignored ? Plugin_Handled : Plugin_Continue;
@@ -216,6 +227,7 @@ public void Retakes_OnTeamSizesSet( int& tCount, int& ctCount )
 
 public Action OnClientSayCommand( int client, const char[] command, const char[] args )
 {
+#if defined ZIKS_POINTS
     static char ziksPointsChatCommands[][] = {
         "points", "zikspoints",
         ".points", ".zikspoints", ".ziks",
@@ -230,6 +242,7 @@ public Action OnClientSayCommand( int client, const char[] command, const char[]
             break;
         }
     }
+#endif
 
     return Plugin_Continue;
 }

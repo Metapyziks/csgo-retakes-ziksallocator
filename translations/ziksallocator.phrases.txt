@@ -1,8 +1,153 @@
 "Phrases"
 {
+    //
+    // Misc
+    //
+
+    "TeamTerrorist"
+    {
+        "en"        "Terrorist"
+    }
+    "TeamCounterTerrorist"
+    {
+        "en"        "Counter-Terrorist"
+    }
+
+    "PistolLoadout"
+    {
+        "en"        "Pistol"
+    }
+    "ForceBuyLoadout"
+    {
+        "en"        "Force Buy"
+    }
+    "FullBuyLoadout"
+    {
+        "en"        "Full Buy"
+    }
+    "AWPLoadout"
+    {
+        "en"        "AWP"
+    }
+    "KnifeLoadout"
+    {
+        "en"        "Knife"
+    }
+
+    //
+    // Chat messages
+    //
+
+    "SymmetricRoundMessage"
+    {
+        // 1: round type / special weapon
+        "#format"   "{1:s}"
+
+        "en"        "{GREEN}{1}{NORMAL} round!"
+    }
+    "AsymmetricRoundMessage"
+    {
+        // 1: T round type / special weapon
+        // 2: CT round type / special weapon
+        "#format"   "{1:s} {2:s}"
+
+        "en"        "{LIGHT_RED}{1}{NORMAL} vs {PURPLE}{2}{NORMAL} round!"
+    }
+
+    "DefuserDiedTimeLeftMessage"
+    {
+        // 1: defuser name
+        // 2: time left seconds
+        "#format"   "{1:s} {2:s}"
+
+        "en"        "{GREEN}{1}{NORMAL} was {LIGHT_RED}{2}s{NORMAL} away from defusing!"
+    }
+    "PostDefuseKillTimeMessage"
+    {
+        // 1: attacker name
+        // 2: time left seconds
+        "#format"   "{1:s} {2:s}"
+
+        "en"        "{GREEN}{1}{NORMAL} was {LIGHT_RED}{2}s{NORMAL} too late to stop the defuser!"
+    }
+    "SuccessfulDefuseTimeLeftMessage"
+    {
+        // 1: defuser name
+        // 2: time left seconds
+        "#format"   "{1:s} {2:s}"
+
+        "en"        "{GREEN}{1}{NORMAL} defused with {LIGHT_RED}{2}s{NORMAL} remaining!"
+    }
+    "BombExplodedTimeLeftMessage"
+    {
+        // 1: defuser name
+        // 2: time left seconds
+        "#format"   "{1:s} {2:s}"
+
+        "en"        "{GREEN}{1}{NORMAL} was too late by {LIGHT_RED}{2}s{NORMAL}!"
+    }
+
+    "ClutchModeMessage"
+    {
+        "en"        "{GREEN}CLUTCH MODE{NORMAL}!"
+    }
+
+    "MovingAfkPlayerMessage"
+    {
+        // 1: player name
+        "#format"   "{1:s}"
+
+        "en"        "Moving {GREEN}{1}{NORMAL} to spectate for being {LIGHT_RED}AFK{NORMAL}."
+    }
+
+    "JumpShotNoScoped"
+    {
+        "en"        "jumping noscoped"
+    }
+    "NoScoped"
+    {
+        "en"        "noscoped"
+    }
+    "JumpShot"
+    {
+        "en"        "jump shot"
+    }
+    "SpecialKillMessage"
+    {
+        // 1: attacker name
+        // 2: kill type
+        // 3: victim name
+        // 4: a or an (english specific)
+        // 5: weapon name
+        // 6: distance in metres
+        "#format"   "{1:s} {2:s} {3:s} {4:s} {5:s} {6:s}"
+
+        "en"        "{GREEN}{1}{NORMAL} {2} {GREEN}{3}{NORMAL} with {4} {PURPLE}{5}{NORMAL} from {LIGHT_RED}{6}m{NORMAL} away!"
+    }
+
+    //
+    // Menu text
+    //
+
+    "Back"
+    {
+        "en"        "Back"
+    }
+    "Exit"
+    {
+        "en"        "Exit"
+    }
+
     "LoadoutMenuHeading"
     {
         "en"        "Configure loadouts:"
+    }
+    "ConfigureLoadout"
+    {
+        // 1: loadout type (pistol / full buy)
+        "#format"   "{1:s}"
+
+        "en"        "Configure {1} loadout:"
     }
 
     "PistolLoadout"
@@ -114,5 +259,34 @@
     "GearDefuseKit"
     {
         "en"    "Defuse Kit"
+    }
+
+    "TeamLoadoutPrimary"
+    {
+        // 1: team abbreviation
+        // 2: loadout type (pistol / full buy)
+        "#format"   "{1:s} {2:s}"
+
+        "en"        "%s %s primary:"
+    }
+
+    "NoWeapon"
+    {
+        "en"        "No weapon"
+    }
+    "NoWeaponCost"
+    {
+        // 1: cost
+        "#format"   "{1:i}"
+
+        "en"        "No weapon (+$%i)"
+    }
+
+    "MoneyAvailable"
+    {
+        // 1: money
+        "#format"   "{1:i}"
+
+        "en"        "Money available: ${1}"
     }
 }

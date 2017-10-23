@@ -21,8 +21,7 @@ void BombTime_PlayerDeath( Event event )
         char timeString[32];
         FloatToStringFixedPoint( timeRemaining, 2, timeString, sizeof(timeString) );
 
-        Retakes_MessageToAll( "{GREEN}%s{NORMAL} was {LIGHT_RED}%ss{NORMAL} away from defusing!",
-            defuserName, timeString );
+        Retakes_MessageToAll( "%t", "DefuserDiedTimeLeftMessage", defuserName, timeString );
     }
     else
     {
@@ -32,8 +31,7 @@ void BombTime_PlayerDeath( Event event )
         char timeString[32];
         FloatToStringFixedPoint( -timeRemaining, 2, timeString, sizeof(timeString) );
         
-        Retakes_MessageToAll( "{GREEN}%s{NORMAL} was {LIGHT_RED}%ss{NORMAL} too late to stop the defuser!",
-            attackerName, timeString );
+        Retakes_MessageToAll( "%t", "PostDefuseKillTimeMessage", attackerName, timeString );
     }
 }
 
@@ -70,8 +68,7 @@ void BombTime_BombDefused( Event event )
     char timeString[32];
     FloatToStringFixedPoint( timeRemaining, 2, timeString, sizeof(timeString) );
 
-    Retakes_MessageToAll( "{GREEN}%s{NORMAL} defused with {LIGHT_RED}%ss{NORMAL} remaining!",
-        defuserName, timeString );
+    Retakes_MessageToAll( "%t", "SuccessfulDefuseTimeLeftMessage", defuserName, timeString );
 }
 
 void BombTime_BombBeginDefuse( Event event )
@@ -119,8 +116,7 @@ void BombTime_BombExploded( Event event )
         char timeString[32];
         FloatToStringFixedPoint( timeRemaining, 2, timeString, sizeof(timeString) );
 
-        Retakes_MessageToAll( "{GREEN}%s{NORMAL} was too late by {LIGHT_RED}%s seconds{NORMAL}!",
-            defuserName, timeString );
+        Retakes_MessageToAll( "%t", "BombExplodedTimeLeftMessage", defuserName, timeString );
     }
 }
 

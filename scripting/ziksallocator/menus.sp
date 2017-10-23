@@ -31,7 +31,7 @@ void AddMoneyAvailableItems( Panel menu, RTLoadout loadout, int money )
     if ( !ShouldShowMoney( loadout ) ) return;
 
     char buffer[64];
-    Format( buffer, sizeof(buffer), "Money available: $%i", money );
+    Format( buffer, sizeof(buffer), "%t", "MoneyAvailable", money );
 
     menu.DrawItem( buffer, ITEMDRAW_RAWLINE );
 }
@@ -63,10 +63,17 @@ void FillMenu( Panel menu, int targetKey )
  */
 void AddBackExitItems( Panel menu )
 {
+    char buffer[64];
+
     FillMenu( menu, BACK_ITEM_INDEX );
-    menu.DrawItem( "Back" );
+
+    Format( buffer, sizeof(buffer), "%t", "Back" );
+    menu.DrawItem( buffer );
+
     FillMenu( menu, EXIT_ITEM_INDEX );
-    menu.DrawItem( "Exit" );
+
+    Format( buffer, sizeof(buffer), "%t", "Exit" );
+    menu.DrawItem( buffer );
 }
 
 #include "ziksallocator/menus/main.sp"

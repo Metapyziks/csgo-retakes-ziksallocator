@@ -40,7 +40,7 @@ void GiveWeaponCategoryMenu( int client, int team, RTLoadout loadout )
     GetLoadoutName( 0, loadout, loadoutName, sizeof(loadoutName) );
 
     char buffer[128];
-    Format( buffer, sizeof(buffer), "%s %s primary:", teamAbbrev, loadoutName );
+    Format( buffer, sizeof(buffer), "%t", "TeamLoadoutPrimary", teamAbbrev, loadoutName );
 
     Panel menu = new Panel();
     menu.SetTitle( buffer );
@@ -55,12 +55,13 @@ void GiveWeaponCategoryMenu( int client, int team, RTLoadout loadout )
 
     if ( weapon != WEAPON_NONE && ShouldShowMoney( loadout ) )
     {
-        Format( buffer, sizeof(buffer), "No weapon (+$%i)", cost );
+        Format( buffer, sizeof(buffer), "%t", "NoWeaponCost", cost );
         menu.DrawItem( buffer );
     }
     else
     {
-        menu.DrawItem( "No weapon" );
+        Format( buffer, sizeof(buffer), "%t", "NoWeapon" );
+        menu.DrawItem( buffer );
     }
 
     for ( int i = 0; i < sizeof(g_PrimaryCategories); ++i )

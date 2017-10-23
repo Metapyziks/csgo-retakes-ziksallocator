@@ -52,7 +52,9 @@ void NoScope_PlayerDeath( Event event )
         if ( wasEnemy )
         {
             int points = g_WasNoScoped[victim] && g_WasJumpShot[victim] ? 3 : 1;
+#if defined ZIKS_POINTS
             ZiksPoints_Award( attacker, points );
+#endif
         }
     }
 }
@@ -86,11 +88,11 @@ void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool no
     char killType[64];
 
     if (noScope && jumpShot) {
-        killType = "jumping noscoped";
+        Format( killType, sizeof(killType), "%t", "JumpShotNoScoped" );
     } else if (noScope) {
-        killType = "noscoped";
+        Format( killType, sizeof(killType), "%t", "NoScoped" );
     } else if (jumpShot) {
-        killType = "jump shot";
+        Format( killType, sizeof(killType), "%t", "JumpShot" );
     } else {
         return;
     }
@@ -103,6 +105,6 @@ void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool no
     if ( weaponName[0] == 'A' ) prefix = "an";
     else prefix = "a";
 
-    Retakes_MessageToAll( "{GREEN}%s{NORMAL} %s {GREEN}%s{NORMAL} with %s {PURPLE}%s{NORMAL} from {LIGHT_RED}%sm{NORMAL} away!",
+    Retakes_MessageToAll( "%t", "SpecialKillMessage",
         attackerName, killType, victimName, prefix, weaponName, distanceString );
 }

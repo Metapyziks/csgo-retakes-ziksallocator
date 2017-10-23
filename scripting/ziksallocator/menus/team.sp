@@ -13,12 +13,18 @@ void GiveTeamMenu( int client, RTLoadout loadout )
     GetLoadoutName( 0, loadout, loadoutName, sizeof(loadoutName) );
 
     char buffer[128];
-    Format( buffer, sizeof(buffer), "Configure %s loadout:", loadoutName );
 
     Handle menu = CreateMenu( MenuHandler_Team );
+    
+    Format( buffer, sizeof(buffer), "%t", "ConfigureLoadout", loadoutName );
     SetMenuTitle( menu, buffer );
-    AddMenuInt( menu, CS_TEAM_T, "Terrorist" );
-    AddMenuInt( menu, CS_TEAM_CT, "Counter-Terrorist" );
+    
+    Format( buffer, sizeof(buffer), "%t", "TeamTerrorist" );
+    AddMenuInt( menu, CS_TEAM_T, buffer );
+    
+    Format( buffer, sizeof(buffer), "%t", "TeamCounterTerrorist" );
+    AddMenuInt( menu, CS_TEAM_CT, buffer );
+
     SetMenuExitBackButton( menu, true );
     DisplayMenu( menu, client, GetMenuTimeSeconds() );
 }
