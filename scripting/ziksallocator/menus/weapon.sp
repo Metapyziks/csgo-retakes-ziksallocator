@@ -16,7 +16,7 @@ void GiveWeaponMenu( int client, int team, RTLoadout loadout, CSWeaponCategory c
     char teamAbbrev[8];
     GetTeamAbbreviation( team, teamAbbrev, sizeof(teamAbbrev) );
 
-    char loadoutName[16];
+    char loadoutName[32];
     GetLoadoutName( 0, loadout, loadoutName, sizeof(loadoutName) );
 
     char weaponCategoryName[16];

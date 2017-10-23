@@ -13,23 +13,23 @@
         "en"        "Counter-Terrorist"
     }
 
-    "PistolLoadout"
+    "Pistol"
     {
         "en"        "Pistol"
     }
-    "ForceBuyLoadout"
+    "ForceBuy"
     {
         "en"        "Force Buy"
     }
-    "FullBuyLoadout"
+    "FullBuy"
     {
         "en"        "Full Buy"
     }
-    "AWPLoadout"
+    "AWP"
     {
         "en"        "AWP"
     }
-    "KnifeLoadout"
+    "Knife"
     {
         "en"        "Knife"
     }
