@@ -1,0 +1,106 @@
+"Phrases"
+{
+    "LoadoutMenuHeading"
+    {
+        "en"        "Configure loadouts:"
+    }
+
+    "PistolLoadout"
+    {
+        "en"        "Pistol loadout"
+    }
+    "FullBuyLoadout"
+    {
+        "en"        "Full Buy loadout"
+    }
+    "AWPLoadout"
+    {
+        "en"        "AWP loadout"
+    }
+
+    "ResetAll"
+    {
+        "en"        "Reset all"
+    }
+
+    "TeamLoadoutHeading"
+    {
+        // 1: team name
+        // 2: loadout type (pistol / full buy)
+        "#format"   "{1:s} {2:s}"
+
+        "en"        "{1} {2} loadout:"
+    }
+
+    "EnableGearOption"
+    {
+        // 1: item name
+        // 2: item cost
+        "#format"   "{1:s} {2:i}"
+
+        "en"        "Enable {1} (-${2})"
+    }
+    "DisableGearOption"
+    {
+        // 1: item name
+        // 2: item cost
+        "#format"   "{1:s} {2:i}"
+
+        "en"        "Disable {1} (+${2})"
+    }
+
+    "EnableAWPRounds"
+    {
+        "en"    "Enable AWP rounds"
+    }
+    "DisableAWPRounds"
+    {
+        "en"    "Disable AWP rounds"
+    }
+
+    "FrequencySometimes"
+    {
+        "en"    "Frequency: Sometimes"
+    }
+    "FrequencyAlways"
+    {
+        "en"    "Frequency: Always if available"
+    }
+
+    "EnableAWPAlone"
+    {
+        "en"    "AWP when alone: Enabled"
+    }
+    "DisableAWPAlone"
+    {
+        "en"    "AWP when alone: Disabled"
+    }
+
+    "PrimaryWeapon"
+    {
+        // 1: weapon name
+        "#format"   "{1:s}"
+
+        "en"        "Primary: {1}"
+    }
+    "SecondaryWeapon"
+    {
+        // 1: weapon name
+        "#format"   "{1:s}"
+
+        "en"        "Sidearm: {1}"
+    }
+
+    "GearHelmet"
+    {
+        "en"    "Helmet"
+    }
+    "GearKevlar"
+    {
+        "en"    "Kevlar"
+    }
+    "GearDefuseKit"
+    {
+        "en"    "Defuse Kit"
+    }
+}

@@ -6,12 +6,25 @@
  */
 void GiveMainMenu( int client )
 {
+    char buffer[128];
+
     Handle menu = CreateMenu( MenuHandler_Main );
-    SetMenuTitle( menu, "Configure loadouts:" );
-    AddMenuInt( menu, view_as<int>( LOADOUT_PISTOL ), "Pistol loadout" );
-    AddMenuInt( menu, view_as<int>( LOADOUT_FULL ), "Full Buy loadout" );
-    AddMenuInt( menu, view_as<int>( LOADOUT_SNIPER ), "AWP loadout" );
-    AddMenuInt( menu, -1, "Reset all" );
+
+    Format( buffer, sizeof(buffer), "%t", "LoadoutMenuHeading" );
+    SetMenuTitle( menu, buffer );
+
+    Format( buffer, sizeof(buffer), "%t", "PistolLoadout" );
+    AddMenuInt( menu, view_as<int>( LOADOUT_PISTOL ), buffer );
+
+    Format( buffer, sizeof(buffer), "%t", "FullBuyLoadout" );
+    AddMenuInt( menu, view_as<int>( LOADOUT_FULL ), buffer );
+
+    Format( buffer, sizeof(buffer), "%t", "AWPLoadout" );
+    AddMenuInt( menu, view_as<int>( LOADOUT_SNIPER ), buffer );
+
+    Format( buffer, sizeof(buffer), "%t", "ResetAll" );
+    AddMenuInt( menu, -1, buffer );
+
     DisplayMenu( menu, client, GetMenuTimeSeconds() );
 }
 

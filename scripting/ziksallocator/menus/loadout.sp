@@ -12,16 +12,19 @@
  */
 void AddGearOption( Panel menu, char[] name, int available, int cost, bool equipped )
 {
+    char translatedName[64];
+    Format( translatedName, sizeof(translatedName), "%t", name );
+
     char buffer[64];
     bool enabled = true;
 
     if ( equipped )
     {
-        Format( buffer, sizeof(buffer), "Disable %s (+$%i)", name, cost );
+        Format( buffer, sizeof(buffer), "%t", "DisableGearOption", translatedName, cost );
     }
     else
     {
-        Format( buffer, sizeof(buffer), "Enable %s (-$%i)", name, cost );
+        Format( buffer, sizeof(buffer), "%t", "EnableGearOption", translatedName, cost );
         enabled = available >= cost;
     }
 
@@ -49,7 +52,7 @@ void GiveLoadoutMenu( int client, int team, RTLoadout loadout )
     GetLoadoutName( 0, loadout, loadoutName, sizeof(loadoutName) );
 
     char buffer[128];
-    Format( buffer, sizeof(buffer), "%s %s loadout:", teamAbbrev, loadoutName );
+    Format( buffer, sizeof(buffer), "%t", "TeamLoadoutHeading", teamAbbrev, loadoutName );
 
     Panel menu = new Panel();
     menu.SetTitle( buffer );
@@ -63,16 +66,22 @@ void GiveLoadoutMenu( int client, int team, RTLoadout loadout )
         bool enabled = GetSniperFlag( client, team, SNIPER_ENABLED );
         int flagStyle = enabled ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED;
 
-        menu.DrawItem( enabled ? "Disable AWP rounds" : "Enable AWP rounds" );
-        menu.DrawItem( GetSniperFlag( client, team, SNIPER_SOMETIMES )
-            ? "Frequency: Sometimes" : "Frequency: Always if available", flagStyle );
-        menu.DrawItem( GetSniperFlag( client, team, SNIPER_NEVERALONE )
-            ? "AWP when alone: Disabled" : "AWP when alone: Enabled", flagStyle );
+        Format( buffer, sizeof(buffer), "%t", enabled
+            ? "DisableAWPRounds" : "EnableAWPRounds" );
+        menu.DrawItem( buffer );
+
+        Format( buffer, sizeof(buffer), "%t", GetSniperFlag( client, team, SNIPER_SOMETIMES )
+            ? "FrequencySometimes" : "FrequencyAlways" );
+        menu.DrawItem( buffer, flagStyle );
+
+        Format( buffer, sizeof(buffer), "%t", GetSniperFlag( client, team, SNIPER_NEVERALONE )
+            ? "DisableAWPAlone" : "EnableAWPAlone" );
+        menu.DrawItem( buffer, flagStyle );
     }
 
     if ( ShowKevlarOption( client, team, loadout ) )
     {
-        AddGearOption( menu, "Kevlar", moneyAvailable,
+        AddGearOption( menu, "GearKevlar", moneyAvailable,
             KEVLAR_COST, GetKevlar( client, team, loadout ) );
     }
 
@@ -84,13 +93,13 @@ void GiveLoadoutMenu( int client, int team, RTLoadout loadout )
             cost += KEVLAR_COST;
         }
 
-        AddGearOption( menu, "Helmet", moneyAvailable,
+        AddGearOption( menu, "GearHelmet", moneyAvailable,
             cost, GetHelmet( client, team, loadout ) );
     }
 
     if ( ShowDefuseOption( client, team, loadout ) )
     {
-        AddGearOption( menu, "Defuse Kit", moneyAvailable,
+        AddGearOption( menu, "GearDefuseKit", moneyAvailable,
             DEFUSE_COST, GetDefuse( client, team, loadout ) );
     }
 
@@ -99,7 +108,7 @@ void GiveLoadoutMenu( int client, int team, RTLoadout loadout )
         char weaponName[32];
         GetWeaponName( GetPrimary( client, team, loadout ), weaponName, sizeof(weaponName) );
 
-        Format( buffer, sizeof(buffer), "Primary: %s", weaponName );
+        Format( buffer, sizeof(buffer), "%t", "PrimaryWeapon", weaponName );
 
         menu.DrawItem( buffer, PrimaryOptionEnabled( client, team, loadout )
             ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED );
@@ -110,7 +119,7 @@ void GiveLoadoutMenu( int client, int team, RTLoadout loadout )
         char pistolName[32];
         GetWeaponName( GetSecondary( client, team, loadout ), pistolName, sizeof(pistolName) );
 
-        Format( buffer, sizeof(buffer), "Sidearm: %s", pistolName );
+        Format( buffer, sizeof(buffer), "%t", "SecondaryWeapon", pistolName );
 
         menu.DrawItem( buffer, SecondaryOptionEnabled( client, team, loadout )
             ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED );
