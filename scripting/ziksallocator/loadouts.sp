@@ -10,10 +10,10 @@ void GetLoadoutName( int team, RTLoadout loadout, char[] buffer, int maxLength )
 {
     switch ( loadout )
     {
-        case LOADOUT_PISTOL: Format( buffer, maxLength, "%t", "PistolLoadout" );
-        case LOADOUT_FORCE:  Format( buffer, maxLength, "%t", "ForceBuyLoadout" );
-        case LOADOUT_FULL:   Format( buffer, maxLength, "%t", "FullBuyLoadout" );
-        case LOADOUT_SNIPER: Format( buffer, maxLength, "%t", "AWPLoadout" );
+        case LOADOUT_PISTOL: Format( buffer, maxLength, "%t", "Pistol" );
+        case LOADOUT_FORCE:  Format( buffer, maxLength, "%t", "ForceBuy" );
+        case LOADOUT_FULL:   Format( buffer, maxLength, "%t", "FullBuy" );
+        case LOADOUT_SNIPER: Format( buffer, maxLength, "%t", "AWP" );
         case LOADOUT_RANDOM:
         {
             if ( GetRandomPrimary( team ) != WEAPON_NONE )
@@ -26,7 +26,7 @@ void GetLoadoutName( int team, RTLoadout loadout, char[] buffer, int maxLength )
             }
             else
             {
-                Format( buffer, maxLength, "%t", "KnifeLoadout" );
+                Format( buffer, maxLength, "%t", "Knife" );
             }
         }
     }
