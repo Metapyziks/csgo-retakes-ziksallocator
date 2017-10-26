@@ -59,7 +59,7 @@
 
         "en"        "{GREEN}{1}{NORMAL} round!"
         "hu"        "{GREEN}{1}{NORMAL} kör!"
-        "de"        "{GREEN}{1}{NORMAL} RUND!"
+        "de"        "{GREEN}{1}{NORMAL} rund!"
     }
     "AsymmetricRoundMessage"
     {
