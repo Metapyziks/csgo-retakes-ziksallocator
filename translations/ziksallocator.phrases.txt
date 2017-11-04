@@ -65,7 +65,7 @@
     {
         // 1: T round type / special weapon
         // 2: CT round type / special weapon
-        "#format"   "{1:s} {2:s}"
+        "#format"   "{1:s},{2:s}"
 
         "en"        "{LIGHT_RED}{1}{NORMAL} vs {PURPLE}{2}{NORMAL} round!"
         "hu"        "{LIGHT_RED}{1}{NORMAL} vs {PURPLE}{2}{NORMAL} kör!"
@@ -76,7 +76,7 @@
     {
         // 1: defuser name
         // 2: time left seconds
-        "#format"   "{1:s} {2:s}"
+        "#format"   "{1:s},{2:s}"
 
         "en"        "{GREEN}{1}{NORMAL} was {LIGHT_RED}{2}s{NORMAL} away from defusing!"
         "hu"        "{GREEN}{1}{NORMAL} {LIGHT_RED}{2}másodperc{NORMAL} volt hátra a hatástalanításhoz!"
@@ -86,7 +86,7 @@
     {
         // 1: attacker name
         // 2: time left seconds
-        "#format"   "{1:s} {2:s}"
+        "#format"   "{1:s},{2:s}"
 
         "en"        "{GREEN}{1}{NORMAL} was {LIGHT_RED}{2}s{NORMAL} too late to stop the defuser!"
         "hu"        "{GREEN}{1}{NORMAL} {LIGHT_RED}{2}másodperc{NORMAL}el a hatástalanítás után ölte meg a hatástalanítót!"
@@ -96,7 +96,7 @@
     {
         // 1: defuser name
         // 2: time left seconds
-        "#format"   "{1:s} {2:s}"
+        "#format"   "{1:s},{2:s}"
 
         "en"        "{GREEN}{1}{NORMAL} defused with {LIGHT_RED}{2}s{NORMAL} remaining!"
         "hu"        "{GREEN}{1}{NORMAL} hatástalanította {LIGHT_RED}{2}másodperc{NORMAL} alatt!"
@@ -106,7 +106,7 @@
     {
         // 1: defuser name
         // 2: time left seconds
-        "#format"   "{1:s} {2:s}"
+        "#format"   "{1:s},{2:s}"
 
         "en"        "{GREEN}{1}{NORMAL} was too late by {LIGHT_RED}{2}s{NORMAL}!"
         "hu"        "{GREEN}{1}{NORMAL} {LIGHT_RED}{2}másodperc{NORMAL} kellett volna a hatástalanításhoz!"
@@ -156,7 +156,7 @@
         // 4: a or an (english specific)
         // 5: weapon name
         // 6: distance in metres
-        "#format"   "{1:s} {2:s} {3:s} {4:s} {5:s} {6:s}"
+        "#format"   "{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
 
         "en"        "{GREEN}{1}{NORMAL} {2} {GREEN}{3}{NORMAL} with {4} {PURPLE}{5}{NORMAL} from {LIGHT_RED}{6}m{NORMAL} away!"
         "hu"        "{GREEN}{1}{NORMAL} {2} {GREEN}{3}{NORMAL} {4} {PURPLE}{5}{NORMAL}-vel {LIGHT_RED}{6}m{NORMAL} távolról!"
@@ -247,7 +247,7 @@
     {
         // 1: team name
         // 2: loadout type (pistol / full buy)
-        "#format"   "{1:s} {2:s}"
+        "#format"   "{1:s},{2:s}"
 
         "en"        "{1} {2} loadout:"
         "hu"        "{1} {2} felszerelés:"
@@ -258,7 +258,7 @@
     {
         // 1: item name
         // 2: item cost
-        "#format"   "{1:s} {2:i}"
+        "#format"   "{1:s},{2:i}"
 
         "en"        "Enable {1} (-${2})"
         "hu"        "{1} (+${2}) engedélyezése"
@@ -268,7 +268,7 @@
     {
         // 1: item name
         // 2: item cost
-        "#format"   "{1:s} {2:i}"
+        "#format"   "{1:s},{2:i}"
 
         "en"        "Disable {1} (+${2})"
         "hu"        "{1} (+${2}) letiltása"
@@ -359,7 +359,7 @@
     {
         // 1: team abbreviation
         // 2: loadout type (pistol / full buy)
-        "#format"   "{1:s} {2:s}"
+        "#format"   "{1:s},{2:s}"
 
         "en"        "%s %s primary:"
         "hu"        "%s %s elsődleges:"
