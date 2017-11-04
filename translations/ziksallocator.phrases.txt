@@ -17,31 +17,31 @@
         "de"        "Counter-Terrorist"  
     }
 
-    "PistolLoadout"
+    "Pistol"
     {
         "en"        "Pistol"
         "hu"        "Pistoly"
         "de"        "Pistole"
     }
-    "ForceBuyLoadout"
+    "ForceBuy"
     {
         "en"        "Force Buy"
         "hu"        "Force Buy"
         "de"        "Force Buy"   
     }
-    "FullBuyLoadout"
+    "FullBuy"
     {
         "en"        "Full Buy"
         "hu"        "Teljes vásárlás"
         "de"        "Vollkauf"
     }
-    "AWPLoadout"
+    "AWP"
     {
         "en"        "AWP"
         "hu"        "AWP"
         "de"        "AWP"
     }
-    "KnifeLoadout"
+    "Knife"
     {
         "en"        "Knife"
         "hu"        "Kés"
