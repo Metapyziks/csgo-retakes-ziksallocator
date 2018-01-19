@@ -20,7 +20,7 @@
     "Pistol"
     {
         "en"        "Pistol"
-        "hu"        "Pistoly"
+        "hu"        "Pisztoly"
         "de"        "Pistole"
     }
     "ForceBuy"
@@ -33,7 +33,7 @@
     {
         "en"        "Full Buy"
         "hu"        "Teljes vásárlás"
-        "de"        "Vollkauf"
+        "de"        "Full Buy"
     }
     "AWP"
     {
@@ -59,7 +59,7 @@
 
         "en"        "{GREEN}{1}{NORMAL} round!"
         "hu"        "{GREEN}{1}{NORMAL} kör!"
-        "de"        "{GREEN}{1}{NORMAL} rund!"
+        "de"        "{GREEN}{1}{NORMAL} Runde!"
     }
     "AsymmetricRoundMessage"
     {
@@ -69,7 +69,7 @@
 
         "en"        "{LIGHT_RED}{1}{NORMAL} vs {PURPLE}{2}{NORMAL} round!"
         "hu"        "{LIGHT_RED}{1}{NORMAL} vs {PURPLE}{2}{NORMAL} kör!"
-        "de"        "{LIGHT_RED}{1}{NORMAL} vs {PURPLE}{2}{NORMAL} rund!"
+        "de"        "{LIGHT_RED}{1}{NORMAL} vs {PURPLE}{2}{NORMAL} Runde!"
     }
 
     "DefuserDiedTimeLeftMessage"
@@ -80,7 +80,7 @@
 
         "en"        "{GREEN}{1}{NORMAL} was {LIGHT_RED}{2}s{NORMAL} away from defusing!"
         "hu"        "{GREEN}{1}{NORMAL} {LIGHT_RED}{2}másodperc{NORMAL} volt hátra a hatástalanításhoz!"
-        "de"        "{GREEN}{1}{NORMAL} {LIGHT_RED}{2}Sekunde{NORMAL} zurück von der Entschärfung!"
+        "de"        "{GREEN}{1}{NORMAL} hätte in {LIGHT_RED}{2}Sekunden{NORMAL} die Bombe entschärft!"
     }
     "PostDefuseKillTimeMessage"
     {
@@ -90,7 +90,7 @@
 
         "en"        "{GREEN}{1}{NORMAL} was {LIGHT_RED}{2}s{NORMAL} too late to stop the defuser!"
         "hu"        "{GREEN}{1}{NORMAL} {LIGHT_RED}{2}másodperc{NORMAL}el a hatástalanítás után ölte meg a hatástalanítót!"
-        "de"        "{GREEN}{1}{NORMAL} {LIGHT_RED}{2}sekunde{NORMAL} vom Entschärfen entfernt!"
+        "de"        "{GREEN}{1}{NORMAL} war {LIGHT_RED}{2}Sekunden{NORMAL} zu spät um den Entschärfer aufzuhalten!"
     }
     "SuccessfulDefuseTimeLeftMessage"
     {
@@ -100,7 +100,7 @@
 
         "en"        "{GREEN}{1}{NORMAL} defused with {LIGHT_RED}{2}s{NORMAL} remaining!"
         "hu"        "{GREEN}{1}{NORMAL} hatástalanította {LIGHT_RED}{2}másodperc{NORMAL} alatt!"
-        "de"        "{GREEN}{1}{NORMAL} entschärft {LIGHT_RED}{2}sekonde{NORMAL} verbleibend!"
+        "de"        "{GREEN}{1}{NORMAL} entschärft mit {LIGHT_RED}{2}Sekunden{NORMAL} verbleibend!"
     }
     "BombExplodedTimeLeftMessage"
     {
@@ -110,7 +110,7 @@
 
         "en"        "{GREEN}{1}{NORMAL} was too late by {LIGHT_RED}{2}s{NORMAL}!"
         "hu"        "{GREEN}{1}{NORMAL} {LIGHT_RED}{2}másodperc{NORMAL} kellett volna a hatástalanításhoz!"
-        "de"        "{GREEN}{1}{NORMAL} war zu spät von {LIGHT_RED}{2}s{NORMAL}!"
+        "de"        "{GREEN}{1}{NORMAL} war {LIGHT_RED}{2}s{NORMAL} zu spät!"
     }
 
     "ClutchModeMessage"
@@ -127,7 +127,7 @@
 
         "en"        "Moving {GREEN}{1}{NORMAL} to spectate for being {LIGHT_RED}AFK{NORMAL}."
         "hu"        "{GREEN}{1}{NORMAL} át lett rakva nézőbe {LIGHT_RED}AFK{NORMAL} miatt."
-        "de"        "Bewegen Sie  {GREEN}{1}{NORMAL} Zuschauer um {LIGHT_RED}AFK{NORMAL} zu sehen."
+        "de"        "{GREEN}{1}{NORMAL} Ist jetzt Zuschauer, da {LIGHT_RED}AFK{NORMAL}."
     }
 
     "JumpShotNoScoped"
@@ -159,8 +159,8 @@
         "#format"   "{1:s},{2:s},{3:s},{4:s},{5:s},{6:s}"
 
         "en"        "{GREEN}{1}{NORMAL} {2} {GREEN}{3}{NORMAL} with {4} {PURPLE}{5}{NORMAL} from {LIGHT_RED}{6}m{NORMAL} away!"
-        "hu"        "{GREEN}{1}{NORMAL} {2} {GREEN}{3}{NORMAL} {4} {PURPLE}{5}{NORMAL}-vel {LIGHT_RED}{6}m{NORMAL} távolról!"
-        "de"        "{GREEN}{1}{NORMAL} {2} {GREEN}{3}{NORMAL} {4} {PURPLE}{5}{NORMAL} mit {LIGHT_RED}{6}m{NORMAL} entfern!"
+        "hu"        "{GREEN}{1}{NORMAL} {2} {GREEN}{3}{NORMAL} {PURPLE}{5}{NORMAL}-vel {LIGHT_RED}{6}m{NORMAL} távolról!"
+        "de"        "{GREEN}{1}{NORMAL} {2} {GREEN}{3}{NORMAL} {PURPLE}{5}{NORMAL} aus {LIGHT_RED}{6}m{NORMAL}!"
     }
 
     //
@@ -185,7 +185,7 @@
     {
         "en"        "Configure loadouts:"
         "hu"        "Felszerelések konfigurálása:"
-        "de"        "Konfigurieren von Loadouts:"
+        "de"        "Ausrüstung konfigurieren:"
     }
     "ConfigureLoadout"
     {
@@ -194,27 +194,27 @@
 
         "en"        "Configure {1} loadout:"
         "hu"        "{1} felszerelés konfigurálása:"
-        "de"        "Konfigurieren {1} laden:"
+        "de"        "{1}-Ausrüstung konfigurieren:"
     }
 
     "PistolLoadout"
     {
         "en"        "Pistol loadout"
         "hu"        "Pistoly felszerelés"
-        "de"        "Pistole laden"
+        "de"        "Pistolenrunde"
     }
     "FullBuyLoadout"
     {
         "en"        "Full Buy loadout"
         "hu"        "Teljes felszerelés"
-        "de"        "Vollkauf-Laden"
+        "de"        "Full Buy Ausrüstung"
 
     }
     "AWPLoadout"
     {
         "en"        "AWP loadout"
         "hu"        "AWP felszerelés"
-        "de"        "AWP-Loadout"
+        "de"        "AWP-Ausrüstung"
     }
 
     "ResetAll"
@@ -234,7 +234,7 @@
     {
         "en"        "Yes, reset all loadouts"
         "hu"        "Igen, állítsd alaphelyzetbe a felszereléseket"
-        "de"        "Ja, alle Ladungen zurücksetzen"
+        "de"        "Ja, alle Konfigurationen zurücksetzen"
     }
     "ResetConfimNo"
     {
@@ -251,7 +251,7 @@
 
         "en"        "{1} {2} loadout:"
         "hu"        "{1} {2} felszerelés:"
-        "de"        "{1} {2} ladungen:"
+        "de"        "{1} {2} Ausrüstungen:"
     }
 
     "EnableGearOption"
@@ -324,7 +324,7 @@
 
         "en"        "Primary: {1}"
         "hu"        "Elsődleges: {1}"
-        "de"        "Primär: {1}"
+        "de"        "Primärwaffe: {1}"
     }
     "SecondaryWeapon"
     {
@@ -333,7 +333,7 @@
 
         "en"        "Sidearm: {1}"
         "hu"        "Kézifegyver: {1}"
-        "de"        "Seitenwaffe: {1}"
+        "de"        "Sekundärwaffe: {1}"
     }
 
     "GearHelmet"
@@ -352,7 +352,7 @@
     {
         "en"    "Defuse Kit"
         "hu"    "Hatástalanító készlet"
-        "de"    "Deaktivierungskit"
+        "de"    "Entschärfungskit"
     }
 
     "TeamLoadoutPrimary"
@@ -363,7 +363,7 @@
 
         "en"        "%s %s primary:"
         "hu"        "%s %s elsődleges:"
-        "de"        "% s% s primary:"
+        "de"        "% s% s Primärwaffe:"
     }
 
     "NoWeapon"
