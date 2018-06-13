@@ -89,6 +89,7 @@ void BombTime_BombBeginDefuse( Event event )
         if ( !BombTime_AnyLivingTerrorists() && bomb != -1 )
         {   
             float defuseLength = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 0 );
+            Retakes_MessageToAll( "Defuselength: %f", defuseLength );
             SetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", defuseLength - 4, 0 );
         } 
     }
