@@ -85,7 +85,7 @@ void BombTime_BombBeginDefuse( Event event )
         g_DefuseEndTime = endTime;
         g_DefusingClient = defuser;
 
-        int bomb = FindEntityByClassname( -1, "weapon_c4" );
+        int bomb = FindEntityByClassname( -1, "planted_c4" );
         if ( bomb == -1 )
         {
             Retakes_MessageToAll( "Unable to find bomb!" );
