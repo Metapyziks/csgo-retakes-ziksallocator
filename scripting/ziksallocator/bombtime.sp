@@ -109,16 +109,6 @@ void BombTime_BombBeginDefuse( Event event )
     }
 }
 
-/*
-    flashbang_projectile
-    decoy_projectile
-    hegrenade_projectile
-    molotov_projectile
-    smokegrenade_projectile
-    tagrenade_projectile
-    inferno
-*/
-
 bool BombTime_AnyLiveGrenadesOfClass( char[] classname )
 {
     int ent;
@@ -138,6 +128,7 @@ bool BombTime_AnyLiveGrenades()
             BombTime_AnyLiveGrenadesOfClass("molotov_projectile") ||
             BombTime_AnyLiveGrenadesOfClass("smokegrenade_projectile") ||
             BombTime_AnyLiveGrenadesOfClass("flashbang_projectile") ||
+            // the smoke screen will be ignored for this
             BombTime_AnyLiveGrenadesOfClass("inferno")); // fire from molotov/incendiary
 }
 
