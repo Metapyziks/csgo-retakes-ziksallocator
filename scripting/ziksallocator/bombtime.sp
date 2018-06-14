@@ -98,8 +98,8 @@ void BombTime_BombBeginDefuse( Event event )
         {
             // float defuseLength = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 0 );
             // Retakes_MessageToAll( "Defuselength: %f", defuseLength );
-            CreateTimer(0.1, ReduceDefuseTime);
-            // SetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 1.0, 0 );
+            SetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 2.5, 0 );
+            CreateTimer(0.5, ReduceDefuseTime);
         } 
     }
 }
@@ -110,8 +110,6 @@ Action ReduceDefuseTime(Handle timer)
     float defuseLength = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 0 );
     Retakes_MessageToAll( "Defuselength: %f", defuseLength );
     SetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 1.0, 0 );
-    defuseLength = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 0 );
-    Retakes_MessageToAll( "Defuselength: %f", defuseLength );
 }
 
 void BombTime_BombAbortDefuse( Event event )
