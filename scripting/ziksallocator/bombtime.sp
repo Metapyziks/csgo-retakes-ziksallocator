@@ -86,8 +86,16 @@ void BombTime_BombBeginDefuse( Event event )
         g_DefusingClient = defuser;
 
         int bomb = FindEntityByClassname( -1, "weapon_c4" );
-        if ( !BombTime_AnyLivingTerrorists() && bomb != -1 )
-        {   
+        if ( bomb == -1 )
+        {
+            Retakes_MessageToAll( "Unable to find bomb!" );
+        }
+        else if ( BombTime_AnyLivingTerrorists() )
+        {
+            Retakes_MessageToAll( "At least one terrorist is alive!" );
+        }
+        else
+        {
             float defuseLength = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 0 );
             Retakes_MessageToAll( "Defuselength: %f", defuseLength );
             SetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", defuseLength - 4, 0 );
