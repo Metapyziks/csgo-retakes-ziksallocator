@@ -2,6 +2,7 @@ float g_DetonateTime = 0.0;
 float g_DefuseEndTime = 0.0;
 int g_DefusingClient = -1;
 bool g_CurrentlyDefusing = false;
+float g_DefuseTime = 1.0;
 
 void BombTime_PlayerDeath( Event event )
 {
@@ -98,18 +99,10 @@ void BombTime_BombBeginDefuse( Event event )
         {
             // float defuseLength = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 0 );
             // Retakes_MessageToAll( "Defuselength: %f", defuseLength );
-            SetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 2.5, 0 );
-            CreateTimer(0.5, ReduceDefuseTime);
+            SetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", g_DefuseTime, 0 );
+            SetEntPropFloat( bomb, Prop_Send, "m_flDefuseCountDown", GetGameTime() + g_DefuseTime, 0 );
         } 
     }
-}
-
-Action ReduceDefuseTime(Handle timer)
-{
-    int bomb = FindEntityByClassname( -1, "planted_c4" );
-    float defuseLength = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 0 );
-    Retakes_MessageToAll( "Defuselength: %f", defuseLength );
-    SetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 1.0, 0 );
 }
 
 void BombTime_BombAbortDefuse( Event event )
