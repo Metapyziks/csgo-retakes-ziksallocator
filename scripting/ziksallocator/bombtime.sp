@@ -101,8 +101,25 @@ void BombTime_BombBeginDefuse( Event event )
             // Retakes_MessageToAll( "Defuselength: %f", defuseLength );
             SetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", g_DefuseTime, 0 );
             SetEntPropFloat( bomb, Prop_Send, "m_flDefuseCountDown", GetGameTime() + g_DefuseTime, 0 );
-        } 
+
+            float defuseLength = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseCountDown", 0 );
+
+            CreateTimer( 0.25, DefuseTimeDebug );
+        }
     }
+}
+
+Action DefuseTimeDebug( Handle timer )
+{
+    int bomb = FindEntityByClassname( -1, "planted_c4" );
+    if ( bomb == -1 ) return;
+
+    float defuseLength = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 0 );
+    float defuseCountDown = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseCountDown", 0 );
+
+    Retakes_MessageToAll( "m_flDefuseLength = %f, m_flDefuseCountDown = %f", defuseLength, defuseCountDown );
+
+    CreateTimer( 0.25, DefuseTimeDebug );
 }
 
 void BombTime_BombAbortDefuse( Event event )
