@@ -85,7 +85,10 @@ void BombTime_BombBeginDefuse( Event event )
     {   
         g_DefuseEndTime = endTime;
         g_DefusingClient = defuser;
+    }
 
+    if ( g_DefuseEndTime < g_DetonateTime )
+    {
         int bomb = FindEntityByClassname( -1, "planted_c4" );
         if ( bomb == -1 )
         {
