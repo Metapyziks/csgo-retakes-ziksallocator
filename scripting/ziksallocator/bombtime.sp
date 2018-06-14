@@ -2,7 +2,7 @@ float g_DetonateTime = 0.0;
 float g_DefuseEndTime = 0.0;
 int g_DefusingClient = -1;
 bool g_CurrentlyDefusing = false;
-float g_DefuseTime = 1.0;
+float g_DefuseTime = 0.4;
 
 void BombTime_PlayerDeath( Event event )
 {
@@ -95,16 +95,50 @@ void BombTime_BombBeginDefuse( Event event )
         {
             Retakes_MessageToAll( "At least one terrorist is alive!" );
         }
-        else
+        else if ( BombTime_AnyLiveGrenades() )
         {
-            // float defuseLength = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 0 );
-            // Retakes_MessageToAll( "Defuselength: %f", defuseLength );
-            CreateTimer( 0.25, DefuseTimeDebug );
+            Retakes_MessageToAll( "At least one grenade is active!" );            
+        }
+        else       
+        {
+            CreateTimer( 0.1, BombTime_DefuseTimeDebug );
         }
     }
 }
 
-Action DefuseTimeDebug( Handle timer )
+/*
+    flashbang_projectile
+    decoy_projectile
+    hegrenade_projectile
+    molotov_projectile
+    smokegrenade_projectile
+    tagrenade_projectile
+    env_fire
+*/
+
+bool BombTime_AnyLiveGrenadesOfClass( char[] classname )
+{
+    int ent;
+    while ( (ent = FindEntityByClassname( -1, classname )) != -1 )
+    {
+        if ( IsValidEntity( ent ) ) return true;                
+    }
+
+    return false;
+}
+
+bool BombTime_AnyLiveGrenades() 
+{   
+    return (BombTime_AnyLiveGrenadesOfClass("flashbang_projectile") ||
+            BombTime_AnyLiveGrenadesOfClass("decoy_projectile") ||
+            BombTime_AnyLiveGrenadesOfClass("hegrenade_projectile") ||
+            BombTime_AnyLiveGrenadesOfClass("molotov_projectile") ||
+            BombTime_AnyLiveGrenadesOfClass("smokegrenade_projectile") ||
+            BombTime_AnyLiveGrenadesOfClass("flashbang_projectile") ||
+            BombTime_AnyLiveGrenadesOfClass("env_fire"));
+}
+
+Action BombTime_DefuseTimeDebug( Handle timer )
 {
     int bomb = FindEntityByClassname( -1, "planted_c4" );
     if ( bomb == -1 || !g_CurrentlyDefusing ) return;
@@ -116,8 +150,6 @@ Action DefuseTimeDebug( Handle timer )
     float defuseCountDown = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseCountDown", 0 );
 
     Retakes_MessageToAll( "m_flDefuseLength = %f, m_flDefuseCountDown = %f, GetGameTime() = %f", defuseLength, defuseCountDown, GetGameTime() );
-
-    // CreateTimer( 0.5, DefuseTimeDebug );
 }
 
 void BombTime_BombAbortDefuse( Event event )
@@ -159,5 +191,3 @@ bool BombTime_AnyLivingTerrorists()
     }
     return false;
 }
-
-//TODO check for live grenades
