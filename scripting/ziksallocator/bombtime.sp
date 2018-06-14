@@ -116,7 +116,7 @@ void BombTime_BombBeginDefuse( Event event )
     molotov_projectile
     smokegrenade_projectile
     tagrenade_projectile
-    env_fire
+    inferno
 */
 
 bool BombTime_AnyLiveGrenadesOfClass( char[] classname )
@@ -138,7 +138,7 @@ bool BombTime_AnyLiveGrenades()
             BombTime_AnyLiveGrenadesOfClass("molotov_projectile") ||
             BombTime_AnyLiveGrenadesOfClass("smokegrenade_projectile") ||
             BombTime_AnyLiveGrenadesOfClass("flashbang_projectile") ||
-            BombTime_AnyLiveGrenadesOfClass("env_fire"));
+            BombTime_AnyLiveGrenadesOfClass("inferno")); // fire from molotov/incendiary
 }
 
 Action BombTime_DefuseTimeDebug( Handle timer )
