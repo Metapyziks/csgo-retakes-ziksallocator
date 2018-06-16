@@ -72,6 +72,11 @@ void BombTime_BombDefused( Event event )
         timeRemaining = 0.0;
     }
 
+    if ( GetGameTime() < g_DefuseEndTime - 0.25 )
+    {
+        Retakes_MessageToAll( "%t", "InstantDefuse" );
+    }
+
     char defuserName[64];
     GetClientName( defuser, defuserName, sizeof(defuserName) );
 
@@ -134,8 +139,6 @@ Action BombTime_InstantDefuseTest( Handle timer )
     {
         SetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", g_DefuseTime, 0 );
         SetEntPropFloat( bomb, Prop_Send, "m_flDefuseCountDown", GetGameTime() + g_DefuseTime, 0 );
-
-        Retakes_MessageToAll( "%t", "InstantDefuse" );
         return;
     }
 
