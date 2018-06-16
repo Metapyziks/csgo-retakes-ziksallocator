@@ -394,6 +394,6 @@
 
     "InstantDefuse"
     {
-        "en"        "All defenders dead - instant defuse"
+        "en"        "All defenders dead - {GREEN}instant defuse{NORMAL}!"
     }
 }
