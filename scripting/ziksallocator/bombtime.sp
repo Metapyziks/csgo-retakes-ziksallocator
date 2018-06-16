@@ -90,19 +90,7 @@ void BombTime_BombBeginDefuse( Event event )
     if ( g_DefuseEndTime < g_DetonateTime )
     {
         int bomb = FindEntityByClassname( -1, "planted_c4" );
-        if ( bomb == -1 )
-        {
-            Retakes_MessageToAll( "Unable to find bomb!" );
-        }
-        else if ( BombTime_AnyLivingTerrorists() )
-        {
-            Retakes_MessageToAll( "At least one terrorist is alive!" );
-        }
-        else if ( BombTime_AnyLiveGrenades() )
-        {
-            Retakes_MessageToAll( "At least one grenade is active!" );            
-        }
-        else       
+        if ( bomb != -1 && !BombTime_AnyLivingTerrorists() && !BombTime_AnyLiveGrenades() )
         {
             CreateTimer( 0.1, BombTime_DefuseTimeDebug );
         }
@@ -140,10 +128,7 @@ Action BombTime_DefuseTimeDebug( Handle timer )
     SetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", g_DefuseTime, 0 );
     SetEntPropFloat( bomb, Prop_Send, "m_flDefuseCountDown", GetGameTime() + g_DefuseTime, 0 );
 
-    float defuseLength = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 0 );
-    float defuseCountDown = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseCountDown", 0 );
-
-    Retakes_MessageToAll( "m_flDefuseLength = %f, m_flDefuseCountDown = %f, GetGameTime() = %f", defuseLength, defuseCountDown, GetGameTime() );
+    Retakes_MessageToAll( "%t", "InstantDefuse" );
 }
 
 void BombTime_BombAbortDefuse( Event event )

@@ -391,4 +391,9 @@
         "hu"        "Elérhető pénzösszeg: ${1}"
         "de"        "Verfügbares Geld: $ {1}"
     }
+
+    "InstantDefuse"
+    {
+        "en"        "All defenders dead - instant defuse"
+    }
 }
