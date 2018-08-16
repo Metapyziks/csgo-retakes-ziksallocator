@@ -61,6 +61,7 @@ CSWeapon g_RandomWeapons[] = {
     WEAPON_UMP45,
     WEAPON_BIZON,
     WEAPON_MP7,
+    WEAPON_MP5SD,
     WEAPON_P90,
 
     WEAPON_NOVA,

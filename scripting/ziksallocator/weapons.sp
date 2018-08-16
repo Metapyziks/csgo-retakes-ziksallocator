@@ -36,6 +36,7 @@ void GetWeaponName( CSWeapon weapon, char[] buffer, int maxLength )
         case WEAPON_UMP45:     strcopy( buffer, maxLength, "UMP-45" );
         case WEAPON_BIZON:     strcopy( buffer, maxLength, "PP-Bizon" );
         case WEAPON_MP7:       strcopy( buffer, maxLength, "MP7" );
+        case WEAPON_MP5SD:     strcopy( buffer, maxLength, "MP5-SD" );
         case WEAPON_P90:       strcopy( buffer, maxLength, "P90" );
 
         case WEAPON_NOVA:      strcopy( buffer, maxLength, "Nova" );
@@ -95,6 +96,7 @@ void GetWeaponClassName( CSWeapon weapon, char[] buffer, int maxLength )
         case WEAPON_UMP45:     strcopy( buffer, maxLength, "weapon_ump45" );
         case WEAPON_BIZON:     strcopy( buffer, maxLength, "weapon_bizon" );
         case WEAPON_MP7:       strcopy( buffer, maxLength, "weapon_mp7" );
+        case WEAPON_MP5SD:     strcopy( buffer, maxLength, "weapon_mp5sd" );
         case WEAPON_P90:       strcopy( buffer, maxLength, "weapon_p90" );
 
         case WEAPON_NOVA:      strcopy( buffer, maxLength, "weapon_nova" );
@@ -145,6 +147,7 @@ CSWeapon GetWeaponFromClassname( char[] classname )
     if ( strcmp( classname, "weapon_ump45" ) == 0 ) return WEAPON_UMP45;
     if ( strcmp( classname, "weapon_bizon" ) == 0 ) return WEAPON_BIZON;
     if ( strcmp( classname, "weapon_mp7" ) == 0 ) return WEAPON_MP7;
+    if ( strcmp( classname, "weapon_mp5sd" ) == 0 ) return WEAPON_MP5SD;
     if ( strcmp( classname, "weapon_p90" ) == 0 ) return WEAPON_P90;
 
     if ( strcmp( classname, "weapon_nova" ) == 0 ) return WEAPON_NOVA;
@@ -312,6 +315,8 @@ int GetWeaponCost( int client, CSWeapon weapon )
             return 1200;
         case WEAPON_BIZON:
             return 1400;
+        case WEAPON_MP5SD:
+            return 1500;
         case WEAPON_MP7:
             return 1700;
         case WEAPON_P90:

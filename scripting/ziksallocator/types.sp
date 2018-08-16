@@ -66,6 +66,7 @@ enum CSWeapon
     WEAPON_UMP45,       /**< UMP-45 */
     WEAPON_BIZON,       /**< PP-Bizon */
     WEAPON_MP7,         /**< MP7 */
+    WEAPON_MP5SD,       /**< MP5-SD */
     WEAPON_P90,         /**< P90 */
 
     WEAPON_NOVA,        /**< Nova. */
