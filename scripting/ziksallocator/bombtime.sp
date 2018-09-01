@@ -2,6 +2,7 @@ float g_DetonateTime = 0.0;
 float g_DefuseEndTime = 0.0;
 int g_DefusingClient = -1;
 bool g_CurrentlyDefusing = false;
+float g_DefuseTime = 0.4;
 
 void BombTime_PlayerDeath( Event event )
 {
@@ -11,6 +12,8 @@ void BombTime_PlayerDeath( Event event )
     if ( g_DefusingClient != victim || !g_CurrentlyDefusing ) return;
     if ( !IsClientValidAndInGame( victim ) ) return;
     if ( !IsClientValidAndInGame( attacker ) ) return;
+
+    g_CurrentlyDefusing = false;
 
     float timeRemaining = g_DefuseEndTime - GetGameTime();
     if ( timeRemaining > 0.0 )
@@ -56,11 +59,23 @@ void BombTime_BombPlanted( Event event )
 
 void BombTime_BombDefused( Event event )
 {
+    g_CurrentlyDefusing = false;
+
     int defuser = GetClientOfUserId( event.GetInt( "userid" ) );
 
     if ( !IsClientValidAndInGame( defuser ) ) return;
 
-    float timeRemaining = g_DetonateTime - GetGameTime();
+    float timeRemaining = g_DetonateTime - g_DefuseEndTime;
+
+    if ( timeRemaining < 0.0 )
+    {
+        timeRemaining = 0.0;
+    }
+
+    if ( GetGameTime() < g_DefuseEndTime - 0.25 )
+    {
+        Retakes_MessageToAll( "%t", "InstantDefuse" );
+    }
 
     char defuserName[64];
     GetClientName( defuser, defuserName, sizeof(defuserName) );
@@ -81,32 +96,65 @@ void BombTime_BombBeginDefuse( Event event )
     g_CurrentlyDefusing = true;
 
     if ( g_DefusingClient == -1 || g_DefuseEndTime < g_DetonateTime )
-    {
+    {   
         g_DefuseEndTime = endTime;
         g_DefusingClient = defuser;
-
-        int bomb = FindEntityByClassname( -1, "weapon_c4" );
-        if ( !BombTime_AnyLivingTerrorists() && bomb != -1 )
-        {   
-            float defuseLength = GetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", 0 );
-            SetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", defuseLength - 4, 0 );
-        } 
     }
+
+    if ( g_DefuseEndTime < g_DetonateTime )
+    {
+        CreateTimer( 0.1, BombTime_InstantDefuseTest );
+    }
+}
+
+bool BombTime_AnyLiveGrenadesOfClass( char[] classname )
+{
+    int ent;
+    while ( (ent = FindEntityByClassname( -1, classname )) != -1 )
+    {
+        if ( IsValidEntity( ent ) ) return true;                
+    }
+
+    return false;
+}
+
+bool BombTime_AnyLiveGrenades() 
+{   
+    return BombTime_AnyLiveGrenadesOfClass( "flashbang_projectile" ) ||
+            BombTime_AnyLiveGrenadesOfClass( "decoy_projectile" ) ||
+            BombTime_AnyLiveGrenadesOfClass( "hegrenade_projectile" ) ||
+            BombTime_AnyLiveGrenadesOfClass( "molotov_projectile" ) ||
+            BombTime_AnyLiveGrenadesOfClass( "smokegrenade_projectile" ) ||
+            BombTime_AnyLiveGrenadesOfClass( "flashbang_projectile" ) ||
+            // the smoke screen will be ignored for this
+            BombTime_AnyLiveGrenadesOfClass( "inferno" ); // fire from molotov/incendiary
+}
+
+Action BombTime_InstantDefuseTest( Handle timer )
+{
+    int bomb = FindEntityByClassname( -1, "planted_c4" );
+    if ( bomb == -1 || !g_CurrentlyDefusing ) return;
+
+    if ( !BombTime_AnyLivingTerrorists() && !BombTime_AnyLiveGrenades() )
+    {
+        SetEntPropFloat( bomb, Prop_Send, "m_flDefuseLength", g_DefuseTime, 0 );
+        SetEntPropFloat( bomb, Prop_Send, "m_flDefuseCountDown", GetGameTime() + g_DefuseTime, 0 );
+        return;
+    }
+
+    CreateTimer( 0.1, BombTime_InstantDefuseTest );
 }
 
 void BombTime_BombAbortDefuse( Event event )
 {
-    int defuser = GetClientOfUserId( event.GetInt( "userid" ) );
-
-    if ( g_DefusingClient == defuser )
-    {
-        g_CurrentlyDefusing = false;
-    }
+    g_CurrentlyDefusing = false;
 }
 
 void BombTime_BombExploded( Event event )
 {
     float timeRemaining = g_DefuseEndTime - g_DetonateTime;
+
+    g_CurrentlyDefusing = false;
 
     if ( IsClientValidAndInGame( g_DefusingClient ) && timeRemaining >= 0.0 )
     {
@@ -133,5 +181,3 @@ bool BombTime_AnyLivingTerrorists()
     }
     return false;
 }
-
-//TODO check for live grenades
