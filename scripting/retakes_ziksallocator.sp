@@ -287,7 +287,7 @@ void Oof( float oofness )
     {
         if ( !IsClientValidAndInGame( client ) ) continue;
 
-        EmitSoundToClient( client, "ziks/oof.wav" );
+        EmitSoundToClient( client, "*ziks/oof.wav", SOUND_FROM_PLAYER, SNDCHAN_STATIC );
     }
 }
 
