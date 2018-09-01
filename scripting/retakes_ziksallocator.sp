@@ -49,8 +49,6 @@ public void OnPluginStart()
     ZiksPoints_OnPluginStart();
 #endif
 
-    RegConsoleCmd( "sm_ziks_oof", Cmd_Oof );
-
     SetupConVars();
     
     HookEvent( "player_death", Event_PlayerDeath, EventHookMode_Pre );
@@ -236,6 +234,23 @@ public void Retakes_OnTeamSizesSet( int& tCount, int& ctCount )
 
 public Action OnClientSayCommand( int client, const char[] command, const char[] args )
 {
+    if ( strcmp( args[0], "oof", false ) == 0 )
+    {
+        Oof( client, 1.0 );
+    }
+    else if ( strcmp( args[0], "big oof", false ) == 0 )
+    {
+        Oof( client, 2.0 );
+    }
+    else if ( strcmp( args[0], "super oof", false ) == 0 )
+    {
+        Oof( client, 3.0 );
+    }
+    else if ( strcmp( args[0], "mega oof", false ) == 0 )
+    {
+        Oof( client, 4.0 );
+    }
+    
 #if defined ZIKS_POINTS
     static char ziksPointsChatCommands[][] = {
         "points", "zikspoints",
@@ -256,15 +271,14 @@ public Action OnClientSayCommand( int client, const char[] command, const char[]
     return Plugin_Continue;
 }
 
-public Action Cmd_Oof( int client, int args )
-{
-    Oof( client, GetRandomFloat( 1.0, 4.0 ) );
-}
-
 void Oof( int client, float oofness )
 {
     float pos[3]; 
-    GetClientAbsOrigin( client, pos ); 
+
+    if ( IsClientValidAndInGame( client ) )
+    {
+        GetClientAbsOrigin( client, pos ); 
+    }
 
     EmitAmbientSound( "ziks/oof.wav", pos, _, _, _, _, _, 1.0 );
 }
