@@ -178,6 +178,11 @@ void SetPrimary( int client, int team, RTLoadout loadout, CSWeapon weapon )
  */
 CSWeapon GetPrimary( int client, int team, RTLoadout loadout )
 {
+    if ( loadout == LOADOUT_SNIPER )
+    {
+        return WEAPON_AWP;
+    }
+
     return g_Primary[client][GetTeamLoadoutIndex( team, loadout )];
 }
 
