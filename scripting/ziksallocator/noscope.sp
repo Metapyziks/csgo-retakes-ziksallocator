@@ -81,7 +81,7 @@ void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool no
         posDiff[1] * posDiff[1] +
         posDiff[2] * posDiff[2] ) * 0.01905;
 
-    float oofness = (noScope && jumpShot ? 2.0 : 1.0) * (1 + (distance < 5.0 ? 0.0 : (distance - 5) / 20.0));
+    float oofness = ((noScope && jumpShot ? 2.0 : 1.0) * (1 + (distance < 5.0 ? 0.0 : (distance - 5) / 20.0)) - 1.0) / 4.0;
     CreateTimer( 1.0, NoScope_Oof, oofness );
 
     char distanceString[32];
