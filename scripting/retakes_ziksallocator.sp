@@ -250,7 +250,7 @@ public Action OnClientSayCommand( int client, const char[] command, const char[]
     {
         Oof( client, 4.0 );
     }
-    
+
 #if defined ZIKS_POINTS
     static char ziksPointsChatCommands[][] = {
         "points", "zikspoints",
@@ -273,6 +273,8 @@ public Action OnClientSayCommand( int client, const char[] command, const char[]
 
 void Oof( int client, float oofness )
 {
+    if ( oofness < 1.0 ) oofness = 1.0;
+
     float pos[3]; 
 
     if ( IsClientValidAndInGame( client ) )
@@ -280,7 +282,10 @@ void Oof( int client, float oofness )
         GetClientAbsOrigin( client, pos ); 
     }
 
-    EmitAmbientSound( "ziks/oof.wav", pos, _, _, _, _, _, 1.0 );
+    int pitch = RoundFloat( 100 / oofness );
+
+    LogMessage( "oof %f", oofness );
+    EmitAmbientSound( "ziks/oof.wav", pos, SOUND_FROM_WORLD, SNDLEVEL_NORMAL, SND_CHANGEPITCH | SND_DELAY, 0.5 + oofness * 0.25, pitch, 1.0 );
 }
 
 /**
