@@ -280,6 +280,8 @@ Action Timer_Oof( Handle timer, DataPack pack )
     float oofness = pack.ReadFloat();
 
     Oof( client, oofness );
+
+    CloseHandle( pack );
 }
 
 void Oof( int client, float oofness, float delay = 0.0 )
@@ -295,7 +297,7 @@ void Oof( int client, float oofness, float delay = 0.0 )
 
     if ( delay >= 0.05 )
     {
-        DataPack pack;
+        DataPack pack = new DataPack();
 
         pack.WriteCell( client );
         pack.WriteFloat( oofness );
