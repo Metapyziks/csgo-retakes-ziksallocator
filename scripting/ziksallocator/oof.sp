@@ -103,5 +103,5 @@ void Oof( int client, float oofness, float delay = 0.0 )
         GetClientEyePosition( client, pos );
     }
 
-    EmitAmbientSound( "*ziks/test.mp3", pos, client, SNDLEVEL_NORMAL, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
+    EmitAmbientSound( "*ziks/test.mp3", pos, client, SNDLEVEL_GUNFIRE, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
 }
