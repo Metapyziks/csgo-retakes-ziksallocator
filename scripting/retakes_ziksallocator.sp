@@ -272,7 +272,7 @@ void Oof( float oofness )
     }
 
     int pitch = RoundFloat( 100 / (1.0 + oofness) );
-    float volume = 0.5 + oofness * 0.5;
+    float volume = 1.0 + oofness * 0.5;
 
     for ( int client = 1; client <= MaxClients; ++client )
     {
