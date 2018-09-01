@@ -283,7 +283,7 @@ void Oof( float oofness )
     for ( int client = 1; client <= MaxClients; ++client )
     {
         if ( !IsClientValidAndInGame( client ) ) continue;
-        EmitSoundToClient( client, "*ziks/oof.mp3", SOUND_FROM_PLAYER, SNDCHAN_STATIC );
+        EmitSoundToClient( client, "*ziks/oof.mp3", SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_CHANGEPITCH | SND_CHANGEVOL, volume, pitch );
     }
 }
 
