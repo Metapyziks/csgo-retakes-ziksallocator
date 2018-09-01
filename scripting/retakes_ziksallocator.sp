@@ -236,19 +236,19 @@ public Action OnClientSayCommand( int client, const char[] command, const char[]
 {
     if ( strcmp( args[0], "oof", false ) == 0 )
     {
-        Oof( client, 1.0 );
+        Oof( 1.0 );
     }
     else if ( strcmp( args[0], "big oof", false ) == 0 )
     {
-        Oof( client, 2.0 );
+        Oof( 2.0 );
     }
     else if ( strcmp( args[0], "super oof", false ) == 0 )
     {
-        Oof( client, 3.0 );
+        Oof( 3.0 );
     }
     else if ( strcmp( args[0], "mega oof", false ) == 0 )
     {
-        Oof( client, 4.0 );
+        Oof( 4.0 );
     }
 
 #if defined ZIKS_POINTS
@@ -271,21 +271,24 @@ public Action OnClientSayCommand( int client, const char[] command, const char[]
     return Plugin_Continue;
 }
 
-void Oof( int client, float oofness )
+void Oof( float oofness )
 {
-    if ( oofness < 1.0 ) oofness = 1.0;
-
-    float pos[3]; 
-
-    if ( IsClientValidAndInGame( client ) )
+    if ( oofness < 1.0 )
     {
-        GetClientAbsOrigin( client, pos ); 
+        oofness = 1.0;
     }
 
     int pitch = RoundFloat( 100 / oofness );
+    float volume = 0.5 + oofness * 0.25;
 
     LogMessage( "oof %f", oofness );
-    EmitAmbientSound( "ziks/oof.wav", pos, SOUND_FROM_WORLD, SNDLEVEL_NORMAL, SND_CHANGEPITCH | SND_DELAY, 0.5 + oofness * 0.25, pitch, 1.0 );
+
+    for ( int client = 1; client <= MaxClients; ++client )
+    {
+        if ( !IsClientValidAndInGame( client ) ) continue;
+
+        EmitSoundToClient( client, "ziks/oof.wav" );
+    }
 }
 
 /**
