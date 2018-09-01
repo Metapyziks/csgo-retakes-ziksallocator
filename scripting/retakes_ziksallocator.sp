@@ -73,9 +73,9 @@ public void OnPluginStart()
 
 public void OnMapStart()
 {
-    AddFileToDownloadsTable( "sound/ziks/oof.mp3" );
-    PrecacheSound( "ziks/oof.mp3", true );
-	AddToStringTable( FindStringTable( "soundprecache" ), "*ziks/oof.mp3" );
+    AddFileToDownloadsTable( "sound/ziks/test.mp3" );
+    PrecacheSound( "ziks/test.mp3", true );
+	AddToStringTable( FindStringTable( "soundprecache" ), "*ziks/test.mp3" );
 
     ResetWinStreak();
 }
@@ -271,12 +271,13 @@ void Oof( float oofness )
         oofness = 1.0;
     }
 
+    float volume = 0.75 + oofness * 0.25;
     int pitch = RoundFloat( 100 / (1.0 + oofness) );
 
     for ( int client = 1; client <= MaxClients; ++client )
     {
         if ( !IsClientValidAndInGame( client ) ) continue;
-        EmitSoundToClient( client, "*ziks/oof.mp3", SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_CHANGEPITCH, 1.0, pitch );
+        EmitSoundToClient( client, "*ziks/test.mp3", SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_CHANGEPITCH | SND_CHANGEVOL, volume, pitch );
     }
 }
 
