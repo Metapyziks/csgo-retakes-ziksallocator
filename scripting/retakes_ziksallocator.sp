@@ -231,21 +231,13 @@ public void Retakes_OnTeamSizesSet( int& tCount, int& ctCount )
 
 public Action OnClientSayCommand( int client, const char[] command, const char[] args )
 {
-    if ( strcmp( args[0], "oof", true ) == 0 )
+    if ( strcmp( args[0], "oof", false ) == 0 )
     {
-        Oof( 1.0 );
+        Oof( GetRandomFloat( 0.0, 0.5 ) );
     }
-    else if ( strcmp( args[0], "big oof", false ) == 0 )
+    else if ( strcmp( args[0], "big oof", false ) == 0 || strcmp( args[0], "o o f", false ) == 0 )
     {
-        Oof( 0.25 );
-    }
-    else if ( strcmp( args[0], "OOF", true ) == 0 )
-    {
-        Oof( 0.75 );
-    }
-    else if ( strcmp( args[0], "o o f", false ) == 0 )
-    {
-        Oof( 1.0 );
+        Oof( GetRandomFloat( 0.5, 1.0 ) );
     }
 
 #if defined ZIKS_POINTS
@@ -274,16 +266,13 @@ void Oof( float oofness )
     {
         oofness = 0.0;
     }
-
-    if ( oofness > 1.0 )
+    else if ( oofness > 1.0 )
     {
         oofness = 1.0;
     }
 
     int pitch = RoundFloat( 100 / (1.0 + oofness) );
     float volume = 0.5 + oofness * 0.5;
-
-    LogMessage( "oof %f", oofness );
 
     for ( int client = 1; client <= MaxClients; ++client )
     {
