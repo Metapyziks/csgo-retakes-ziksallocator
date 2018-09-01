@@ -51,6 +51,8 @@ public void OnPluginStart()
 
     SetupConVars();
     
+    RegConsoleCmd( "sm_oof", Cmd_Oof );
+    
     HookEvent( "player_death", Event_PlayerDeath, EventHookMode_Pre );
     HookEvent( "bomb_beginplant", Event_BombBeginPlant, EventHookMode_Post );
     HookEvent( "bomb_planted", Event_BombPlanted, EventHookMode_Post );
@@ -229,15 +231,25 @@ public void Retakes_OnTeamSizesSet( int& tCount, int& ctCount )
     ClutchMode_OnTeamSizesSet( tCount, ctCount );
 }
 
+public Action Cmd_Oof( int client, int args )
+{
+    Oof( client, GetRandomFloat( 0.0, 1.0 ) );
+    return Plugin_Handled;
+}
+
 public Action OnClientSayCommand( int client, const char[] command, const char[] args )
 {
     if ( strcmp( args[0], "oof", false ) == 0 )
     {
-        Oof( GetRandomFloat( 0.0, 0.5 ) );
+        Oof( client, GetRandomFloat( 0.0, 0.3 ) );
     }
-    else if ( strcmp( args[0], "big oof", false ) == 0 || strcmp( args[0], "o o f", false ) == 0 )
+    else if ( strcmp( args[0], "big oof", false ) == 0 )
     {
-        Oof( GetRandomFloat( 0.5, 1.0 ) );
+        Oof( client, GetRandomFloat( 0.4, 0.6 ) );
+    }
+    else if ( strcmp( args[0], "o o f", false ) == 0 )
+    {
+        Oof( client, GetRandomFloat( 0.7, 1.0 ) );
     }
 
 #if defined ZIKS_POINTS
@@ -260,7 +272,7 @@ public Action OnClientSayCommand( int client, const char[] command, const char[]
     return Plugin_Continue;
 }
 
-void Oof( float oofness )
+void Oof( int client, float oofness, float delay = 0.0 )
 {
     if ( oofness < 0.0 )
     {
@@ -274,11 +286,13 @@ void Oof( float oofness )
     float volume = 0.75 + oofness * 0.25;
     int pitch = RoundFloat( 100 / (1.0 + oofness) );
 
-    for ( int client = 1; client <= MaxClients; ++client )
+    float pos[3];
+    if ( IsClientValidAndInGame( client ) )
     {
-        if ( !IsClientValidAndInGame( client ) ) continue;
-        EmitSoundToClient( client, "*ziks/test.mp3", SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_CHANGEPITCH | SND_CHANGEVOL, volume, pitch );
+        GetClientEyePosition( client, pos );
     }
+
+    EmitAmbientSound( "*ziks/test.mp3", pos, client, SNDLEVEL_NORMAL, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch, delay );
 }
 
 /**

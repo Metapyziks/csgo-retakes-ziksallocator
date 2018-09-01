@@ -59,11 +59,6 @@ void NoScope_PlayerDeath( Event event )
     }
 }
 
-Action NoScope_Oof( Handle timer, float oofness )
-{
-    Oof( oofness );
-}
-
 void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool noScope, bool jumpShot )
 {
     float victimPos[3];
@@ -81,8 +76,9 @@ void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool no
         posDiff[1] * posDiff[1] +
         posDiff[2] * posDiff[2] ) * 0.01905;
 
-    float oofness = ((noScope && jumpShot ? 2.0 : 1.0) * (1 + (distance < 5.0 ? 0.0 : (distance - 5) / 20.0)) - 1.0) / 4.0;
-    CreateTimer( 1.0, NoScope_Oof, oofness );
+    float oofness = ((noScope && jumpShot ? 2.0 : 1.0) * (1 + (distance < 5.0 ? 0.0 : (distance - 5) / 20.0)) - 1.0) / 2.0;
+
+    Oof( victim, oofness, 0.5 );
 
     char distanceString[32];
     FloatToStringFixedPoint( distance, 1, distanceString, sizeof(distanceString) );
