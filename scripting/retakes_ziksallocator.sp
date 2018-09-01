@@ -272,6 +272,16 @@ public Action OnClientSayCommand( int client, const char[] command, const char[]
     return Plugin_Continue;
 }
 
+Action Timer_Oof( Handle timer, DataPack pack )
+{
+    pack.Reset();
+
+    int client = pack.ReadCell();
+    float oofness = pack.ReadFloat();
+
+    Oof( client, oofness );
+}
+
 void Oof( int client, float oofness, float delay = 0.0 )
 {
     if ( oofness < 0.0 )
@@ -283,6 +293,18 @@ void Oof( int client, float oofness, float delay = 0.0 )
         oofness = 1.0;
     }
 
+    if ( delay >= 0.05 )
+    {
+        DataPack pack;
+
+        pack.WriteCell( client );
+        pack.WriteFloat( oofness );
+
+        CreateTimer( delay, Timer_Oof, pack );
+
+        return;
+    }
+
     float volume = 0.75 + oofness * 0.25;
     int pitch = RoundFloat( 100 / (1.0 + oofness) );
 
@@ -292,7 +314,7 @@ void Oof( int client, float oofness, float delay = 0.0 )
         GetClientEyePosition( client, pos );
     }
 
-    EmitAmbientSound( "*ziks/test.mp3", pos, client, SNDLEVEL_NORMAL, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch, delay );
+    EmitAmbientSound( "*ziks/test.mp3", pos, client, SNDLEVEL_NORMAL, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
 }
 
 /**
