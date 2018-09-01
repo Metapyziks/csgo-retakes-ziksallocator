@@ -49,6 +49,8 @@ public void OnPluginStart()
     ZiksPoints_OnPluginStart();
 #endif
 
+    RegConsoleCmd( "sm_ziks_oof", Cmd_Oof );
+
     SetupConVars();
     
     HookEvent( "player_death", Event_PlayerDeath, EventHookMode_Pre );
@@ -252,6 +254,19 @@ public Action OnClientSayCommand( int client, const char[] command, const char[]
 #endif
 
     return Plugin_Continue;
+}
+
+public Action Cmd_Oof( int client, int args )
+{
+    Oof( client, GetRandomFloat( 1.0, 4.0 ) );
+}
+
+void Oof( int client, float oofness )
+{
+    float pos[3]; 
+    GetClientAbsOrigin( client, pos ); 
+
+    EmitAmbientSound( "ziks/oof.wav", pos, _, _, _, _, _, 1.0 );
 }
 
 /**

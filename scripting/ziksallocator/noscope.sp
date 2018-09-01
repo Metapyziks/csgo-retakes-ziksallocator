@@ -59,16 +59,6 @@ void NoScope_PlayerDeath( Event event )
     }
 }
 
-void Oof( float oofness )
-{
-    for ( int client = 1; client <= MaxClients; ++client )
-    {
-        if ( !IsClientValidAndInGame( client ) ) continue;
-
-        ClientCommand( client, "play */ziks/oof.wav" );
-    }
-}
-
 void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool noScope, bool jumpShot )
 {
     float victimPos[3];
@@ -86,7 +76,7 @@ void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool no
         posDiff[1] * posDiff[1] +
         posDiff[2] * posDiff[2] ) * 0.01905;
 
-    Oof( (noScope && jumpShot ? 2.0 : 1.0) * (1 + (distance < 5.0 ? 0.0 : (distance - 5) / 20.0)) );
+    Oof( victim, (noScope && jumpShot ? 2.0 : 1.0) * (1 + (distance < 5.0 ? 0.0 : (distance - 5) / 20.0)) );
 
     char distanceString[32];
     FloatToStringFixedPoint( distance, 1, distanceString, sizeof(distanceString) );
