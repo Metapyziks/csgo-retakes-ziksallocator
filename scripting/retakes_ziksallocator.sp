@@ -73,6 +73,13 @@ public void OnPluginStart()
 
 public void OnMapStart()
 {
+    AddFileToDownloadsTable( "sounds/ziks/oof.wav" );
+    
+    if ( !IsSoundPrecached( "sound/ziks/oof.wav" ) )
+    {
+        PrecacheSound( "ziks/oof.wav", true );
+    }
+
     ResetWinStreak();
 }
 
