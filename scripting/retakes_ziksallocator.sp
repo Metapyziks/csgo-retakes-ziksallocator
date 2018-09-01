@@ -239,11 +239,11 @@ public Action OnClientSayCommand( int client, const char[] command, const char[]
     {
         Oof( 2.0 );
     }
-    else if ( strcmp( args[0], "super oof", false ) == 0 )
+    else if ( strcmp( args[0], "OOF", true ) == 0 )
     {
         Oof( 3.0 );
     }
-    else if ( strcmp( args[0], "mega oof", false ) == 0 )
+    else if ( strcmp( args[0], "o o f", false ) == 0 )
     {
         Oof( 4.0 );
     }
@@ -275,7 +275,12 @@ void Oof( float oofness )
         oofness = 1.0;
     }
 
-    int pitch = RoundFloat( 100 / oofness );
+    if ( oofness > 4.0 )
+    {
+        oofness = 4.0;
+    }
+
+    int pitch = RoundFloat( 100 / (1.0 + (oofness - 1.0) * 0.5) );
     float volume = 0.5 + oofness * 0.25;
 
     LogMessage( "oof %f", oofness );
