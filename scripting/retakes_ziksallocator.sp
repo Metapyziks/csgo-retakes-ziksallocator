@@ -272,12 +272,11 @@ void Oof( float oofness )
     }
 
     int pitch = RoundFloat( 100 / (1.0 + oofness) );
-    float volume = 1.0 + oofness * 0.5;
 
     for ( int client = 1; client <= MaxClients; ++client )
     {
         if ( !IsClientValidAndInGame( client ) ) continue;
-        EmitSoundToClient( client, "*ziks/oof.mp3", SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_CHANGEPITCH | SND_CHANGEVOL, volume, pitch );
+        EmitSoundToClient( client, "*ziks/oof.mp3", SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_CHANGEPITCH, 1.0, pitch );
     }
 }
 
