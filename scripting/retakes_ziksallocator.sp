@@ -73,7 +73,7 @@ public void OnPluginStart()
 
 public void OnMapStart()
 {
-    AddFileToDownloadsTable( "sounds/ziks/oof.wav" );
+    AddFileToDownloadsTable( "sound/ziks/oof.wav" );
     
     if ( !IsSoundPrecached( "sound/ziks/oof.wav" ) )
     {
