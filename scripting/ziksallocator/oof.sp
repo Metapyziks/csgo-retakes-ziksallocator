@@ -1,7 +1,18 @@
 
+Handle g_CVOofCooldown = INVALID_HANDLE;
+
+float g_LastOof[MAXPLAYERS+1];
+
 void Oof_OnPluginStart()
 {
     RegConsoleCmd( "sm_oof", Cmd_Oof );
+
+    g_CVOofCooldown = CreateConVar( "sm_oof_cooldown", "10", "Time in seconds before a player can oof again.", FCVAR_NOTIFY );
+}
+
+float Oof_GetOofCooldown()
+{
+    return GetConVarFloat( g_CVOofCooldown );
 }
 
 void Oof_OnMapStart()
@@ -13,6 +24,22 @@ void Oof_OnMapStart()
 
 public Action Cmd_Oof( int client, int args )
 {
+    if ( !IsClientValidAndInGame( client ) )
+    {
+        return Plugin_Handled;
+    }
+
+    float lastOof = g_LastOof[client];
+    float waitTime = lastOof + Oof_GetOofCooldown() - GetGameTime();
+
+    if ( waitTime > 0 )
+    {
+        Retakes_Message( client, "You must wait {LIGHT_RED}%.1f{NORMAL} seconds to oof!", waitTime );
+        return Plugin_Handled;
+    }
+
+    g_LastOof[client] = GetGameTime();
+
     float min = 0.0;
     float max = 0.0;
 
@@ -41,7 +68,7 @@ public Action Cmd_Oof( int client, int args )
     return Plugin_Handled;
 }
 
-void Oof_OnClientSayCommand( int client, const char[] command, const char[] args )
+Action Oof_OnClientSayCommand( int client, const char[] command, const char[] args )
 {
     if ( strcmp( args[0], "oof", false ) == 0 )
     {
@@ -90,12 +117,11 @@ void Oof( int client, float oofness, float delay = 0.0 )
         pack.WriteFloat( oofness );
 
         CreateTimer( delay, Timer_Oof, pack );
-
         return;
     }
 
-    float volume = 0.75 + oofness * 0.25;
-    int pitch = RoundFloat( 100 / (1.0 + oofness) );
+    float volume = 0.5 + oofness * 0.5;
+    int pitch = RoundFloat( 100.0 / (0.75 + oofness * 1.25) );
 
     float pos[3];
     if ( IsClientValidAndInGame( client ) )
