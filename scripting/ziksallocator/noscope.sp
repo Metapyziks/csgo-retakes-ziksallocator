@@ -1,6 +1,9 @@
 bool g_WasNoScoped[MAXPLAYERS+1];
 bool g_WasJumpShot[MAXPLAYERS+1];
+bool g_WasHeadShot[MAXPLAYERS+1];
 CSWeapon g_KilledWeapon[MAXPLAYERS+1];
+float g_SinceLastShot[MAXPLAYERS+1];
+float g_LastShotTime[MAXPLAYERS+1];
 
 bool GetWeaponCanNoScope( CSWeapon weapon )
 {
@@ -15,6 +18,11 @@ bool GetWeaponCanNoScope( CSWeapon weapon )
     return false;
 }
 
+float GetOneTapPeriod()
+{
+    return 5.0;
+}
+
 void NoScope_OnTakeDamage( int victim,
     int &attacker, int &inflictor,
     float &damage, int &damagetype, int &weaponEnt,
@@ -22,6 +30,7 @@ void NoScope_OnTakeDamage( int victim,
 {
     g_WasNoScoped[victim] = false;
     g_WasJumpShot[victim] = false;
+    g_WasHeadShot[victim] = false;
     g_KilledWeapon[victim] = WEAPON_NONE;
 
     if ( !IsClientValidAndInGame( attacker ) ) return;
@@ -34,7 +43,19 @@ void NoScope_OnTakeDamage( int victim,
     
     g_WasNoScoped[victim] = canNoScope && !scoped;
     g_WasJumpShot[victim] = weapon != WEAPON_NONE && inAir;
+    g_WasHeadShot[victim] = (damagetype & CS_DMG_HEADSHOT) == CS_DMG_HEADSHOT;
     g_KilledWeapon[victim] = weapon;
+}
+
+void NoScope_WeaponFire( Event event )
+{
+    int client = GetClientOfUserId( event.GetInt( "userid" ) );
+    if ( !IsClientValidAndInGame( client ) ) return;
+
+    float time = GetGameTime();
+
+    g_SinceLastShot[client] = time - g_LastShotTime[client];
+    g_LastShotTime[client] = time;
 }
 
 void NoScope_PlayerDeath( Event event )
@@ -42,11 +63,17 @@ void NoScope_PlayerDeath( Event event )
     int victim = GetClientOfUserId( event.GetInt( "userid" ) );
     if ( !IsClientValidAndInGame( victim ) ) return;
 
-    if ( g_WasNoScoped[victim] || g_WasJumpShot[victim] )
-    {
-        int attacker = GetClientOfUserId( event.GetInt( "attacker" ) );
+    int attacker = GetClientOfUserId( event.GetInt( "attacker" ) );
+    if ( !IsClientValidAndInGame( attacker ) ) return;
 
-        DisplayTrickKillMessage( victim, attacker, g_KilledWeapon[victim], g_WasNoScoped[victim], g_WasJumpShot[victim] );
+    float sinceLastShot = g_SinceLastShot[attacker];
+
+    if ( g_WasNoScoped[victim] || g_WasJumpShot[victim] || g_WasHeadShot[victim] && sinceLastShot >= GetOneTapPeriod() )
+    {
+        g_LastShotTime[attacker] = 0.0;
+
+        DisplayTrickKillMessage( victim, attacker, g_KilledWeapon[victim],
+            g_WasNoScoped[victim], g_WasJumpShot[victim], g_WasHeadShot[victim] );
 
         bool wasEnemy = GetClientTeam( victim ) != GetClientTeam( attacker );
         if ( wasEnemy )
@@ -59,7 +86,7 @@ void NoScope_PlayerDeath( Event event )
     }
 }
 
-void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool noScope, bool jumpShot )
+void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool noScope, bool jumpShot, bool headShot )
 {
     float victimPos[3];
     GetClientAbsOrigin( victim, victimPos );
@@ -76,9 +103,16 @@ void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool no
         posDiff[1] * posDiff[1] +
         posDiff[2] * posDiff[2] ) * 0.01905;
 
-    float oofness = ((noScope && jumpShot ? 2.0 : 1.0) * (1 + (distance < 5.0 ? 0.0 : (distance - 5) / 20.0)) - 1.0) / 2.0;
+    float oofness = (distance < 5.0 ? 0.0 : (distance - 5) / 40.0) - 0.5;
 
-    Oof( victim, oofness, 0.5 );
+    if (headShot) oofness += 0.5;
+    if (jumpShot) oofness += 0.5;
+    if (noScope) oofness += 0.5;
+
+    if (oofness >= 0.0)
+    {
+        Oof( victim, oofness, 0.5 );
+    }
 
     char distanceString[32];
     FloatToStringFixedPoint( distance, 1, distanceString, sizeof(distanceString) );
@@ -97,6 +131,12 @@ void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool no
         Format( killType, sizeof(killType), "%t", "NoScoped" );
     } else if (jumpShot) {
         Format( killType, sizeof(killType), "%t", "JumpShot" );
+    } else if (headShot) {
+        if (weapon == WEAPON_DEAGLE) {
+            Format( killType, sizeof(killType), "%t", "OneDeag" );
+        } else {
+            return;
+        }
     } else {
         return;
     }

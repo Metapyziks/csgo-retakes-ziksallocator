@@ -54,6 +54,7 @@ public void OnPluginStart()
     SetupConVars();
 
     HookEvent( "player_death", Event_PlayerDeath, EventHookMode_Pre );
+    HookEvent( "weapon_fire", Event_WeaponFire, EventHookMode_Pre );
     HookEvent( "bomb_beginplant", Event_BombBeginPlant, EventHookMode_Post );
     HookEvent( "bomb_planted", Event_BombPlanted, EventHookMode_Post );
     HookEvent( "bomb_defused", Event_BombDefused, EventHookMode_Post );
@@ -116,6 +117,13 @@ public Action Event_PlayerDeath( Event event, const char[] name, bool dontBroadc
 #if defined ZIKS_POINTS
     ZiksPoints_PlayerDeath( event );
 #endif
+
+    return Plugin_Continue;
+}
+
+public Action Event_WeaponFire( Event event, const char[] name, bool dontBroadcast )
+{
+    NoScope_WeaponFire( event );
 
     return Plugin_Continue;
 }

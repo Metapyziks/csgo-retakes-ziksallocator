@@ -148,6 +148,10 @@
         "hu"        "ugrásból lövés"
         "de"        "Jump Shot"
     }
+    "OneDeag"
+    {
+        "en"        "one deag'd"
+    }
     "SpecialKillMessage"
     {
         // 1: attacker name
