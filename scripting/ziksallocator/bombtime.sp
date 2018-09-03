@@ -28,7 +28,7 @@ void BombTime_PlayerDeath( Event event )
 
         if ( timeRemaining < 1.0 )
         {
-            Oof( victim, 1.0 - timeRemaining );
+            Oof( victim, 1.0 - timeRemaining, 0.5 );
         }
     }
     else
@@ -43,7 +43,7 @@ void BombTime_PlayerDeath( Event event )
 
         if ( -timeRemaining < 1.0 )
         {
-            Oof( attacker, 1.0 + timeRemaining );
+            Oof( attacker, 1.0 + timeRemaining, 0.5 );
         }
     }
 }
@@ -176,7 +176,7 @@ void BombTime_BombExploded( Event event )
 
         if ( timeRemaining < 1.0 )
         {
-            Oof( g_DefusingClient, 1.0 - timeRemaining );
+            Oof( g_DefusingClient, 1.0 - timeRemaining, 1.0 );
         }
     }
 }
