@@ -20,7 +20,7 @@ bool GetWeaponCanNoScope( CSWeapon weapon )
 
 float GetOneTapPeriod()
 {
-    return 5.0;
+    return 2.5;
 }
 
 void NoScope_OnTakeDamage( int victim,
@@ -51,6 +51,12 @@ void NoScope_WeaponFire( Event event )
 {
     int client = GetClientOfUserId( event.GetInt( "userid" ) );
     if ( !IsClientValidAndInGame( client ) ) return;
+
+    char weaponName[64];
+    event.GetString( "weapon", weaponName, sizeof(weaponName) );
+
+    CSWeapon weapon = GetWeaponFromClassname( weaponName );
+    if ( weapon == WEAPON_NONE ) return;
 
     float time = GetGameTime();
 

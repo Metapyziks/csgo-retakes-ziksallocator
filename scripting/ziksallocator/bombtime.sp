@@ -25,6 +25,11 @@ void BombTime_PlayerDeath( Event event )
         FloatToStringFixedPoint( timeRemaining, 2, timeString, sizeof(timeString) );
 
         Retakes_MessageToAll( "%t", "DefuserDiedTimeLeftMessage", defuserName, timeString );
+
+        if ( timeRemaining < 1.0 )
+        {
+            Oof( victim, 1.0 - timeRemaining );
+        }
     }
     else
     {
@@ -35,6 +40,11 @@ void BombTime_PlayerDeath( Event event )
         FloatToStringFixedPoint( -timeRemaining, 2, timeString, sizeof(timeString) );
         
         Retakes_MessageToAll( "%t", "PostDefuseKillTimeMessage", attackerName, timeString );
+
+        if ( -timeRemaining < 1.0 )
+        {
+            Oof( attacker, 1.0 + timeRemaining );
+        }
     }
 }
 
@@ -59,8 +69,6 @@ void BombTime_BombPlanted( Event event )
 
 void BombTime_BombDefused( Event event )
 {
-    g_CurrentlyDefusing = false;
-
     int defuser = GetClientOfUserId( event.GetInt( "userid" ) );
 
     if ( !IsClientValidAndInGame( defuser ) ) return;
@@ -165,6 +173,11 @@ void BombTime_BombExploded( Event event )
         FloatToStringFixedPoint( timeRemaining, 2, timeString, sizeof(timeString) );
 
         Retakes_MessageToAll( "%t", "BombExplodedTimeLeftMessage", defuserName, timeString );
+
+        if ( timeRemaining < 1.0 )
+        {
+            Oof( g_DefusingClient, 1.0 - timeRemaining );
+        }
     }
 }
 
