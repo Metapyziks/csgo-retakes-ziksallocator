@@ -114,6 +114,7 @@ public Action Event_PlayerDeath( Event event, const char[] name, bool dontBroadc
 {
     BombTime_PlayerDeath( event );
     NoScope_PlayerDeath( event );
+    Oof_PlayerDeath( event );
 #if defined ZIKS_POINTS
     ZiksPoints_PlayerDeath( event );
 #endif

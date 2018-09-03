@@ -20,6 +20,19 @@ void Oof_OnMapStart()
     AddFileToDownloadsTable( "sound/ziks/test.mp3" );
     PrecacheSound( "ziks/test.mp3", true );
     AddToStringTable( FindStringTable( "soundprecache" ), "*ziks/test.mp3" );
+
+    for ( int client = 1; client <= MaxClients; ++client )
+    {
+        g_LastOof[client] = 0.0;
+    }
+}
+
+void Oof_PlayerDeath( Event event )
+{
+    int victim = GetClientOfUserId( event.GetInt( "userid" ) );
+    if ( !IsClientValidAndInGame( victim ) ) return;
+
+    g_LastOof[victim] = 0.0;
 }
 
 public Action Cmd_Oof( int client, int args )
