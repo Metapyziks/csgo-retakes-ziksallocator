@@ -122,6 +122,13 @@ public Action Event_PlayerDeath( Event event, const char[] name, bool dontBroadc
     return Plugin_Continue;
 }
 
+public Action Event_ItemEquip( Event event, const char[] name, bool dontBroadcast )
+{
+    NoScope_ItemEquip( event );
+
+    return Plugin_Continue;
+}
+
 public Action Event_WeaponFire( Event event, const char[] name, bool dontBroadcast )
 {
     NoScope_WeaponFire( event );
