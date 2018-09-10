@@ -34,6 +34,8 @@ Handle g_CVMaxGrenadeValue = INVALID_HANDLE;
  */
 Handle g_CVDecoyProbability = INVALID_HANDLE;
 
+Handle g_CVInstantDefuseMargin = INVALID_HANDLE;
+
 /**
  * Total number of grenades a player can hold.
  */
@@ -70,6 +72,8 @@ void SetupConVars()
 
     g_CVMaxGrenadeValue = CreateConVar( "sm_retakes_grenade_maxvalue", "800", "Maximum total value of randomly allocated grenades", FCVAR_NOTIFY );
     g_CVDecoyProbability = CreateConVar( "sm_retakes_decoy_chance", "10", "Percentage chance of decoys being considered for random grenade allocation", FCVAR_NOTIFY );
+
+    g_CVInstantDefuseMargin = CreateConVar( "sm_retakes_instdefuse_margin", "1.0", "Safety margin in seconds for instant defuse", FCVAR_NOTIFY );
 
     g_CVNadeLimitTotal = FindConVar( "ammo_grenade_limit_total" );
     g_CVNadeLimitDefault = FindConVar( "ammo_grenade_limit_default" );
@@ -163,6 +167,12 @@ int GetMaxNadeValue( int team, RTLoadout loadout )
 int GetDecoyProbability( RTLoadout loadout )
 {
     return GetConVarInt( g_CVDecoyProbability );
+}
+
+float GetInstantDefuseMargin()
+{
+    float value = GetConVarFloat( g_CVInstantDefuseMargin );
+    return value < 0.0 ? 0.0 : value;
 }
 
 /**

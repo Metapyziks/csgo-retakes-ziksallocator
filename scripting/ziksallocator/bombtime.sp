@@ -2,7 +2,6 @@ float g_DetonateTime = 0.0;
 float g_DefuseEndTime = 0.0;
 int g_DefusingClient = -1;
 bool g_CurrentlyDefusing = false;
-float g_InstantDefuseMargin = 0.2;
 float g_DefuseTime = 0.4;
 
 void BombTime_PlayerDeath( Event event )
@@ -110,33 +109,69 @@ void BombTime_BombBeginDefuse( Event event )
         g_DefusingClient = defuser;
     }
 
-    if ( g_DefuseEndTime < g_DetonateTime - g_InstantDefuseMargin )
+    if ( g_DefuseEndTime < g_DetonateTime - GetInstantDefuseMargin() )
     {
         CreateTimer( 0.1, BombTime_InstantDefuseTest );
     }
 }
 
-bool BombTime_AnyLiveGrenadesOfClass( char[] classname )
+bool BombTime_AnyLiveGrenadesOfClass( char[] classname, bool allowIfStationary = false, float minDistance = 8192.0 )
 {
+    float clientOrigin[3];
+    float vec[3];
+
+    if ( !IsClientValidAndInGame( g_DefusingClient ) )
+    {
+        return false;
+    }
+
+    GetClientAbsOrigin( g_DefusingClient, clientOrigin );
+
+    const float VELOCITY_ERROR = 0.001;
+
+    float minDistance2 = minDistance * minDistance;
+
     int ent;
     while ( (ent = FindEntityByClassname( -1, classname )) != -1 )
     {
-        if ( IsValidEntity( ent ) ) return true;                
+        if ( !IsValidEntity( ent ) ) continue;
+
+        GetEntPropVector( ent, Prop_Data, "m_vecOrigin", vec );
+
+        vec[0] -= clientOrigin[0];
+        vec[1] -= clientOrigin[1];
+        vec[2] -= clientOrigin[2];
+
+        float dist2 = vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2];
+
+        if ( dist2 <= minDistance2 ) return true;
+
+        if ( !allowIfStationary ) continue;
+
+        GetEntPropVector( ent, Prop_Data, "m_vecVelocity", vec );
+
+        if ( FloatAbs( vec[0] ) <= VELOCITY_ERROR
+            && FloatAbs( vec[1] ) <= VELOCITY_ERROR
+            && FloatAbs( vec[2] ) <= VELOCITY_ERROR )
+        {
+            continue;
+        }
+
+        return true;
     }
 
     return false;
 }
 
 bool BombTime_AnyLiveGrenades() 
-{   
-    return BombTime_AnyLiveGrenadesOfClass( "flashbang_projectile" ) ||
-            BombTime_AnyLiveGrenadesOfClass( "decoy_projectile" ) ||
-            BombTime_AnyLiveGrenadesOfClass( "hegrenade_projectile" ) ||
-            BombTime_AnyLiveGrenadesOfClass( "molotov_projectile" ) ||
-            BombTime_AnyLiveGrenadesOfClass( "smokegrenade_projectile" ) ||
-            BombTime_AnyLiveGrenadesOfClass( "flashbang_projectile" ) ||
-            // the smoke screen will be ignored for this
-            BombTime_AnyLiveGrenadesOfClass( "inferno" ); // fire from molotov/incendiary
+{
+    return BombTime_AnyLiveGrenadesOfClass( "flashbang_projectile", true ) ||
+        BombTime_AnyLiveGrenadesOfClass( "decoy_projectile", true, 128.0 ) ||
+        BombTime_AnyLiveGrenadesOfClass( "hegrenade_projectile" ) ||
+        BombTime_AnyLiveGrenadesOfClass( "molotov_projectile" ) ||
+        BombTime_AnyLiveGrenadesOfClass( "smokegrenade_projectile", true, 0.0 ) ||
+        // the smoke screen will be ignored for this
+        BombTime_AnyLiveGrenadesOfClass( "inferno", false, 512.0 ); // fire from molotov/incendiary
 }
 
 Action BombTime_InstantDefuseTest( Handle timer )
