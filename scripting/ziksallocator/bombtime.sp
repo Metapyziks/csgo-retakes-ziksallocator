@@ -2,6 +2,7 @@ float g_DetonateTime = 0.0;
 float g_DefuseEndTime = 0.0;
 int g_DefusingClient = -1;
 bool g_CurrentlyDefusing = false;
+float g_InstantDefuseMargin = 0.2;
 float g_DefuseTime = 0.4;
 
 void BombTime_PlayerDeath( Event event )
@@ -109,7 +110,7 @@ void BombTime_BombBeginDefuse( Event event )
         g_DefusingClient = defuser;
     }
 
-    if ( g_DefuseEndTime < g_DetonateTime )
+    if ( g_DefuseEndTime < g_DetonateTime - g_InstantDefuseMargin )
     {
         CreateTimer( 0.1, BombTime_InstantDefuseTest );
     }
