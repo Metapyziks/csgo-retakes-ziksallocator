@@ -131,8 +131,8 @@ bool BombTime_AnyLiveGrenadesOfClass( char[] classname, bool allowIfStationary =
 
     float minDistance2 = minDistance * minDistance;
 
-    int ent;
-    while ( (ent = FindEntityByClassname( -1, classname )) != -1 )
+    int ent = -1;
+    while ( (ent = FindEntityByClassname( ent, classname )) != -1 )
     {
         if ( !IsValidEntity( ent ) ) continue;
 
