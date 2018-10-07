@@ -47,6 +47,10 @@ void Oof_OnMapStart()
     PrecacheSound( "ziks/test.mp3", true );
     AddToStringTable( FindStringTable( "soundprecache" ), "*ziks/test.mp3" );
 
+    AddFileToDownloadsTable( "sound/ziks/JON.mp3" );
+    PrecacheSound( "ziks/JON.mp3", true );
+    AddToStringTable( FindStringTable( "soundprecache" ), "*ziks/JON.mp3" );
+
     for ( int client = 1; client <= MaxClients; ++client )
     {
         g_LastOof[client] = 0.0;
