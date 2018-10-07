@@ -53,6 +53,7 @@ void NoScope_ItemEquip( Event event )
     if ( !IsClientValidAndInGame( client ) ) return;
 
     g_LastShotTime[client] = 0.0;
+    g_SinceLastShot[client] = GetOneTapPeriod();
 }
 
 void NoScope_WeaponFire( Event event )
@@ -86,17 +87,16 @@ void NoScope_PlayerDeath( Event event )
     {
         g_LastShotTime[attacker] = 0.0;
 
+        bool wasEnemy = GetClientTeam( victim ) != GetClientTeam( attacker );
+        if ( !wasEnemy ) return;
+
         DisplayTrickKillMessage( victim, attacker, g_KilledWeapon[victim],
             g_WasNoScoped[victim], g_WasJumpShot[victim], g_WasHeadShot[victim] );
 
-        bool wasEnemy = GetClientTeam( victim ) != GetClientTeam( attacker );
-        if ( wasEnemy )
-        {
-            int points = g_WasNoScoped[victim] && g_WasJumpShot[victim] ? 3 : 1;
 #if defined ZIKS_POINTS
-            ZiksPoints_Award( attacker, points );
+        int points = g_WasNoScoped[victim] && g_WasJumpShot[victim] ? 3 : 1;
+        ZiksPoints_Award( attacker, points );
 #endif
-        }
     }
 }
 
@@ -119,11 +119,11 @@ void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool no
 
     float oofness = (distance < 5.0 ? 0.0 : (distance - 5) / 40.0) - 0.5;
 
-    if (headShot) oofness += 0.5;
-    if (jumpShot) oofness += 0.5;
-    if (noScope) oofness += 0.5;
+    if ( headShot ) oofness += 0.5;
+    if ( jumpShot ) oofness += 0.5;
+    if ( noScope ) oofness += 0.5;
 
-    if (oofness >= 0.0)
+    if ( headShot || jumpShot || noScope )
     {
         Oof( victim, oofness, 0.5 );
     }
@@ -145,8 +145,8 @@ void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool no
         Format( killType, sizeof(killType), "%t", "NoScoped" );
     } else if (jumpShot) {
         Format( killType, sizeof(killType), "%t", "JumpShot" );
-    } else if (headShot) {
-        if (weapon == WEAPON_DEAGLE) {
+    } else if ( headShot ) {
+        if ( weapon == WEAPON_DEAGLE ) {
             Format( killType, sizeof(killType), "%t", "OneDeag" );
         } else {
             return;

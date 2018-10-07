@@ -13,9 +13,9 @@ void Oof_OnPluginStart()
     RegConsoleCmd( "sm_oof", Cmd_Oof );
 
     g_CVOofCooldown = CreateConVar( "sm_oof_cooldown", "10", "Time in seconds before a player can oof again.", FCVAR_NOTIFY );
-    g_CVOofTimeDuration = CreateConVar( "sm_ooftime_duration", "1.0", "Time in seconds that OofTime should last.", FCVAR_NOTIFY );
-    g_CVOofTimeEaseIn = CreateConVar( "sm_ooftime_easein", "0.125", "Time in seconds that OofTime ease in.", FCVAR_NOTIFY );
-    g_CVOofTimeEaseOut = CreateConVar( "sm_ooftime_easeout", "1.0", "Time in seconds that OofTime ease out.", FCVAR_NOTIFY );
+    g_CVOofTimeDuration = CreateConVar( "sm_ooftime_duration", "1.5", "Time in seconds that OofTime should last.", FCVAR_NOTIFY );
+    g_CVOofTimeEaseIn = CreateConVar( "sm_ooftime_easein", "0.125", "Time in seconds that OofTime eases in.", FCVAR_NOTIFY );
+    g_CVOofTimeEaseOut = CreateConVar( "sm_ooftime_easeout", "1.0", "Time in seconds that OofTime eases out.", FCVAR_NOTIFY );
 
     int flags = GetCommandFlags( "sv_cheats" );
     SetCommandFlags( "sv_cheats", flags & ~FCVAR_NOTIFY );
