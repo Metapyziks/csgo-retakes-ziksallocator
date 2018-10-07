@@ -12,6 +12,9 @@ void Oof_OnPluginStart()
 
     g_CVOofCooldown = CreateConVar( "sm_oof_cooldown", "10", "Time in seconds before a player can oof again.", FCVAR_NOTIFY );
     g_CVOofTimeDuration = CreateConVar( "sm_ooftime_duration", "2", "Time in seconds that OofTime should last.", FCVAR_NOTIFY );
+
+    int flags = GetCommandFlags( "sv_cheats" );
+    SetCommandFlags( "sv_cheats", flags & ~FCVAR_NOTIFY );
 }
 
 float Oof_GetOofCooldown()
