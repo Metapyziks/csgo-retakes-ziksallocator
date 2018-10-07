@@ -72,12 +72,23 @@ void UpdateTimescale( float value )
 {
     if ( value != value ) return;
     if ( value == g_CurTimescale ) return;
+
+    if ( g_CurTimescale == 1.0 )
+    {
+        ServerCommand( "sv_cheats \"1\"" );
+    }
+
     g_CurTimescale = value;
 
     char buffer[16];
     FloatToString( value, buffer, sizeof(buffer) );
 
-    ServerCommand( "sm_cvar host_timescale \"%s\"", buffer );
+    ServerCommand( "host_timescale \"%s\"", buffer );
+
+    if ( value == 1.0 )
+    {
+        ServerCommand( "sv_cheats \"0\"" );
+    }
 }
 
 void Oof_PlayerDeath( Event event )
