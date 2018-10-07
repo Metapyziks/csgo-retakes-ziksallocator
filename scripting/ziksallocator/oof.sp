@@ -239,5 +239,13 @@ void Oof( int client, float oofness, float delay = 0.0 )
         GetClientEyePosition( client, pos );
     }
 
-    EmitAmbientSound( "*ziks/test.mp3", pos, client, SNDLEVEL_GUNFIRE, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
+    if ( GetSteamAccountID(client) == 126811133 )
+    {
+        // Account is Stubenhocker
+        EmitAmbientSound( "*ziks/JON.mp3", pos, client, SNDLEVEL_GUNFIRE, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
+    }
+    else
+    {
+        EmitAmbientSound( "*ziks/test.mp3", pos, client, SNDLEVEL_GUNFIRE, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
+    }
 }
