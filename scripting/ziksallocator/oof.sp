@@ -3,8 +3,8 @@ Handle g_CVOofCooldown = INVALID_HANDLE;
 Handle g_CVOofTimeDuration = INVALID_HANDLE;
 
 float g_LastOof[MAXPLAYERS+1];
-float g_OofTime = -1;
-float g_CurTimescale = 1;
+float g_OofTime = -1.0;
+float g_CurTimescale = 1.0;
 
 void Oof_OnPluginStart()
 {
@@ -75,7 +75,7 @@ void UpdateTimescale( float value )
 
     if ( g_CurTimescale == 1.0 )
     {
-        ServerCommand( "sv_cheats \"1\"" );
+        ServerCommand( "sv_cheats 1" );
     }
 
     g_CurTimescale = value;
@@ -87,7 +87,7 @@ void UpdateTimescale( float value )
 
     if ( value == 1.0 )
     {
-        ServerCommand( "sv_cheats \"0\"" );
+        ServerCommand( "sv_cheats 0" );
     }
 }
 
