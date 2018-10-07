@@ -196,6 +196,11 @@ public Action Event_RoundEnd( Event event, const char[] name, bool dontBroadcast
     return Plugin_Continue;
 }
 
+public void OnGameFrame()
+{
+    Oof_OnGameFrame();
+}
+
 public Action OnPlayerRunCmd( int client, int &buttons,
     int &impulse, float vel[3], float angles[3],
     int &weapon, int &subtype, int &cmdnum,

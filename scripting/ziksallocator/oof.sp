@@ -1,18 +1,27 @@
 
 Handle g_CVOofCooldown = INVALID_HANDLE;
+Handle g_CVOofTimeDuration = INVALID_HANDLE;
 
 float g_LastOof[MAXPLAYERS+1];
+float g_OofTime = -1;
+float g_CurTimescale = 1;
 
 void Oof_OnPluginStart()
 {
     RegConsoleCmd( "sm_oof", Cmd_Oof );
 
     g_CVOofCooldown = CreateConVar( "sm_oof_cooldown", "10", "Time in seconds before a player can oof again.", FCVAR_NOTIFY );
+    g_CVOofTimeDuration = CreateConVar( "sm_ooftime_duration", "2", "Time in seconds that OofTime should last.", FCVAR_NOTIFY );
 }
 
 float Oof_GetOofCooldown()
 {
     return GetConVarFloat( g_CVOofCooldown );
+}
+
+float Oof_GetOofTimeDuration()
+{
+    return GetConVarFloat( g_CVOofTimeDuration );
 }
 
 void Oof_OnMapStart()
@@ -25,6 +34,49 @@ void Oof_OnMapStart()
     {
         g_LastOof[client] = 0.0;
     }
+}
+
+void Oof_StartOofTime()
+{
+    g_OofTime = GetGameTime();
+}
+
+void Oof_OnGameFrame()
+{
+    float ooftimeDuration = Oof_GetOofTimeDuration();
+
+    if ( g_OofTime == -1 || ooftimeDuration <= 0 ) return;
+
+    float gameTime = GetGameTime();
+    float t = gameTime - g_OofTime;
+
+    if ( t < 0 ) return;
+
+    if ( t < ooftimeDuration )
+    {
+        UpdateTimescale( 0.5 );
+        return;
+    }
+
+    t = (t - ooftimeDuration) / 0.25;
+
+    if ( t > 1.0 )
+    {
+        t = 1.0;
+    }
+
+    UpdateTimescale( 0.5 + t * 0.5 );
+}
+
+void UpdateTimescale( float value )
+{
+    if ( value == g_CurTimescale ) return;
+    g_CurTimescale = value;
+
+    char buffer[16];
+    FloatToString( value, buffer, sizeof(buffer) );
+
+    ServerCommand( "sm_cvar host_timescale \"%s\"", buffer );
 }
 
 void Oof_PlayerDeath( Event event )
@@ -111,11 +163,6 @@ Action Timer_Oof( Handle timer, DataPack pack )
     CloseHandle( pack );
 }
 
-Action Timer_NormalSpeed( Handle timer )
-{
-    ServerCommand( "host_timescale 1" );
-}
-
 void Oof( int client, float oofness, float delay = 0.0 )
 {
     if ( oofness < 0.0 )
@@ -135,10 +182,8 @@ void Oof( int client, float oofness, float delay = 0.0 )
         pack.WriteFloat( oofness );
 
         CreateTimer( delay, Timer_Oof, pack );
-
-        ServerCommand( "host_timescale 0.5" );
-        CreateTimer( 2.0, Timer_NormalSpeed );
-
+        
+        Oof_StartOofTime();
         return;
     }
 
