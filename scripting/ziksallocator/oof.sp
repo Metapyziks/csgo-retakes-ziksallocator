@@ -111,6 +111,11 @@ Action Timer_Oof( Handle timer, DataPack pack )
     CloseHandle( pack );
 }
 
+Action Timer_NormalSpeed( Handle timer )
+{
+    ServerCommand( "host_timescale 1" );
+}
+
 void Oof( int client, float oofness, float delay = 0.0 )
 {
     if ( oofness < 0.0 )
@@ -130,6 +135,10 @@ void Oof( int client, float oofness, float delay = 0.0 )
         pack.WriteFloat( oofness );
 
         CreateTimer( delay, Timer_Oof, pack );
+
+        ServerCommand( "host_timescale 0.5" );
+        CreateTimer( 2.0, Timer_NormalSpeed );
+
         return;
     }
 
