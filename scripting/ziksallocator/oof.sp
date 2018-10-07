@@ -1,6 +1,8 @@
 
 Handle g_CVOofCooldown = INVALID_HANDLE;
 Handle g_CVOofTimeDuration = INVALID_HANDLE;
+Handle g_CVOofTimeEaseIn = INVALID_HANDLE;
+Handle g_CVOofTimeEaseOut = INVALID_HANDLE;
 
 float g_LastOof[MAXPLAYERS+1];
 float g_OofTime = -1.0;
@@ -11,7 +13,9 @@ void Oof_OnPluginStart()
     RegConsoleCmd( "sm_oof", Cmd_Oof );
 
     g_CVOofCooldown = CreateConVar( "sm_oof_cooldown", "10", "Time in seconds before a player can oof again.", FCVAR_NOTIFY );
-    g_CVOofTimeDuration = CreateConVar( "sm_ooftime_duration", "2", "Time in seconds that OofTime should last.", FCVAR_NOTIFY );
+    g_CVOofTimeDuration = CreateConVar( "sm_ooftime_duration", "1.0", "Time in seconds that OofTime should last.", FCVAR_NOTIFY );
+    g_CVOofTimeEaseIn = CreateConVar( "sm_ooftime_easein", "0.125", "Time in seconds that OofTime ease in.", FCVAR_NOTIFY );
+    g_CVOofTimeEaseOut = CreateConVar( "sm_ooftime_easeout", "1.0", "Time in seconds that OofTime ease out.", FCVAR_NOTIFY );
 
     int flags = GetCommandFlags( "sv_cheats" );
     SetCommandFlags( "sv_cheats", flags & ~FCVAR_NOTIFY );
@@ -25,6 +29,16 @@ float Oof_GetOofCooldown()
 float Oof_GetOofTimeDuration()
 {
     return GetConVarFloat( g_CVOofTimeDuration );
+}
+
+float Oof_GetOofTimeEaseIn()
+{
+    return GetConVarFloat( g_CVOofTimeEaseIn );
+}
+
+float Oof_GetOofTimeEaseOut()
+{
+    return GetConVarFloat( g_CVOofTimeEaseOut );
 }
 
 void Oof_OnMapStart()
@@ -46,29 +60,43 @@ void Oof_StartOofTime()
 
 void Oof_OnGameFrame()
 {
-    float ooftimeDuration = Oof_GetOofTimeDuration();
+    float duration = Oof_GetOofTimeDuration();
 
-    if ( g_OofTime == -1 || ooftimeDuration <= 0 ) return;
+    if ( g_OofTime == -1 || duration <= 0 ) return;
 
     float gameTime = GetGameTime();
     float t = gameTime - g_OofTime;
 
     if ( t < 0 ) return;
 
-    if ( t < ooftimeDuration )
+    float easeIn = Oof_GetOofTimeEaseIn();
+    float easeOut = Oof_GetOofTimeEaseOut();
+
+    float timeScale = 0.5;
+
+    if ( t < easeIn )
     {
-        UpdateTimescale( 0.5 );
+        UpdateTimescale( 1.0 - (t / easeIn) * (1.0 - timeScale) );
         return;
     }
 
-    t = (t - ooftimeDuration) / 0.25;
+    t -= easeIn;
 
-    if ( t > 1.0 )
+    if ( t < duration )
     {
-        t = 1.0;
+        UpdateTimescale( timeScale );
+        return;
     }
 
-    UpdateTimescale( 0.5 + t * 0.5 );
+    t -= duration;
+
+    if ( t > easeOut )
+    {
+        UpdateTimescale( 1.0 );
+        return;
+    }
+
+    UpdateTimescale( timeScale + (t / easeOut) * (1.0 - timeScale) );
 }
 
 void UpdateTimescale( float value )
