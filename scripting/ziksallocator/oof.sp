@@ -243,9 +243,11 @@ void Oof( int client, float oofness, float delay = 0.0 )
     {
         // Account is Stubenhocker
         EmitAmbientSound( "*ziks/JON.mp3", pos, client, SNDLEVEL_GUNFIRE, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
+        PrintToConsole(client, "Played JON-oof for id %i", GetSteamAccountID(client));
     }
     else
     {
         EmitAmbientSound( "*ziks/test.mp3", pos, client, SNDLEVEL_GUNFIRE, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
+        PrintToConsole(client, "Played oof for id %i", GetSteamAccountID(client));
     }
 }
