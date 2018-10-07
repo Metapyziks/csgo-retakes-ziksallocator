@@ -70,6 +70,7 @@ void Oof_OnGameFrame()
 
 void UpdateTimescale( float value )
 {
+    if ( value != value ) return;
     if ( value == g_CurTimescale ) return;
     g_CurTimescale = value;
 
