@@ -249,6 +249,8 @@ void Oof( int client, float oofness, float delay = 0.0, int attacker = 0 )
         GetClientEyePosition( client, pos );
     }
 
+    PrintToConsoleAll( "GetSteamAccountID(attacker) == %i; Oof_GetOofJonId() == %i;", GetSteamAccountID(attacker), Oof_GetOofJonId() );
+
     if ( attacker != 0 && GetSteamAccountID(attacker) == Oof_GetOofJonId() )
     {
         // Account is Stubenhocker
