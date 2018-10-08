@@ -125,7 +125,7 @@ void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool no
 
     if ( headShot || jumpShot || noScope )
     {
-        Oof( victim, oofness, 0.5 );
+        Oof( victim, oofness, 0.5, attacker );
     }
 
     char distanceString[32];
