@@ -44,7 +44,7 @@ float Oof_GetOofTimeEaseOut()
 
 int Oof_GetOofJonId()
 {
-    return GetConVarFloat( g_CVOofJonId );
+    return GetConVarInt( g_CVOofJonId );
 }
 
 void Oof_OnMapStart()
