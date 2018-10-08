@@ -249,11 +249,11 @@ void Oof( int client, float oofness, float delay = 0.0, int attacker = 0 )
         GetClientEyePosition( client, pos );
     }
 
-    if ( attacker != 0 ) {
+    if ( IsClientValidAndInGame( attacker ) ) {
         PrintToConsoleAll( "GetSteamAccountID(attacker) == %i; Oof_GetOofJonId() == %i; attacker == %i;", GetSteamAccountID(attacker), Oof_GetOofJonId(), attacker );
     }
 
-    if ( attacker != 0 && GetSteamAccountID(attacker) == Oof_GetOofJonId() )
+    if ( IsClientValidAndInGame( attacker ) && GetSteamAccountID(attacker) == Oof_GetOofJonId() )
     {
         EmitAmbientSound( "*ziks/JON.mp3", pos, client, SNDLEVEL_GUNFIRE, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
         PrintToConsole(client, "Played JON-oof for id %i", GetSteamAccountID(client));
