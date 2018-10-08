@@ -3,6 +3,7 @@ Handle g_CVOofCooldown = INVALID_HANDLE;
 Handle g_CVOofTimeDuration = INVALID_HANDLE;
 Handle g_CVOofTimeEaseIn = INVALID_HANDLE;
 Handle g_CVOofTimeEaseOut = INVALID_HANDLE;
+Handle g_CVOofJonId = INVALID_HANDLE;
 
 float g_LastOof[MAXPLAYERS+1];
 float g_OofTime = -1.0;
@@ -16,7 +17,7 @@ void Oof_OnPluginStart()
     g_CVOofTimeDuration = CreateConVar( "sm_ooftime_duration", "1.5", "Time in seconds that OofTime should last.", FCVAR_NOTIFY );
     g_CVOofTimeEaseIn = CreateConVar( "sm_ooftime_easein", "0.125", "Time in seconds that OofTime eases in.", FCVAR_NOTIFY );
     g_CVOofTimeEaseOut = CreateConVar( "sm_ooftime_easeout", "1.0", "Time in seconds that OofTime eases out.", FCVAR_NOTIFY );
-
+    g_CVOofJonId = CreateConVar( "sm_oof_jon_id", "126811133", "Steam3 ID for custom JON oof sound", FCVAR_NOTIFY );
     int flags = GetCommandFlags( "sv_cheats" );
     SetCommandFlags( "sv_cheats", flags & ~FCVAR_NOTIFY );
 }
@@ -39,6 +40,11 @@ float Oof_GetOofTimeEaseIn()
 float Oof_GetOofTimeEaseOut()
 {
     return GetConVarFloat( g_CVOofTimeEaseOut );
+}
+
+int Oof_GetOofJonId()
+{
+    return GetConVarFloat( g_CVOofJonId );
 }
 
 void Oof_OnMapStart()
@@ -210,7 +216,7 @@ Action Timer_Oof( Handle timer, DataPack pack )
     CloseHandle( pack );
 }
 
-void Oof( int client, float oofness, float delay = 0.0 )
+void Oof( int client, float oofness, float delay = 0.0, int attacker = 0 )
 {
     if ( oofness < 0.0 )
     {
@@ -243,7 +249,7 @@ void Oof( int client, float oofness, float delay = 0.0 )
         GetClientEyePosition( client, pos );
     }
 
-    if ( GetSteamAccountID(client) == 126811133 )
+    if ( attacker != 0 && GetSteamAccountID(attacker) == Oof_GetOofJonId() )
     {
         // Account is Stubenhocker
         EmitAmbientSound( "*ziks/JON.mp3", pos, client, SNDLEVEL_GUNFIRE, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
