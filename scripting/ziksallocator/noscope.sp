@@ -53,6 +53,8 @@ void NoScope_ItemEquip( Event event )
     if ( !IsClientValidAndInGame( client ) ) return;
 
     g_LastShotTime[client] = 0.0;
+    
+    Retakes_MessageToAll( "[DEBUG] NoScope_ItemEquip %f", GetGameTime() );
 }
 
 void NoScope_WeaponFire( Event event )
