@@ -63,6 +63,7 @@ public void OnPluginStart()
     HookEvent( "bomb_exploded", Event_BombExploded, EventHookMode_Post );
     HookEvent( "round_poststart", Event_RoundPostStart, EventHookMode_Post );
     HookEvent( "round_end", Event_RoundEnd, EventHookMode_Post );
+    HookEvent( "item_equip", Event_ItemEquip, EventHookMode_Post );
 
     for ( int client = 1; client <= MaxClients; ++client )
     {
