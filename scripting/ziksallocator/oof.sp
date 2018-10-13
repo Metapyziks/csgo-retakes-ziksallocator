@@ -210,8 +210,9 @@ Action Timer_Oof( Handle timer, DataPack pack )
 
     int client = pack.ReadCell();
     float oofness = pack.ReadFloat();
+    int attacker = pack.ReadCell();
 
-    Oof( client, oofness );
+    Oof( client, oofness, 0.0, attacker );
 
     CloseHandle( pack );
 }
@@ -233,6 +234,7 @@ void Oof( int client, float oofness, float delay = 0.0, int attacker = 0 )
 
         pack.WriteCell( client );
         pack.WriteFloat( oofness );
+        pack.WriteCell( attacker );
 
         CreateTimer( delay, Timer_Oof, pack );
         
