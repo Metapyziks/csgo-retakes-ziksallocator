@@ -21,9 +21,10 @@ void GetWeaponName( CSWeapon weapon, char[] buffer, int maxLength )
     {
         case WEAPON_NONE:      strcopy( buffer, maxLength, "None" );
 
-        case WEAPON_GLOCK:     strcopy( buffer, maxLength, "Glock" );
-        case WEAPON_HKP2000:   strcopy( buffer, maxLength, "P2000 / USP-S" );
-        case WEAPON_P250:      strcopy( buffer, maxLength, "P250" );
+        case WEAPON_GLOCK:          strcopy( buffer, maxLength, "Glock" );
+        case WEAPON_HKP2000:        strcopy( buffer, maxLength, "P2000" );
+        case WEAPON_USP_SILENCER:   strcopy( buffer, maxLength, "USP-S" );
+        case WEAPON_P250:           strcopy( buffer, maxLength, "P250" );
         case WEAPON_ELITE:     strcopy( buffer, maxLength, "Dual Barettas" );
         case WEAPON_TEC9:      strcopy( buffer, maxLength, "Tec-9" );
         case WEAPON_FIVESEVEN: strcopy( buffer, maxLength, "Five-SeveN" );
@@ -83,6 +84,7 @@ void GetWeaponClassName( CSWeapon weapon, char[] buffer, int maxLength )
 
         case WEAPON_GLOCK:     strcopy( buffer, maxLength, "weapon_glock" );
         case WEAPON_HKP2000:   strcopy( buffer, maxLength, "weapon_hkp2000" );
+        case WEAPON_USP_SILENCER: strcopy( buffer, maxLength, "weapon_usp_silencer" );
         case WEAPON_P250:      strcopy( buffer, maxLength, "weapon_p250" );
         case WEAPON_ELITE:     strcopy( buffer, maxLength, "weapon_elite" );
         case WEAPON_TEC9:      strcopy( buffer, maxLength, "weapon_tec9" );
@@ -133,6 +135,7 @@ CSWeapon GetWeaponFromEntity( int weapon )
 CSWeapon GetWeaponFromClassname( char[] classname )
 {
     if ( strcmp( classname, "weapon_glock" ) == 0 ) return WEAPON_GLOCK;
+    if ( strcmp( classname, "weapon_usp_silencer" ) == 0 ) return WEAPON_USP_SILENCER;
     if ( strcmp( classname, "weapon_hkp2000" ) == 0 ) return WEAPON_HKP2000;
     if ( strcmp( classname, "weapon_p250" ) == 0 ) return WEAPON_P250;
     if ( strcmp( classname, "weapon_elite" ) == 0 ) return WEAPON_ELITE;
@@ -279,7 +282,7 @@ bool CanBuyWeapon( int client, int team, RTLoadout loadout, CSWeapon weapon )
         case WEAPON_GLOCK, WEAPON_TEC9, WEAPON_MAC10, WEAPON_SAWEDOFF,
             WEAPON_GALILAR, WEAPON_AK47, WEAPON_SG556, WEAPON_G3SG1:
             return team == CS_TEAM_T;
-        case WEAPON_HKP2000, WEAPON_FIVESEVEN, WEAPON_MP9, WEAPON_MAG7,
+        case WEAPON_HKP2000, WEAPON_USP_SILENCER, WEAPON_FIVESEVEN, WEAPON_MP9, WEAPON_MAG7,
             WEAPON_FAMAS, WEAPON_M4A1, WEAPON_M4A1_SILENCER, WEAPON_AUG, WEAPON_SCAR20:
             return team == CS_TEAM_CT;
     }
@@ -298,7 +301,7 @@ int GetWeaponCost( int client, CSWeapon weapon )
 {
     switch ( weapon )
     {
-        case WEAPON_NONE, WEAPON_GLOCK, WEAPON_HKP2000:
+        case WEAPON_NONE, WEAPON_GLOCK, WEAPON_HKP2000, WEAPON_USP_SILENCER:
             return 0;
         case WEAPON_P250:
             return 300;

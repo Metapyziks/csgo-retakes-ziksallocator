@@ -48,6 +48,7 @@ CSWeapon g_RandomSecondary[TEAM_COUNT];
 CSWeapon g_RandomWeapons[] = {
     WEAPON_GLOCK,
     WEAPON_HKP2000,
+    WEAPON_USP_SILENCER,
     WEAPON_P250,
     WEAPON_ELITE,
     WEAPON_TEC9,
@@ -88,7 +89,7 @@ int GetRandomWeaponWeight( CSWeapon weapon )
 {
     switch( weapon )
     {
-        case WEAPON_GLOCK, WEAPON_HKP2000:
+        case WEAPON_GLOCK, WEAPON_HKP2000, WEAPON_USP_SILENCER:
             return 0;
         case WEAPON_AWP, WEAPON_SSG08:
             return GetIsHeadshotOnly() ? 0 : 1;

@@ -52,7 +52,8 @@ enum CSWeapon
     WEAPON_NONE,        /**< No weapon. */
 
     WEAPON_GLOCK,       /**< Glock. */
-    WEAPON_HKP2000,     /**< P2000 / USP-S. */
+    WEAPON_HKP2000,     /**< P2000 */
+    WEAPON_USP_SILENCER, /**< USP-S. */
     WEAPON_P250,        /**< P250. */
     WEAPON_ELITE,       /**< Dual Barettas. */
     WEAPON_TEC9,        /**< Tec-9. */
