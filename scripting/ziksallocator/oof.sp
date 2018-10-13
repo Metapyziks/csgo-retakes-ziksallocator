@@ -17,7 +17,7 @@ void Oof_OnPluginStart()
     g_CVOofTimeDuration = CreateConVar( "sm_ooftime_duration", "1.5", "Time in seconds that OofTime should last.", FCVAR_NOTIFY );
     g_CVOofTimeEaseIn = CreateConVar( "sm_ooftime_easein", "0.125", "Time in seconds that OofTime eases in.", FCVAR_NOTIFY );
     g_CVOofTimeEaseOut = CreateConVar( "sm_ooftime_easeout", "1.0", "Time in seconds that OofTime eases out.", FCVAR_NOTIFY );
-    g_CVOofJonId = CreateConVar( "sm_oof_jon_id", "126811133", "Steam3 ID for custom JON oof sound", FCVAR_NOTIFY );
+    g_CVOofJonId = CreateConVar( "sm_oof_jon_id", "334614586", "Steam3 ID for custom JON oof sound", FCVAR_NOTIFY );
     int flags = GetCommandFlags( "sv_cheats" );
     SetCommandFlags( "sv_cheats", flags & ~FCVAR_NOTIFY );
 }
@@ -249,18 +249,12 @@ void Oof( int client, float oofness, float delay = 0.0, int attacker = 0 )
         GetClientEyePosition( client, pos );
     }
 
-    if ( IsClientValidAndInGame( attacker ) ) {
-        PrintToConsoleAll( "GetSteamAccountID(attacker) == %i; Oof_GetOofJonId() == %i; attacker == %i;", GetSteamAccountID(attacker), Oof_GetOofJonId(), attacker );
-    }
-
     if ( IsClientValidAndInGame( attacker ) && GetSteamAccountID(attacker) == Oof_GetOofJonId() )
     {
         EmitAmbientSound( "*ziks/JON.mp3", pos, client, SNDLEVEL_GUNFIRE, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
-        PrintToConsole(client, "Played JON-oof for id %i", GetSteamAccountID(client));
     }
     else
     {
         EmitAmbientSound( "*ziks/test.mp3", pos, client, SNDLEVEL_GUNFIRE, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
-        PrintToConsole(client, "Played oof for id %i", GetSteamAccountID(client));
     }
 }

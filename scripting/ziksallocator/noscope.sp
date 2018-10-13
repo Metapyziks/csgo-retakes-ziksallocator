@@ -53,7 +53,6 @@ void NoScope_ItemEquip( Event event )
     if ( !IsClientValidAndInGame( client ) ) return;
 
     g_LastShotTime[client] = 0.0;
-    g_SinceLastShot[client] = GetOneTapPeriod();
 }
 
 void NoScope_WeaponFire( Event event )
@@ -71,6 +70,8 @@ void NoScope_WeaponFire( Event event )
 
     g_SinceLastShot[client] = time - g_LastShotTime[client];
     g_LastShotTime[client] = time;
+
+    Retakes_MessageToAll( "[DEBUG] NoScope_WeaponFire %f %f", time, g_SinceLastShot[client] );
 }
 
 void NoScope_PlayerDeath( Event event )
@@ -82,6 +83,8 @@ void NoScope_PlayerDeath( Event event )
     if ( !IsClientValidAndInGame( attacker ) ) return;
 
     float sinceLastShot = g_SinceLastShot[attacker];
+    
+    Retakes_MessageToAll( "[DEBUG] NoScope_PlayerDeath %f %f", GetGameTime(), g_SinceLastShot[attacker] );
 
     if ( g_WasNoScoped[victim] || g_WasJumpShot[victim] || g_WasHeadShot[victim] && sinceLastShot >= GetOneTapPeriod() )
     {
