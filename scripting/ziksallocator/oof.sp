@@ -241,8 +241,9 @@ Action Timer_Oof( Handle timer, DataPack pack )
     int client = pack.ReadCell();
     float oofness = pack.ReadFloat();
     int attacker = pack.ReadCell();
+    bool doneThis = pack.ReadCell() > 0;
 
-    Oof( client, oofness, 0.0, attacker );
+    Oof( client, oofness, 0.0, attacker, doneThis );
 
     CloseHandle( pack );
 }
@@ -258,7 +259,7 @@ void Oof_EmitSound( OofSound sound, float pos[3], int client, float volume, int 
     EmitAmbientSound( soundPath, pos, client, SNDLEVEL_GUNFIRE, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
 }
 
-void Oof( int client, float oofness, float delay = 0.0, int attacker = 0 )
+void Oof( int client, float oofness, float delay = 0.0, int attacker = 0, bool doneThis = false )
 {
     if ( oofness < 0.0 )
     {
@@ -276,6 +277,7 @@ void Oof( int client, float oofness, float delay = 0.0, int attacker = 0 )
         pack.WriteCell( client );
         pack.WriteFloat( oofness );
         pack.WriteCell( attacker );
+        pack.WriteCell( doneThis ? 1 : 0 );
 
         CreateTimer( delay, Timer_Oof, pack );
         
@@ -296,7 +298,7 @@ void Oof( int client, float oofness, float delay = 0.0, int attacker = 0 )
     {
         Oof_EmitSound( OOF_SOUND_JON, pos, client, volume, pitch );
     }
-    else if ( GetRandomFloat( 0.0, 1.0 ) < 0.1 )
+    else if ( doneThis )
     {
         Oof_EmitSound( OOF_SOUND_DONETHIS, pos, client, volume, pitch );
     }
