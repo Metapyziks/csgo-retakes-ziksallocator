@@ -183,6 +183,13 @@ CSWeapon GetWeaponFromClassname( char[] classname )
     if ( strcmp( classname, "weapon_g3sg1" ) == 0 ) return WEAPON_G3SG1;
     if ( strcmp( classname, "weapon_scar20" ) == 0 ) return WEAPON_SCAR20;
 
+    if ( strcmp( classname, "weapon_knife" ) == 0 ) return WEAPON_KNIFE;
+    if ( strcmp( classname, "weapon_hegrenade" ) == 0 ) return WEAPON_HEGRENADE;
+    if ( strcmp( classname, "weapon_incgrenade" ) == 0 ) return WEAPON_INCGRENADE;
+    if ( strcmp( classname, "weapon_molotov" ) == 0 ) return WEAPON_MOLOTOV;
+    if ( strcmp( classname, "weapon_decoy" ) == 0 ) return WEAPON_DECOY;
+    if ( strcmp( classname, "weapon_smokegrenade" ) == 0 ) return WEAPON_SMOKEGRENADE;
+
     return WEAPON_NONE;
 }
 
