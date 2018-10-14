@@ -87,5 +87,12 @@ enum CSWeapon
     WEAPON_AUG,             /**< AUG. */
     WEAPON_AWP,             /**< AWP. */
     WEAPON_G3SG1,           /**< G3SG1. */
-    WEAPON_SCAR20           /**< SCAR-20. */
+    WEAPON_SCAR20,          /**< SCAR-20. */
+
+    WEAPON_KNIFE,
+    WEAPON_HEGRENADE,
+    WEAPON_INCGRENADE,
+    WEAPON_MOLOTOV,
+    WEAPON_DECOY,
+    WEAPON_SMOKEGRENADE
 }

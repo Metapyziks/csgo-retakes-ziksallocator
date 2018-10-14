@@ -15,50 +15,52 @@ CSWeaponCategory g_PrimaryCategories[] = {
  * @param maxLength Size of the destination character array.
  * @noreturn
  */
-void GetWeaponName( CSWeapon weapon, char[] buffer, int maxLength )
+int GetWeaponName( CSWeapon weapon, char[] buffer, int maxLength )
 {
     switch ( weapon )
     {
-        case WEAPON_NONE:      strcopy( buffer, maxLength, "None" );
+        case WEAPON_NONE:      return strcopy( buffer, maxLength, "None" );
 
-        case WEAPON_GLOCK:          strcopy( buffer, maxLength, "Glock" );
-        case WEAPON_HKP2000:        strcopy( buffer, maxLength, "P2000" );
-        case WEAPON_USP_SILENCER:   strcopy( buffer, maxLength, "USP-S" );
-        case WEAPON_P250:           strcopy( buffer, maxLength, "P250" );
-        case WEAPON_ELITE:     strcopy( buffer, maxLength, "Dual Barettas" );
-        case WEAPON_TEC9:      strcopy( buffer, maxLength, "Tec-9" );
-        case WEAPON_FIVESEVEN: strcopy( buffer, maxLength, "Five-SeveN" );
-        case WEAPON_CZ75A:     strcopy( buffer, maxLength, "CZ75 Auto" );
-        case WEAPON_DEAGLE:    strcopy( buffer, maxLength, "Desert Eagle" );
-        case WEAPON_REVOLVER:  strcopy( buffer, maxLength, "R8 Revolver" );
+        case WEAPON_GLOCK:          return strcopy( buffer, maxLength, "Glock" );
+        case WEAPON_HKP2000:        return strcopy( buffer, maxLength, "P2000" );
+        case WEAPON_USP_SILENCER:   return strcopy( buffer, maxLength, "USP-S" );
+        case WEAPON_P250:           return strcopy( buffer, maxLength, "P250" );
+        case WEAPON_ELITE:     return strcopy( buffer, maxLength, "Dual Barettas" );
+        case WEAPON_TEC9:      return strcopy( buffer, maxLength, "Tec-9" );
+        case WEAPON_FIVESEVEN: return strcopy( buffer, maxLength, "Five-SeveN" );
+        case WEAPON_CZ75A:     return strcopy( buffer, maxLength, "CZ75 Auto" );
+        case WEAPON_DEAGLE:    return strcopy( buffer, maxLength, "Desert Eagle" );
+        case WEAPON_REVOLVER:  return strcopy( buffer, maxLength, "R8 Revolver" );
 
-        case WEAPON_MAC10:     strcopy( buffer, maxLength, "MAC-10" );
-        case WEAPON_MP9:       strcopy( buffer, maxLength, "MP9" );
-        case WEAPON_UMP45:     strcopy( buffer, maxLength, "UMP-45" );
-        case WEAPON_BIZON:     strcopy( buffer, maxLength, "PP-Bizon" );
-        case WEAPON_MP7:       strcopy( buffer, maxLength, "MP7" );
-        case WEAPON_MP5SD:     strcopy( buffer, maxLength, "MP5-SD" );
-        case WEAPON_P90:       strcopy( buffer, maxLength, "P90" );
+        case WEAPON_MAC10:     return strcopy( buffer, maxLength, "MAC-10" );
+        case WEAPON_MP9:       return strcopy( buffer, maxLength, "MP9" );
+        case WEAPON_UMP45:     return strcopy( buffer, maxLength, "UMP-45" );
+        case WEAPON_BIZON:     return strcopy( buffer, maxLength, "PP-Bizon" );
+        case WEAPON_MP7:       return strcopy( buffer, maxLength, "MP7" );
+        case WEAPON_MP5SD:     return strcopy( buffer, maxLength, "MP5-SD" );
+        case WEAPON_P90:       return strcopy( buffer, maxLength, "P90" );
 
-        case WEAPON_NOVA:      strcopy( buffer, maxLength, "Nova" );
-        case WEAPON_SAWEDOFF:  strcopy( buffer, maxLength, "Sawed-Off" );
-        case WEAPON_MAG7:      strcopy( buffer, maxLength, "MAG-7" );
-        case WEAPON_XM1014:    strcopy( buffer, maxLength, "XM1014" );
-        case WEAPON_M249:      strcopy( buffer, maxLength, "M249" );
-        case WEAPON_NEGEV:     strcopy( buffer, maxLength, "Negev" );
+        case WEAPON_NOVA:      return strcopy( buffer, maxLength, "Nova" );
+        case WEAPON_SAWEDOFF:  return strcopy( buffer, maxLength, "Sawed-Off" );
+        case WEAPON_MAG7:      return strcopy( buffer, maxLength, "MAG-7" );
+        case WEAPON_XM1014:    return strcopy( buffer, maxLength, "XM1014" );
+        case WEAPON_M249:      return strcopy( buffer, maxLength, "M249" );
+        case WEAPON_NEGEV:     return strcopy( buffer, maxLength, "Negev" );
 
-        case WEAPON_GALILAR:       strcopy( buffer, maxLength, "Galil AR" );
-        case WEAPON_FAMAS:         strcopy( buffer, maxLength, "FAMAS" );
-        case WEAPON_SSG08:         strcopy( buffer, maxLength, "SSG 08" );
-        case WEAPON_AK47:          strcopy( buffer, maxLength, "AK-47" );
-        case WEAPON_M4A1:          strcopy( buffer, maxLength, "M4A4" );
-        case WEAPON_M4A1_SILENCER: strcopy( buffer, maxLength, "M4A1-S" );
-        case WEAPON_SG556:         strcopy( buffer, maxLength, "SG 553" );
-        case WEAPON_AUG:           strcopy( buffer, maxLength, "AUG" );
-        case WEAPON_AWP:           strcopy( buffer, maxLength, "AWP" );
-        case WEAPON_G3SG1:         strcopy( buffer, maxLength, "G3SG1" );
-        case WEAPON_SCAR20:        strcopy( buffer, maxLength, "SCAR-20" );
+        case WEAPON_GALILAR:       return strcopy( buffer, maxLength, "Galil AR" );
+        case WEAPON_FAMAS:         return strcopy( buffer, maxLength, "FAMAS" );
+        case WEAPON_SSG08:         return strcopy( buffer, maxLength, "SSG 08" );
+        case WEAPON_AK47:          return strcopy( buffer, maxLength, "AK-47" );
+        case WEAPON_M4A1:          return strcopy( buffer, maxLength, "M4A4" );
+        case WEAPON_M4A1_SILENCER: return strcopy( buffer, maxLength, "M4A1-S" );
+        case WEAPON_SG556:         return strcopy( buffer, maxLength, "SG 553" );
+        case WEAPON_AUG:           return strcopy( buffer, maxLength, "AUG" );
+        case WEAPON_AWP:           return strcopy( buffer, maxLength, "AWP" );
+        case WEAPON_G3SG1:         return strcopy( buffer, maxLength, "G3SG1" );
+        case WEAPON_SCAR20:        return strcopy( buffer, maxLength, "SCAR-20" );
     }
+
+    return 0;
 
     /*
     char weaponClass[WEAPON_STRING_LENGTH];
@@ -76,50 +78,59 @@ void GetWeaponName( CSWeapon weapon, char[] buffer, int maxLength )
  * @param maxLength Size of the destination character array.
  * @noreturn
  */
-void GetWeaponClassName( CSWeapon weapon, char[] buffer, int maxLength )
+int GetWeaponClassName( CSWeapon weapon, char[] buffer, int maxLength )
 {
     switch ( weapon )
     {
-        case WEAPON_NONE:      strcopy( buffer, maxLength, "" );
+        case WEAPON_NONE:      return strcopy( buffer, maxLength, "" );
 
-        case WEAPON_GLOCK:     strcopy( buffer, maxLength, "weapon_glock" );
-        case WEAPON_HKP2000:   strcopy( buffer, maxLength, "weapon_hkp2000" );
-        case WEAPON_USP_SILENCER: strcopy( buffer, maxLength, "weapon_usp_silencer" );
-        case WEAPON_P250:      strcopy( buffer, maxLength, "weapon_p250" );
-        case WEAPON_ELITE:     strcopy( buffer, maxLength, "weapon_elite" );
-        case WEAPON_TEC9:      strcopy( buffer, maxLength, "weapon_tec9" );
-        case WEAPON_FIVESEVEN: strcopy( buffer, maxLength, "weapon_fiveseven" );
-        case WEAPON_CZ75A:     strcopy( buffer, maxLength, "weapon_cz75a" );
-        case WEAPON_DEAGLE:    strcopy( buffer, maxLength, "weapon_deagle" );
-        case WEAPON_REVOLVER:  strcopy( buffer, maxLength, "weapon_revolver" );
+        case WEAPON_GLOCK:     return strcopy( buffer, maxLength, "weapon_glock" );
+        case WEAPON_HKP2000:   return strcopy( buffer, maxLength, "weapon_hkp2000" );
+        case WEAPON_USP_SILENCER: return strcopy( buffer, maxLength, "weapon_usp_silencer" );
+        case WEAPON_P250:      return strcopy( buffer, maxLength, "weapon_p250" );
+        case WEAPON_ELITE:     return strcopy( buffer, maxLength, "weapon_elite" );
+        case WEAPON_TEC9:      return strcopy( buffer, maxLength, "weapon_tec9" );
+        case WEAPON_FIVESEVEN: return strcopy( buffer, maxLength, "weapon_fiveseven" );
+        case WEAPON_CZ75A:     return strcopy( buffer, maxLength, "weapon_cz75a" );
+        case WEAPON_DEAGLE:    return strcopy( buffer, maxLength, "weapon_deagle" );
+        case WEAPON_REVOLVER:  return strcopy( buffer, maxLength, "weapon_revolver" );
 
-        case WEAPON_MAC10:     strcopy( buffer, maxLength, "weapon_mac10" );
-        case WEAPON_MP9:       strcopy( buffer, maxLength, "weapon_mp9" );
-        case WEAPON_UMP45:     strcopy( buffer, maxLength, "weapon_ump45" );
-        case WEAPON_BIZON:     strcopy( buffer, maxLength, "weapon_bizon" );
-        case WEAPON_MP7:       strcopy( buffer, maxLength, "weapon_mp7" );
-        case WEAPON_MP5SD:     strcopy( buffer, maxLength, "weapon_mp5sd" );
-        case WEAPON_P90:       strcopy( buffer, maxLength, "weapon_p90" );
+        case WEAPON_MAC10:     return strcopy( buffer, maxLength, "weapon_mac10" );
+        case WEAPON_MP9:       return strcopy( buffer, maxLength, "weapon_mp9" );
+        case WEAPON_UMP45:     return strcopy( buffer, maxLength, "weapon_ump45" );
+        case WEAPON_BIZON:     return strcopy( buffer, maxLength, "weapon_bizon" );
+        case WEAPON_MP7:       return strcopy( buffer, maxLength, "weapon_mp7" );
+        case WEAPON_MP5SD:     return strcopy( buffer, maxLength, "weapon_mp5sd" );
+        case WEAPON_P90:       return strcopy( buffer, maxLength, "weapon_p90" );
 
-        case WEAPON_NOVA:      strcopy( buffer, maxLength, "weapon_nova" );
-        case WEAPON_SAWEDOFF:  strcopy( buffer, maxLength, "weapon_sawedoff" );
-        case WEAPON_MAG7:      strcopy( buffer, maxLength, "weapon_mag7" );
-        case WEAPON_XM1014:    strcopy( buffer, maxLength, "weapon_xm1014" );
-        case WEAPON_M249:      strcopy( buffer, maxLength, "weapon_m249" );
-        case WEAPON_NEGEV:     strcopy( buffer, maxLength, "weapon_negev" );
+        case WEAPON_NOVA:      return strcopy( buffer, maxLength, "weapon_nova" );
+        case WEAPON_SAWEDOFF:  return strcopy( buffer, maxLength, "weapon_sawedoff" );
+        case WEAPON_MAG7:      return strcopy( buffer, maxLength, "weapon_mag7" );
+        case WEAPON_XM1014:    return strcopy( buffer, maxLength, "weapon_xm1014" );
+        case WEAPON_M249:      return strcopy( buffer, maxLength, "weapon_m249" );
+        case WEAPON_NEGEV:     return strcopy( buffer, maxLength, "weapon_negev" );
 
-        case WEAPON_GALILAR:       strcopy( buffer, maxLength, "weapon_galilar" );
-        case WEAPON_FAMAS:         strcopy( buffer, maxLength, "weapon_famas" );
-        case WEAPON_SSG08:         strcopy( buffer, maxLength, "weapon_ssg08" );
-        case WEAPON_AK47:          strcopy( buffer, maxLength, "weapon_ak47" );
-        case WEAPON_M4A1:          strcopy( buffer, maxLength, "weapon_m4a1" );
-        case WEAPON_M4A1_SILENCER: strcopy( buffer, maxLength, "weapon_m4a1_silencer" );
-        case WEAPON_SG556:         strcopy( buffer, maxLength, "weapon_sg556" );
-        case WEAPON_AUG:           strcopy( buffer, maxLength, "weapon_aug" );
-        case WEAPON_AWP:           strcopy( buffer, maxLength, "weapon_awp" );
-        case WEAPON_G3SG1:         strcopy( buffer, maxLength, "weapon_g3sg1" );
-        case WEAPON_SCAR20:        strcopy( buffer, maxLength, "weapon_scar20" );
+        case WEAPON_GALILAR:       return strcopy( buffer, maxLength, "weapon_galilar" );
+        case WEAPON_FAMAS:         return strcopy( buffer, maxLength, "weapon_famas" );
+        case WEAPON_SSG08:         return strcopy( buffer, maxLength, "weapon_ssg08" );
+        case WEAPON_AK47:          return strcopy( buffer, maxLength, "weapon_ak47" );
+        case WEAPON_M4A1:          return strcopy( buffer, maxLength, "weapon_m4a1" );
+        case WEAPON_M4A1_SILENCER: return strcopy( buffer, maxLength, "weapon_m4a1_silencer" );
+        case WEAPON_SG556:         return strcopy( buffer, maxLength, "weapon_sg556" );
+        case WEAPON_AUG:           return strcopy( buffer, maxLength, "weapon_aug" );
+        case WEAPON_AWP:           return strcopy( buffer, maxLength, "weapon_awp" );
+        case WEAPON_G3SG1:         return strcopy( buffer, maxLength, "weapon_g3sg1" );
+        case WEAPON_SCAR20:        return strcopy( buffer, maxLength, "weapon_scar20" );
+
+        case WEAPON_KNIFE:          return strcopy( buffer, maxLength, "weapon_knife" );
+        case WEAPON_HEGRENADE:      return strcopy( buffer, maxLength, "weapon_hegrenade" );
+        case WEAPON_INCGRENADE:     return strcopy( buffer, maxLength, "weapon_incgrenade" );
+        case WEAPON_MOLOTOV:        return strcopy( buffer, maxLength, "weapon_molotov" );
+        case WEAPON_DECOY:          return strcopy( buffer, maxLength, "weapon_decoy" );
+        case WEAPON_SMOKEGRENADE:   return strcopy( buffer, maxLength, "weapon_smokegrenade" );
     }
+
+    return 0;
 }
 
 CSWeapon GetWeaponFromEntity( int weapon )

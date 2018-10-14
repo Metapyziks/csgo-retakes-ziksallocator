@@ -1,6 +1,12 @@
-bool g_WasNoScoped[MAXPLAYERS+1];
-bool g_WasJumpShot[MAXPLAYERS+1];
-bool g_WasHeadShot[MAXPLAYERS+1];
+enum KillFlags
+{
+    KILLFLAG_NONE = 0,
+    KILLFLAG_NOSCOPE = 1,
+    KILLFLAG_JUMPSHOT = 2,
+    KILLFLAG_HEADSHOT = 4
+}
+
+KillFlags g_KillFlags[MAXPLAYERS+1];
 CSWeapon g_KilledWeapon[MAXPLAYERS+1];
 float g_SinceLastShot[MAXPLAYERS+1];
 float g_LastShotTime[MAXPLAYERS+1];
@@ -28,9 +34,7 @@ void NoScope_OnTakeDamage( int victim,
     float &damage, int &damagetype, int &weaponEnt,
     float damageForce[3], float damagePosition[3], int damagecustom )
 {
-    g_WasNoScoped[victim] = false;
-    g_WasJumpShot[victim] = false;
-    g_WasHeadShot[victim] = false;
+    g_KillFlags[victim] = KILLFLAG_NONE;
     g_KilledWeapon[victim] = WEAPON_NONE;
 
     if ( !IsClientValidAndInGame( attacker ) ) return;
@@ -41,9 +45,21 @@ void NoScope_OnTakeDamage( int victim,
     bool scoped = GetEntProp( attacker, Prop_Send, "m_bIsScoped" ) != 0;
     bool inAir = !(GetEntityFlags( attacker ) & FL_ONGROUND);
     
-    g_WasNoScoped[victim] = canNoScope && !scoped;
-    g_WasJumpShot[victim] = weapon != WEAPON_NONE && inAir;
-    g_WasHeadShot[victim] = (damagetype & CS_DMG_HEADSHOT) == CS_DMG_HEADSHOT;
+    if ( canNoScope && !scoped )
+    {
+        g_KillFlags[victim] |= KILLFLAG_NOSCOPE;
+    }
+
+    if ( weapon != WEAPON_NONE && inAir )
+    {
+        g_KillFlags[victim] |= KILLFLAG_JUMPSHOT;
+    }
+
+    if ( (damagetype & CS_DMG_HEADSHOT) == CS_DMG_HEADSHOT )
+    {
+        g_KillFlags[victim] |= KILLFLAG_HEADSHOT;
+    }
+
     g_KilledWeapon[victim] = weapon;
 }
 
@@ -82,7 +98,11 @@ void NoScope_PlayerDeath( Event event )
 
     float sinceLastShot = g_SinceLastShot[attacker];
 
-    if ( g_WasNoScoped[victim] || g_WasJumpShot[victim] || g_WasHeadShot[victim] && sinceLastShot >= GetOneTapPeriod() )
+    bool noScope = (g_KillFlags[victim] & KILLFLAG_NOSCOPE) != 0;
+    bool jumpShot = (g_KillFlags[victim] & KILLFLAG_JUMPSHOT) != 0;
+    bool headShot = (g_KillFlags[victim] & KILLFLAG_HEADSHOT) != 0;
+
+    if ( noScope || jumpShot || headShot && sinceLastShot >= GetOneTapPeriod() )
     {
         g_LastShotTime[attacker] = 0.0;
 
@@ -90,13 +110,24 @@ void NoScope_PlayerDeath( Event event )
         if ( !wasEnemy ) return;
 
         DisplayTrickKillMessage( victim, attacker, g_KilledWeapon[victim],
-            g_WasNoScoped[victim], g_WasJumpShot[victim], g_WasHeadShot[victim] );
+            noScope, jumpShot, headShot );
 
 #if defined ZIKS_POINTS
         int points = g_WasNoScoped[victim] && g_WasJumpShot[victim] ? 3 : 1;
         ZiksPoints_Award( attacker, points );
 #endif
     }
+}
+
+bool NoScope_IsSpecialWeaponKill( CSWeapon weapon )
+{
+    switch ( weapon )
+    {
+        case WEAPON_KNIFE, WEAPON_HEGRENADE, WEAPON_DECOY, WEAPON_SMOKEGRENADE:
+            return true;
+    }
+
+    return false;
 }
 
 void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool noScope, bool jumpShot, bool headShot )
@@ -118,13 +149,16 @@ void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool no
 
     float oofness = (distance < 5.0 ? 0.0 : (distance - 5) / 40.0) - 0.5;
 
+    bool specialWeapon = NoScope_IsSpecialWeaponKill( weapon );
+
+    if ( specialWeapon ) oofness += 0.5;
     if ( headShot ) oofness += 0.5;
-    if ( jumpShot ) oofness += 0.5;
+    if ( jumpShot && !specialWeapon ) oofness += 0.5;
     if ( noScope ) oofness += 0.5;
 
-    if ( headShot || jumpShot || noScope )
+    if ( headShot || jumpShot || noScope || specialWeapon )
     {
-        Oof( victim, oofness, 0.5, attacker, distance < 5.0 );
+        Oof( victim, oofness, 0.5, attacker, distance < 5.0 || specialWeapon );
     }
 
     char distanceString[32];
@@ -142,7 +176,7 @@ void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool no
         Format( killType, sizeof(killType), "%t", "JumpShotNoScoped" );
     } else if (noScope) {
         Format( killType, sizeof(killType), "%t", "NoScoped" );
-    } else if (jumpShot) {
+    } else if (jumpShot && !specialWeapon) {
         Format( killType, sizeof(killType), "%t", "JumpShot" );
     } else if ( headShot ) {
         if ( weapon == WEAPON_DEAGLE ) {
