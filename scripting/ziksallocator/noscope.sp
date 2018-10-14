@@ -96,19 +96,16 @@ void NoScope_PlayerDeath( Event event )
     int attacker = GetClientOfUserId( event.GetInt( "attacker" ) );
     if ( !IsClientValidAndInGame( attacker ) ) return;
 
-    char weaponName[64];
-    event.GetString( "weapon", weaponName, sizeof(weaponName) );
-
-    CSWeapon weapon = GetWeaponFromClassname( weaponName );
-    if ( weapon == WEAPON_NONE ) return;
-
     float sinceLastShot = g_SinceLastShot[attacker];
 
-    bool noScope = (g_KillFlags[victim] & KILLFLAG_NOSCOPE) != 0;
-    bool jumpShot = (g_KillFlags[victim] & KILLFLAG_JUMPSHOT) != 0;
-    bool headShot = (g_KillFlags[victim] & KILLFLAG_HEADSHOT) != 0;
+    bool noScope = (g_KillFlags[victim] & KILLFLAG_NOSCOPE) != KILLFLAG_NONE;
+    bool jumpShot = (g_KillFlags[victim] & KILLFLAG_JUMPSHOT) != KILLFLAG_NONE;
+    bool headShot = (g_KillFlags[victim] & KILLFLAG_HEADSHOT) != KILLFLAG_NONE;
+    bool special = NoScope_IsSpecialWeaponKill( g_KilledWeapon[victim] );
 
-    if ( noScope || jumpShot || headShot && sinceLastShot >= GetOneTapPeriod() || NoScope_IsSpecialWeaponKill( weapon ) )
+    Retakes_MessageToAll( "[DEBUG] %f %i %s", sinceLastShot, view_as<int>(g_KillFlags[victim]), special ? "true" : "false" );
+
+    if ( noScope || jumpShot || headShot && sinceLastShot >= GetOneTapPeriod() || special )
     {
         g_LastShotTime[attacker] = 0.0;
 
