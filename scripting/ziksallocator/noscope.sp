@@ -98,12 +98,14 @@ void NoScope_PlayerDeath( Event event )
 
     float sinceLastShot = g_SinceLastShot[attacker];
 
+    CSWeapon weapon = g_KilledWeapon[victim];
+
     bool noScope = (g_KillFlags[victim] & KILLFLAG_NOSCOPE) != KILLFLAG_NONE;
     bool jumpShot = (g_KillFlags[victim] & KILLFLAG_JUMPSHOT) != KILLFLAG_NONE;
     bool headShot = (g_KillFlags[victim] & KILLFLAG_HEADSHOT) != KILLFLAG_NONE;
-    bool special = NoScope_IsSpecialWeaponKill( g_KilledWeapon[victim] );
+    bool special = NoScope_IsSpecialWeaponKill( weapon );
 
-    Retakes_MessageToAll( "[DEBUG] %f %i %s", sinceLastShot, view_as<int>(g_KillFlags[victim]), special ? "true" : "false" );
+    Retakes_MessageToAll( "[DEBUG] %f %i %i", sinceLastShot, view_as<int>(g_KillFlags[victim]), view_as<int>(weapon) );
 
     if ( noScope || jumpShot || headShot && sinceLastShot >= GetOneTapPeriod() || special )
     {
@@ -112,7 +114,7 @@ void NoScope_PlayerDeath( Event event )
         bool wasEnemy = GetClientTeam( victim ) != GetClientTeam( attacker );
         if ( !wasEnemy ) return;
 
-        DisplayTrickKillMessage( victim, attacker, g_KilledWeapon[victim],
+        DisplayTrickKillMessage( victim, attacker, weapon,
             noScope, jumpShot, headShot );
 
 #if defined ZIKS_POINTS
