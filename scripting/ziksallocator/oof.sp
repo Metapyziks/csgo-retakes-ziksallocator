@@ -1,4 +1,13 @@
 
+enum OofSound
+{
+    OOF_SOUND_OOF,
+    OOF_SOUND_JON,
+    OOF_SOUND_DONETHIS,
+
+    OOF_SOUND_COUNT
+}
+
 Handle g_CVOofCooldown = INVALID_HANDLE;
 Handle g_CVOofTimeDuration = INVALID_HANDLE;
 Handle g_CVOofTimeEaseIn = INVALID_HANDLE;
@@ -18,8 +27,20 @@ void Oof_OnPluginStart()
     g_CVOofTimeEaseIn = CreateConVar( "sm_ooftime_easein", "0.125", "Time in seconds that OofTime eases in.", FCVAR_NOTIFY );
     g_CVOofTimeEaseOut = CreateConVar( "sm_ooftime_easeout", "1.0", "Time in seconds that OofTime eases out.", FCVAR_NOTIFY );
     g_CVOofJonId = CreateConVar( "sm_oof_jon_id", "334614586", "Steam3 ID for custom JON oof sound", FCVAR_NOTIFY );
+
     int flags = GetCommandFlags( "sv_cheats" );
     SetCommandFlags( "sv_cheats", flags & ~FCVAR_NOTIFY );
+}
+
+int Oof_GetSoundPath( OofSound sound, char[] buffer, int maxLength )
+{
+    switch ( sound )
+    {
+        case OOF_SOUND_OOF:         return strcopy( buffer, maxLength, "ziks/test.mp3" );
+        case OOF_SOUND_JON:         return strcopy( buffer, maxLength, "ziks/JON.mp3" );
+        case OOF_SOUND_DONETHIS:    return strcopy( buffer, maxLength, "ziks/done-this.mp3" );
+        default: return 0;
+    }
 }
 
 float Oof_GetOofCooldown()
@@ -49,13 +70,22 @@ int Oof_GetOofJonId()
 
 void Oof_OnMapStart()
 {
-    AddFileToDownloadsTable( "sound/ziks/test.mp3" );
-    PrecacheSound( "ziks/test.mp3", true );
-    AddToStringTable( FindStringTable( "soundprecache" ), "*ziks/test.mp3" );
+    char buffer[64];
+    char soundPath[64];
 
-    AddFileToDownloadsTable( "sound/ziks/JON.mp3" );
-    PrecacheSound( "ziks/JON.mp3", true );
-    AddToStringTable( FindStringTable( "soundprecache" ), "*ziks/JON.mp3" );
+    int stringTable = FindStringTable( "soundprecache" );
+
+    for ( int i = 0; i < view_as<int>(OOF_SOUND_COUNT); ++i )
+    {
+        Oof_GetSoundPath( view_as<OofSound>(i), soundPath, sizeof(soundPath) );
+
+        Format( buffer, sizeof(buffer), "sound/%s", soundPath );
+        AddFileToDownloadsTable( buffer );
+        PrecacheSound( soundPath );
+
+        Format( buffer, sizeof(buffer), "*%s", soundPath );
+        AddToStringTable( stringTable, buffer );
+    }
 
     for ( int client = 1; client <= MaxClients; ++client )
     {
@@ -217,6 +247,17 @@ Action Timer_Oof( Handle timer, DataPack pack )
     CloseHandle( pack );
 }
 
+void Oof_EmitSound( OofSound sound, float pos[3], int client, float volume, int pitch )
+{
+    char buffer[64];
+    char soundPath[64];
+
+    Oof_GetSoundPath( sound, soundPath, sizeof(soundPath) );
+    Format( buffer, sizeof(buffer), "*%s", soundPath );
+
+    EmitAmbientSound( soundPath, pos, client, SNDLEVEL_GUNFIRE, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
+}
+
 void Oof( int client, float oofness, float delay = 0.0, int attacker = 0 )
 {
     if ( oofness < 0.0 )
@@ -253,10 +294,14 @@ void Oof( int client, float oofness, float delay = 0.0, int attacker = 0 )
 
     if ( IsClientValidAndInGame( attacker ) && GetSteamAccountID(attacker) == Oof_GetOofJonId() )
     {
-        EmitAmbientSound( "*ziks/JON.mp3", pos, client, SNDLEVEL_GUNFIRE, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
+        Oof_EmitSound( OOF_SOUND_JON, pos, client, volume, pitch );
+    }
+    else if ( GetRandomFloat( 0.0, 1.0 ) < 0.1 )
+    {
+        Oof_EmitSound( OOF_SOUND_DONETHIS, pos, client, volume, pitch );
     }
     else
     {
-        EmitAmbientSound( "*ziks/test.mp3", pos, client, SNDLEVEL_GUNFIRE, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
+        Oof_EmitSound( OOF_SOUND_OOF, pos, client, volume, pitch );
     }
 }
