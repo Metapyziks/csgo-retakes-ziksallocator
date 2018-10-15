@@ -104,9 +104,7 @@ void NoScope_PlayerDeath( Event event )
     bool jumpShot = (g_KillFlags[victim] & KILLFLAG_JUMPSHOT) != KILLFLAG_NONE;
     bool headShot = (g_KillFlags[victim] & KILLFLAG_HEADSHOT) != KILLFLAG_NONE;
     bool special = NoScope_IsSpecialWeaponKill( weapon );
-
-    Retakes_MessageToAll( "[DEBUG] %f %i %i", sinceLastShot, view_as<int>(g_KillFlags[victim]), view_as<int>(weapon) );
-
+    
     if ( noScope || jumpShot || headShot && sinceLastShot >= GetOneTapPeriod() || special )
     {
         g_LastShotTime[attacker] = 0.0;
