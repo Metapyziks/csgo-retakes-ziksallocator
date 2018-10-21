@@ -8,6 +8,7 @@ enum OofSound
     OOF_SOUND_COUNT
 }
 
+Handle g_CVOofEnabled = INVALID_HANDLE;
 Handle g_CVOofCooldown = INVALID_HANDLE;
 Handle g_CVOofTimeDuration = INVALID_HANDLE;
 Handle g_CVOofTimeEaseIn = INVALID_HANDLE;
@@ -22,6 +23,7 @@ void Oof_OnPluginStart()
 {
     RegConsoleCmd( "sm_oof", Cmd_Oof );
 
+    g_CVOofEnabled = CreateConVar( "sm_oof_enabled", "0", "Enables oofing.", FCVAR_NOTIFY );
     g_CVOofCooldown = CreateConVar( "sm_oof_cooldown", "10", "Time in seconds before a player can oof again.", FCVAR_NOTIFY );
     g_CVOofTimeDuration = CreateConVar( "sm_ooftime_duration", "1.5", "Time in seconds that OofTime should last.", FCVAR_NOTIFY );
     g_CVOofTimeEaseIn = CreateConVar( "sm_ooftime_easein", "0.125", "Time in seconds that OofTime eases in.", FCVAR_NOTIFY );
@@ -30,6 +32,11 @@ void Oof_OnPluginStart()
 
     int flags = GetCommandFlags( "sv_cheats" );
     SetCommandFlags( "sv_cheats", flags & ~FCVAR_NOTIFY );
+}
+
+bool Oof_IsEnabled()
+{
+    return GetConVarInt( g_CVOofEnabled ) > 0;
 }
 
 int Oof_GetSoundPath( OofSound sound, char[] buffer, int maxLength )
@@ -70,6 +77,11 @@ int Oof_GetOofJonId()
 
 void Oof_OnMapStart()
 {
+    if ( !Oof_IsEnabled() )
+    {
+        return;
+    }
+
     char buffer[64];
     char soundPath[64];
 
@@ -100,6 +112,8 @@ void Oof_StartOofTime()
 
 void Oof_OnGameFrame()
 {
+    if ( !Oof_IsEnabled() ) return;
+
     float duration = Oof_GetOofTimeDuration();
 
     if ( g_OofTime == -1 || duration <= 0 ) return;
@@ -164,6 +178,8 @@ void UpdateTimescale( float value )
 
 void Oof_PlayerDeath( Event event )
 {
+    if ( !Oof_IsEnabled() ) return;
+
     int victim = GetClientOfUserId( event.GetInt( "userid" ) );
     if ( !IsClientValidAndInGame( victim ) ) return;
 
@@ -172,6 +188,8 @@ void Oof_PlayerDeath( Event event )
 
 public Action Cmd_Oof( int client, int args )
 {
+    if ( !Oof_IsEnabled() ) return Plugin_Handled;
+
     if ( !IsClientValidAndInGame( client ) )
     {
         return Plugin_Handled;
@@ -218,6 +236,8 @@ public Action Cmd_Oof( int client, int args )
 
 Action Oof_OnClientSayCommand( int client, const char[] command, const char[] args )
 {
+    if ( !Oof_IsEnabled() ) return Plugin_Continue;
+
     if ( strcmp( args[0], "oof", false ) == 0 )
     {
         ClientCommand( client, "sm_oof 0 0.2" );
@@ -261,6 +281,8 @@ void Oof_EmitSound( OofSound sound, float pos[3], int client, float volume, int 
 
 void Oof( int client, float oofness, float delay = 0.0, int attacker = 0, bool doneThis = false )
 {
+    if ( !Oof_IsEnabled() ) return;
+
     if ( oofness < 0.0 )
     {
         oofness = 0.0;
