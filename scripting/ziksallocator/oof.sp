@@ -4,11 +4,13 @@ enum OofSound
     OOF_SOUND_OOF,
     OOF_SOUND_JON,
     OOF_SOUND_DONETHIS,
+    OOF_SOUND_GNOMED,
 
     OOF_SOUND_COUNT
 }
 
 Handle g_CVOofEnabled = INVALID_HANDLE;
+Handle g_CVOofTimescale = INVALID_HANDLE;
 Handle g_CVOofCooldown = INVALID_HANDLE;
 Handle g_CVOofTimeDuration = INVALID_HANDLE;
 Handle g_CVOofTimeEaseIn = INVALID_HANDLE;
@@ -24,6 +26,7 @@ void Oof_OnPluginStart()
     RegConsoleCmd( "sm_oof", Cmd_Oof );
 
     g_CVOofEnabled = CreateConVar( "sm_oof_enabled", "0", "Enables oofing.", FCVAR_NOTIFY );
+    g_CVOofTimescale = CreateConVar( "sm_oof_timescale", "0.5", "Timescale during peak ooftime.", FCVAR_NOTIFY );
     g_CVOofCooldown = CreateConVar( "sm_oof_cooldown", "10", "Time in seconds before a player can oof again.", FCVAR_NOTIFY );
     g_CVOofTimeDuration = CreateConVar( "sm_ooftime_duration", "1.5", "Time in seconds that OofTime should last.", FCVAR_NOTIFY );
     g_CVOofTimeEaseIn = CreateConVar( "sm_ooftime_easein", "0.125", "Time in seconds that OofTime eases in.", FCVAR_NOTIFY );
@@ -46,8 +49,14 @@ int Oof_GetSoundPath( OofSound sound, char[] buffer, int maxLength )
         case OOF_SOUND_OOF:         return strcopy( buffer, maxLength, "ziks/test.mp3" );
         case OOF_SOUND_JON:         return strcopy( buffer, maxLength, "ziks/JON.mp3" );
         case OOF_SOUND_DONETHIS:    return strcopy( buffer, maxLength, "ziks/done-this.mp3" );
+        case OOF_SOUND_GNOMED:      return strcopy( buffer, maxLength, "ziks/gnomed.mp3" );
         default: return 0;
     }
+}
+
+float Oof_GetOofTimescale()
+{
+    return GetConVarFloat( g_CVOofTimescale );
 }
 
 float Oof_GetOofCooldown()
@@ -121,12 +130,14 @@ void Oof_OnGameFrame()
     float gameTime = GetGameTime();
     float t = gameTime - g_OofTime;
 
-    if ( t < 0 ) return;
+    if ( t < 0.0 ) return;
 
     float easeIn = Oof_GetOofTimeEaseIn();
     float easeOut = Oof_GetOofTimeEaseOut();
 
-    float timeScale = 0.5;
+    float timeScale = Oof_GetOofTimescale();
+
+    if ( timeScale == 1.0 ) return;
 
     if ( t < easeIn )
     {
@@ -211,15 +222,45 @@ public Action Cmd_Oof( int client, int args )
 
     char buffer[32];
 
-    if ( args >= 1 )
+    OofSound sound = OOF_SOUND_OOF;
+
+    int argIndex = 1;
+
+    if ( args >= argIndex )
     {
-        GetCmdArg( 1, buffer, sizeof(buffer) );
+        GetCmdArg( argIndex++, buffer, sizeof(buffer) );
+
+        if ( strcmp( buffer, "oof", false ) )
+        {
+            sound = OOF_SOUND_OOF;
+        }
+        else if ( strcmp( buffer, "donethis", false ) )
+        {
+            sound = OOF_SOUND_DONETHIS;
+        }
+        else if ( strcmp( buffer, "jon", false ) )
+        {
+            sound = OOF_SOUND_JON;
+        }
+        else if ( strcmp( buffer, "gnomed", false ) )
+        {
+            sound = OOF_SOUND_GNOMED;
+        }
+        else
+        {
+            --argIndex;
+        }
+    }
+
+    if ( args >= argIndex )
+    {
+        GetCmdArg( argIndex++, buffer, sizeof(buffer) );
         min = max = StringToFloat( buffer );
     }
 
-    if ( args >= 2 )
+    if ( args >= argIndex )
     {
-        GetCmdArg( 2, buffer, sizeof(buffer) );
+        GetCmdArg( argIndex++, buffer, sizeof(buffer) );
         max = StringToFloat( buffer );
     }
 
@@ -230,7 +271,7 @@ public Action Cmd_Oof( int client, int args )
         max = temp;
     }
 
-    Oof( client, GetRandomFloat( min, max ) );
+    Oof( client, GetRandomFloat( min, max ), 0.0, 0, sound );
     return Plugin_Handled;
 }
 
@@ -250,6 +291,10 @@ Action Oof_OnClientSayCommand( int client, const char[] command, const char[] ar
     {
         ClientCommand( client, "sm_oof 0.8 1.0" );
     }
+    else if ( strcmp( args[0], "gnomed", false ) == 0 )
+    {
+        ClientCommand( client, "sm_oof gnomed" );
+    }
 
     return Plugin_Continue;
 }
@@ -261,9 +306,9 @@ Action Timer_Oof( Handle timer, DataPack pack )
     int client = pack.ReadCell();
     float oofness = pack.ReadFloat();
     int attacker = pack.ReadCell();
-    bool doneThis = pack.ReadCell() > 0;
+    int sound = pack.ReadCell();
 
-    Oof( client, oofness, 0.0, attacker, doneThis );
+    Oof( client, oofness, 0.0, attacker, view_as<OofSound>(sound) );
 
     CloseHandle( pack );
 }
@@ -279,7 +324,7 @@ void Oof_EmitSound( OofSound sound, float pos[3], int client, float volume, int 
     EmitAmbientSound( soundPath, pos, client, SNDLEVEL_GUNFIRE, SND_CHANGEVOL | SND_CHANGEPITCH, volume, pitch );
 }
 
-void Oof( int client, float oofness, float delay = 0.0, int attacker = 0, bool doneThis = false )
+void Oof( int client, float oofness, float delay = 0.0, int attacker = 0, OofSound sound = OOF_SOUND_OOF )
 {
     if ( !Oof_IsEnabled() ) return;
 
@@ -299,7 +344,7 @@ void Oof( int client, float oofness, float delay = 0.0, int attacker = 0, bool d
         pack.WriteCell( client );
         pack.WriteFloat( oofness );
         pack.WriteCell( attacker );
-        pack.WriteCell( doneThis ? 1 : 0 );
+        pack.WriteCell( view_as<int>( sound ) );
 
         CreateTimer( delay, Timer_Oof, pack );
         
@@ -320,12 +365,8 @@ void Oof( int client, float oofness, float delay = 0.0, int attacker = 0, bool d
     {
         Oof_EmitSound( OOF_SOUND_JON, pos, client, volume, pitch );
     }
-    else if ( doneThis )
-    {
-        Oof_EmitSound( OOF_SOUND_DONETHIS, pos, client, volume, pitch );
-    }
     else
     {
-        Oof_EmitSound( OOF_SOUND_OOF, pos, client, volume, pitch );
+        Oof_EmitSound( sound, pos, client, volume, pitch );
     }
 }
