@@ -230,19 +230,19 @@ public Action Cmd_Oof( int client, int args )
     {
         GetCmdArg( argIndex++, buffer, sizeof(buffer) );
 
-        if ( strcmp( buffer, "oof", false ) )
+        if ( strcmp( buffer, "oof", false ) == 0 )
         {
             sound = OOF_SOUND_OOF;
         }
-        else if ( strcmp( buffer, "donethis", false ) )
+        else if ( strcmp( buffer, "donethis", false ) == 0 )
         {
             sound = OOF_SOUND_DONETHIS;
         }
-        else if ( strcmp( buffer, "jon", false ) )
+        else if ( strcmp( buffer, "jon", false ) == 0 )
         {
             sound = OOF_SOUND_JON;
         }
-        else if ( strcmp( buffer, "gnomed", false ) )
+        else if ( strcmp( buffer, "gnomed", false ) == 0 )
         {
             sound = OOF_SOUND_GNOMED;
         }

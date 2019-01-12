@@ -161,7 +161,18 @@ void DisplayTrickKillMessage( int victim, int attacker, CSWeapon weapon, bool no
 
     if ( headShot || jumpShot || noScope || specialWeapon )
     {
-        Oof( victim, oofness, 0.5, attacker, distance < 5.0 || specialWeapon );
+        OofSound sound = OOF_SOUND_OOF;
+
+        if ( distance < 5.0 || specialWeapon )
+        {
+            sound = OOF_SOUND_DONETHIS;
+        }
+        else if ( GetRandomInt( 0, 10 ) < 1 )
+        {
+            sound = OOF_SOUND_GNOMED;
+        }
+
+        Oof( victim, oofness, 0.5, attacker, sound );
     }
 
     char distanceString[32];
