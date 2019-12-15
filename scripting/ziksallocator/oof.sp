@@ -50,8 +50,9 @@ int Oof_GetSoundPath( OofSound sound, char[] buffer, int maxLength )
         case OOF_SOUND_JON:         return strcopy( buffer, maxLength, "ziks/JON.mp3" );
         case OOF_SOUND_DONETHIS:    return strcopy( buffer, maxLength, "ziks/done-this.mp3" );
         case OOF_SOUND_GNOMED:      return strcopy( buffer, maxLength, "ziks/gnomed.mp3" );
-        default: return 0;
     }
+
+    return 0;
 }
 
 float Oof_GetOofTimescale()

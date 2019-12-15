@@ -93,7 +93,8 @@ public void OnClientConnected( int client )
     InvalidateLoadedCookies( client );
 
     Afk_OnClientConnected( client );
-    
+    ClutchMode_OnClientConnected( client );
+
 #if defined ZIKS_POINTS
     ZiksPoints_OnClientConnected( client );
 #endif
@@ -294,6 +295,11 @@ public void Retakes_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlay
 {
     if ( winner == CS_TEAM_T ) OnTerroristsWon();
     else OnCounterTerroristsWon();
+}
+
+public void Retakes_OnPostRoundEnqueue( Handle rankingQueue, Handle waitingQueue )
+{
+    ClutchMode_OnPostRoundEnqueue( view_as<ArrayList>( rankingQueue ) );
 }
 
 /**
