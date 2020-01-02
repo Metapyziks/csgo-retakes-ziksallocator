@@ -255,11 +255,15 @@ void AllocateForceWeapons( int team, ArrayList players )
 
     while ( shuffle.Length > 0 )
     {
-        int index = GetRandomInt( 0, shuffle.Length - 1 );
+        int remaining = shuffle.Length;
+        int index = GetRandomInt( 0, remaining - 1 );
         int client = shuffle.Get( index );
         shuffle.Erase( index );
 
-        totalValue = AllocateForceWeapon( client, team, totalValue );
+        int availableValue = totalValue / remaining;
+        int spareValue = AllocateForceWeapon( client, team, availableValue );
+
+        totalValue -= availableValue + spareValue;
     }
 
     CloseHandle( shuffle );
