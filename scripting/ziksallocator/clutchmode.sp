@@ -79,6 +79,8 @@ void ClutchMode_OnTeamSizesSet( int& tCount, int& ctCount )
     {
         g_ClutchModeActive = true;
 
+        ResetWinStreak();
+
         for ( int client = 1; client < MaxClients; ++client )
         {
             if ( !IsClientValidAndInGame( client ) )
