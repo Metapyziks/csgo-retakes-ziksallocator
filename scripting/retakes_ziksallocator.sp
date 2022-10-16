@@ -1,9 +1,12 @@
 #include <sourcemod>
 #include <sdkhooks>
+#include <sdktools_stringtables>
+#include <sdktools_sound>
+#include <sdktools_engine>
+#include <sdktools_functions>
 #include <cstrike>
 #include <clientprefs>
-#include "include/retakes.inc"
-#include "retakes/generic.sp"
+#include <retakes>
 
 #pragma semicolon 1
 #pragma newdecls required
@@ -31,7 +34,7 @@ public Plugin myinfo =
     name = "CS:GO Retakes: ziks.net weapon allocator",
     author = "Ziks",
     description = "A more complex weapon allocator with extra configurable preferences.",
-    version = PLUGIN_VERSION,
+    version = "1.0.1",
     url = "https://github.com/Metapyziks/retakes-ziksallocator"
 };
 
@@ -297,9 +300,9 @@ public void Retakes_OnRoundWon( int winner, ArrayList tPlayers, ArrayList ctPlay
     else OnCounterTerroristsWon();
 }
 
-public void Retakes_OnPostRoundEnqueue( Handle rankingQueue, Handle waitingQueue )
+public void Retakes_OnPostRoundEnqueue( ArrayList rankingQueue, ArrayList waitingQueue )
 {
-    ClutchMode_OnPostRoundEnqueue( view_as<ArrayList>( rankingQueue ) );
+    ClutchMode_OnPostRoundEnqueue( rankingQueue );
 }
 
 /**

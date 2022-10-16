@@ -101,14 +101,14 @@ public int MenuHandler_Weapon( Menu menu, MenuAction action, int param1, int par
     if ( action == MenuAction_End )
     {
         delete menu;
-        return;
+        return 0;
     }
 
-    if ( action != MenuAction_Select ) return;
+    if ( action != MenuAction_Select ) return 0;
     
     if ( param2 == EXIT_ITEM_INDEX )
     {
-        return;
+        return 0;
     }
 
     int client = param1;
@@ -139,4 +139,5 @@ public int MenuHandler_Weapon( Menu menu, MenuAction action, int param1, int par
     }
     
     GiveLoadoutMenu( client, team, loadout );
+    return 0;
 }

@@ -260,8 +260,8 @@ void AllocateForceWeapons( int team, ArrayList players )
         int client = shuffle.Get( index );
         shuffle.Erase( index );
 
-        int availableValue = totalValue / remaining;
-        int spareValue = AllocateForceWeapon( client, team, availableValue );
+        float availableValue = totalValue / remaining;
+        float spareValue = AllocateForceWeapon( client, team, availableValue );
 
         totalValue -= availableValue + spareValue;
     }

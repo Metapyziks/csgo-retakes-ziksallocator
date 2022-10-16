@@ -76,6 +76,44 @@ void AddBackExitItems( Panel menu )
     menu.DrawItem( buffer );
 }
 
+bool AddMenuBool( Handle menu, bool value, const char[] display )
+{
+    return AddMenuItem( menu, value ? "TRUE" : "FALSE", display );
+}
+
+bool GetMenuBool( Handle menu, int position, bool defaultValue = false )
+{
+    char buffer[32];
+
+    if ( !GetMenuItem( menu, position, buffer, sizeof(buffer) ) )
+    {
+        return defaultValue;
+    }
+
+    return strcmp( buffer, "TRUE" ) == 0;
+}
+
+bool AddMenuInt( Handle menu, int value, const char[] display )
+{
+    char buffer[32];
+
+    IntToString( value, buffer, sizeof(buffer) );
+
+    return AddMenuItem( menu, buffer, display );
+}
+
+int GetMenuInt( Handle menu, int position, int defaultValue = 0 )
+{
+    char buffer[32];
+
+    if ( !GetMenuItem( menu, position, buffer, sizeof(buffer) ) )
+    {
+        return defaultValue;
+    }
+
+    return StringToInt( buffer, 10 );
+}
+
 #include "ziksallocator/menus/main.sp"
 #include "ziksallocator/menus/team.sp"
 #include "ziksallocator/menus/resetconfirm.sp"

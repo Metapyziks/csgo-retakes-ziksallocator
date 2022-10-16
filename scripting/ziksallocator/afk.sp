@@ -31,7 +31,7 @@ void Afk_OnRoundStart()
     {
         g_AliveLastRound[client] = false;
 
-        if ( !IsClientValidAndInGame( client ) || !IsOnTeam( client ) ) continue;
+        if ( !IsClientValidAndInGame( client ) ) continue;
 
         int team = GetClientTeam( client );
         if ( team != CS_TEAM_T && team != CS_TEAM_CT ) continue;
@@ -64,7 +64,7 @@ void Afk_OnRoundEnd()
     {
         bool wasAlive = g_AliveLastRound[client];
 
-        if ( !IsClientValidAndInGame( client ) || !IsOnTeam( client ) || !wasAlive ) continue;
+        if ( !IsClientValidAndInGame( client ) || !wasAlive ) continue;
 
         int team = GetClientTeam( client );
         if ( team != CS_TEAM_T && team != CS_TEAM_CT ) continue;

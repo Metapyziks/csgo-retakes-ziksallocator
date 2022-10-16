@@ -95,10 +95,10 @@ public int MenuHandler_WeaponCategory( Menu menu, MenuAction action, int param1,
     if ( action == MenuAction_End )
     {
         delete menu;
-        return;
+        return 0;
     }
 
-    if ( action != MenuAction_Select ) return;
+    if ( action != MenuAction_Select ) return 0;
 
     int client = param1;
     int team = g_MenuStateTeam[client];
@@ -107,12 +107,12 @@ public int MenuHandler_WeaponCategory( Menu menu, MenuAction action, int param1,
     if ( param2 == BACK_ITEM_INDEX )
     {
         GiveLoadoutMenu( client, team, loadout );
-        return;
+        return 0;
     }
     
     if ( param2 == EXIT_ITEM_INDEX )
     {
-        return;
+        return 0;
     }
     
     if ( param2 == 1 ) // No weapon
@@ -120,11 +120,12 @@ public int MenuHandler_WeaponCategory( Menu menu, MenuAction action, int param1,
         SetPrimary( client, team, loadout, WEAPON_NONE );
         SaveLoadouts( client );
         GiveLoadoutMenu( client, team, loadout );
-        return;
+        return 0;
     }
 
     int categoryIndex = param2 - 2;
     
     CSWeaponCategory category = g_PrimaryCategories[categoryIndex];
     GiveWeaponMenu( client, team, loadout, category );
+    return 0;
 }

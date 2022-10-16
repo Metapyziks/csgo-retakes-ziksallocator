@@ -145,10 +145,10 @@ public int MenuHandler_Loadout( Menu menu, MenuAction action, int param1, int pa
     if ( action == MenuAction_End )
     {
         delete menu;
-        return;
+        return 0;
     }
 
-    if ( action != MenuAction_Select ) return;
+    if ( action != MenuAction_Select ) return 0;
 
     int client = param1;
     int team = g_MenuStateTeam[client];
@@ -157,12 +157,12 @@ public int MenuHandler_Loadout( Menu menu, MenuAction action, int param1, int pa
     if ( param2 == BACK_ITEM_INDEX )
     {
         GiveTeamMenu( client, loadout );
-        return;
+        return 0;
     }
     
     if ( param2 == EXIT_ITEM_INDEX )
     {
-        return;
+        return 0;
     }
 
     if ( loadout == LOADOUT_SNIPER )
@@ -215,7 +215,7 @@ public int MenuHandler_Loadout( Menu menu, MenuAction action, int param1, int pa
         if ( param2 == 1 )
         {
             GiveWeaponCategoryMenu( client, team, loadout );
-            return;
+            return 0;
         }
 
         param2 -= 1;
@@ -226,11 +226,12 @@ public int MenuHandler_Loadout( Menu menu, MenuAction action, int param1, int pa
         if ( param2 == 1 )
         {
             GiveWeaponMenu( client, team, loadout, WCAT_PISTOL );
-            return;
+            return 0;
         }
 
         param2 -= 1;
     }
 
     GiveLoadoutMenu( client, team, loadout );
+    return 0;
 }

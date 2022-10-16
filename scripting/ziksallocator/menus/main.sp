@@ -42,20 +42,21 @@ public int MenuHandler_Main( Handle menu, MenuAction action, int param1, int par
     if ( action == MenuAction_End )
     {
         CloseHandle( menu );
-        return;
+        return 0;
     }
 
-    if ( action != MenuAction_Select ) return;
+    if ( action != MenuAction_Select ) return 0;
 
     int client = param1;
 
     if ( GetMenuInt( menu, param2 ) == -1 )
     {
         GiveResetConfirmMenu( client );
-        return;
+        return 0;
     }
 
     RTLoadout choice = view_as<RTLoadout>( GetMenuInt( menu, param2 ) );
 
     GiveTeamMenu( client, choice );
+    return 0;
 }

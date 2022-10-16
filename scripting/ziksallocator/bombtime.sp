@@ -221,7 +221,7 @@ bool BombTime_AnyLivingTerrorists()
 {
     for ( int client = 1; client <= MaxClients; ++client )
     {
-        if ( !IsClientValidAndInGame( client ) || !IsOnTeam( client ) ) continue;
+        if ( !IsClientValidAndInGame( client ) ) continue;
 
         int team = GetClientTeam( client );
         if ( team != CS_TEAM_T ) continue;

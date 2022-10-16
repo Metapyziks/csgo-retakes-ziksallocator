@@ -1,4 +1,4 @@
-#include "include/priorityqueue.inc"
+#include <priorityqueue>
 
 #define MAX_ROLLING_AVERAGE_ROUNDS 10
 #define POINTS_LOSS 5000

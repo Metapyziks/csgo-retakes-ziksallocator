@@ -43,20 +43,21 @@ public int MenuHandler_Team( Handle menu, MenuAction action, int param1, int par
     if ( action == MenuAction_Cancel && param2 == MenuCancel_ExitBack )
     {
         GiveMainMenu( param1 );
-        return;
+        return 0;
     }
 
     if ( action == MenuAction_End )
     {
         CloseHandle( menu );
-        return;
+        return 0;
     }
 
-    if ( action != MenuAction_Select ) return;
+    if ( action != MenuAction_Select ) return 0;
 
     int client = param1;
     int team = GetMenuInt( menu, param2 );
     RTLoadout loadout = g_MenuStateLoadout[client];
 
     GiveLoadoutMenu( client, team, loadout );
+    return 0;
 }

@@ -37,16 +37,16 @@ public int MenuHandler_ResetConfirm( Handle menu, MenuAction action, int param1,
     if ( action == MenuAction_Cancel && param2 == MenuCancel_ExitBack )
     {
         GiveMainMenu( param1 );
-        return;
+        return 0;
     }
 
     if ( action == MenuAction_End )
     {
         CloseHandle( menu );
-        return;
+        return 0;
     }
 
-    if ( action != MenuAction_Select ) return;
+    if ( action != MenuAction_Select ) return 0;
 
     int client = param1;
 
@@ -57,4 +57,5 @@ public int MenuHandler_ResetConfirm( Handle menu, MenuAction action, int param1,
     }
 
     GiveMainMenu( client );
+    return 0;
 }
